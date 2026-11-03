@@ -8,11 +8,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "neuron": "python3 scripts/build_neuron.py",
-    "spines": "python3 scripts/build_spines.py"
+    "spines": "python3 scripts/build_spines.py",
+    "spinebuilder": "python3 scripts/build_spinebuilder.py",
+    "neuronmesh": "python3 scripts/build_neuronmesh.py"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.1.0",
     "@fontsource-variable/inter": "5.1.0",
+    "katex": "0.16.11",
     "three": "0.169.0"
   },
   "devDependencies": {

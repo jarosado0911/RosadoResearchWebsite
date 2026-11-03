@@ -12,6 +12,8 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
         spines: resolve(import.meta.dirname, 'spines.html'),
+        spinebuilder: resolve(import.meta.dirname, 'spinebuilder.html'),
+        neuronmesh: resolve(import.meta.dirname, 'neuronmesh.html'),
       },
     },
   },

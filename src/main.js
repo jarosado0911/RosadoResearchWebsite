@@ -10,7 +10,8 @@ if (import.meta.env.DEV) document.body.classList.add('show-todo');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canvas = document.getElementById('neuron');
 
-import('./neuron.js')
+// the CA1 neuron background (home and spines pages)
+if (canvas) import('./neuron.js')
   .then(({ startNeuron }) => startNeuron(canvas, {
     reducedMotion,
     stillTime: new URLSearchParams(location.search).has('t') ? Number(new URLSearchParams(location.search).get('t')) : null,
@@ -30,12 +31,24 @@ import('./neuron.js')
       else window.scrollTo(0, Number(sc) * (document.documentElement.scrollHeight - window.innerHeight));
       document.querySelectorAll('.section').forEach((s) => s.classList.add('in'));
     }
-    document.getElementById('fire').addEventListener('click', () => neuron.fire());
+    document.getElementById('fire')?.addEventListener('click', () => neuron.fire());
   })
   .catch((e) => {
     console.error(e);
     document.body.classList.add('no-webgl');
   });
+
+// the SpineBuilder and NeuronMesh pages: their own backgrounds (the real meshes), math and viewers
+const sbCanvas = document.getElementById('sb-bg');
+if (sbCanvas) {
+  (sbCanvas.dataset.page === 'neuronmesh'
+    ? import('./neuronmesh.js').then(({ startNeuronMeshPage }) => startNeuronMeshPage(sbCanvas, { reducedMotion }))
+    : import('./spinebuilder.js').then(({ startSpineBuilderPage }) => startSpineBuilderPage(sbCanvas, { reducedMotion })))
+    .catch((e) => {
+      console.error(e);
+      document.body.classList.add('no-webgl');
+    });
+}
 
 // the spine gallery: loaded when it comes near the screen
 const gallery = document.getElementById('spine-gallery');

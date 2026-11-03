@@ -1,0 +1,28 @@
+{
+ "name": "python",
+ "source": "python_0-2a.ugx",
+ "unit": "um",
+ "parts": [
+  {
+   "name": "surface",
+   "vertices": 6810,
+   "count": 38688,
+   "positions": 0,
+   "indices": 81720
+  },
+  {
+   "name": "clip",
+   "vertices": 1071,
+   "count": 2991,
+   "positions": 236472,
+   "indices": 249324
+  },
+  {
+   "name": "open",
+   "vertices": 720,
+   "count": 1440,
+   "positions": 261288,
+   "indices": 269928
+  }
+ ]
+}

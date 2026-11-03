@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inside NeuronMesh | James Rosado, Ph.D.</title>
+    <meta name="description" content="From a NeuroMorpho reconstruction to one closed neuron surface: the NeuronMesh pipeline (B-splines, rotation-minimizing frames, junction patches, soma weld), compared side by side with my first generator, PythonNeuronMeshes." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="sb nm">
+    <!-- The background (src/neuronmesh.js): the 0-2a cell at the pipeline step being read; drag where there is no text -->
+    <canvas id="sb-bg" data-page="neuronmesh" aria-label="3D view of the neuron at the current step of the pipeline; drag to rotate"></canvas>
+    <div class="vignette sb-vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="/">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="/#services">Consulting</a>
+        <a href="/#research">Research</a>
+        <a href="/#projects">Software</a>
+        <a href="/#publications">Publications</a>
+        <a href="/#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small" href="/#contact">Contact</a>
+    </header>
+
+    <div class="sb-hud" id="sb-hud">
+      <p class="sb-hud-label"><span class="dot"></span><span id="sb-scene-name">The SWC reconstruction</span><span class="sb-hud-hint"> · drag to rotate</span></p>
+    </div>
+
+    <main id="top" class="subpage">
+      <section class="page-head sb-head">
+        <a class="back" href="/#research">&larr; Research</a>
+        <p class="eyebrow">Research software &middot; Meshing &middot; C++17 and Python</p>
+        <h1>From a skeleton to <em>a closed surface.</em></h1>
+        <p class="lede">
+          A neuron reconstruction is a tree of points with radii. A simulation, or a VR view, needs a surface: one
+          closed membrane, with no tubes cutting into each other. NeuronMesh is the C++ tool I wrote to make it, after
+          a first attempt in Python taught me where that's hard. The background follows one real cell from
+          <a href="https://neuromorpho.org" target="_blank" rel="noopener">NeuroMorpho.org</a> through every step.
+        </p>
+        <div class="nm-tools">
+          <article class="card">
+            <p class="tag">2026 &middot; C++17 &middot; 6,600 lines</p>
+            <h3>NeuronMesh</h3>
+            <p>B-spline resampling, rotation-minimizing frames, curved junction patches and a welded soma: one closed surface, plus the 1D skeleton and the Neuro-VISOR <code>.vrn</code> archive.</p>
+            <a class="more" href="#pipeline">How it works &darr;</a>
+          </article>
+          <article class="card">
+            <p class="tag">2023 &middot; Python &middot; my first effort</p>
+            <h3>PythonNeuronMeshes</h3>
+            <p>scipy splines and parallel transport frames, one tube per branch and a soma sphere. It got the shapes right and the joins wrong.</p>
+            <a class="more" href="https://github.com/jarosado0911/PythonNeuronMeshes" target="_blank" rel="noopener">github.com/jarosado0911/PythonNeuronMeshes &rarr;</a>
+          </article>
+        </div>
+        <ul class="facts nm-facts" aria-label="The two meshes of the same cell">
+          <li><strong id="f-pieces">1</strong><span>closed surface from NeuronMesh, against 31 open pieces</span></li>
+          <li><strong id="f-cross">14&times;</strong><span>fewer crossing triangles (100 pairs against 1,418)</span></li>
+          <li><strong>&lt;0.3 s</strong><span>for the whole cell, 26,564 triangles</span></li>
+        </ul>
+      </section>
+
+      <!-- ===================== THE PIPELINE ===================== -->
+      <section id="pipeline" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">The pipeline</p>
+          <h2>Seven steps, one cell.</h2>
+          <p class="sub">
+            The cell is <code>0-2a.CNG.swc</code>, a rat layer-5 pyramidal neuron: 457 points. Scroll through the steps;
+            the background shows each one on the real cell.
+          </p>
+        </div>
+
+        <ol class="nm-steps">
+          <li class="card" data-stage="swc">
+            <span class="num">01</span>
+            <h3>The reconstruction</h3>
+            <p>An <code>.swc</code> file from NeuroMorpho.org: every point has a position, a radius, a type (soma, axon, dendrite) and a parent, so the points form a tree rooted at the soma.</p>
+            <div class="tex-block">\mathcal T=\{(x_i,\,r_i,\,\text{type}_i,\,\text{parent}_i)\}_{i=1}^{457}</div>
+            <p>Between branch points and tips the tree splits into <em>trunks</em>, unbranched runs of points. This cell has 30.</p>
+          </li>
+          <li class="card" data-stage="spline">
+            <span class="num">02</span>
+            <h3>A smooth centerline</h3>
+            <p>Each trunk's points <span class="tex">P_i=(x_i,y_i,z_i,r_i)</span> become the control polygon of a clamped B-spline in <span class="tex">\mathbb R^4</span>, so position and radius are smoothed together:</p>
+            <div class="tex-block">C(t)=\sum_{i=0}^{M-1}N_{i,d}(t)\,P_i,\qquad t\in[0,1]</div>
+            <p>The repeated end knots make the curve pass through both ends of the trunk, so neighbors still meet at their branch point. It is then resampled at equal arc length <span class="tex">\delta</span>, here 4 µm, with <span class="tex">N=\max\big(4,\operatorname{round}(L/\delta)\big)</span> points: the 1D skeleton.</p>
+          </li>
+          <li class="card" data-stage="frames">
+            <span class="num">03</span>
+            <h3>Frames that don't twist</h3>
+            <p>To place a ring around each point, every point needs two directions across the curve. Rotation-minimizing frames (red and green here) turn only as much as the curve does, never spinning about it. See <a href="#frames">the frames below</a>.</p>
+          </li>
+          <li class="card" data-stage="rings">
+            <span class="num">04</span>
+            <h3>Rings</h3>
+            <p>Around point <span class="tex">p_i</span>, with radius <span class="tex">\rho_i</span> and frame <span class="tex">(t_i,r_i,s_i)</span>, a ring of <span class="tex">n=12</span> vertices:</p>
+            <div class="tex-block">x_{i,j}=p_i+\rho_i\big(\cos\theta_j\,r_i+\sin\theta_j\,s_i\big),\qquad \theta_j=\tfrac{2\pi j}{n}</div>
+          </li>
+          <li class="card" data-stage="tubes">
+            <span class="num">05</span>
+            <h3>Tubes, each on its own</h3>
+            <p>Consecutive rings are joined by quads, split into triangles. Done trunk by trunk, this is where my first version stopped: every branch is a separate tube, and at the branch points they cut into each other and leave gaps. The background shows that mesh, from PythonNeuronMeshes.</p>
+          </li>
+          <li class="card" data-stage="junctions">
+            <span class="num">06</span>
+            <h3>Branch points</h3>
+            <p>NeuronMesh stops each tube about a radius short of the branch point, and keeps trimming while two tube ends still overlap, <span class="tex">\lVert e_a-e_b\rVert&lt;r_a+r_b</span>. Facing half-rings are then joined by cubic Bézier rails, pulled toward the branch point <span class="tex">O</span>:</p>
+            <div class="tex-block">B(t)=(1-t)^3W_i+3(1-t)^2t\,U_i+3(1-t)t^2\,U_j+t^3W_j,\quad U_i=O+\alpha(W_i-O)</div>
+            <p>with <span class="tex">\alpha=0.5</span>. The two holes left at the poles are closed by fans, and tips by a fan from the last ring's center.</p>
+          </li>
+          <li class="card" data-stage="weld">
+            <span class="num">07</span>
+            <h3>Welding into the soma</h3>
+            <p>The soma is a sphere of center <span class="tex">c</span> and radius <span class="tex">R</span>. Each tube is cut exactly where it enters it: along each generator, segment <span class="tex">p\to p+d</span> meets the sphere at <span class="tex">p+\tau d</span>, with <span class="tex">w=p-c</span> and</p>
+            <div class="tex-block">\tau=\frac{-b-\sqrt{b^2-4a\gamma}}{2a},\qquad a=d\cdot d,\quad b=2\,w\cdot d,\quad \gamma=w\cdot w-R^2</div>
+            <p>These points form the seam, the exact curve where tube and sphere meet. The sphere is refined around each seam by longest-edge bisection, a hole is cut, and a collar of rings with geometric radii <span class="tex">\rho_{i}=r_{\text{in}}(r_{\text{out}}/r_{\text{in}})^{i/(m+1)}</span> joins the seam to it.</p>
+          </li>
+          <li class="card" data-stage="cell">
+            <span class="num">&check;</span>
+            <h3>One closed surface</h3>
+            <p>26,564 triangles, one piece, no open edges, every edge in exactly two triangles, Euler characteristic</p>
+            <div class="tex-block">\chi=V-E+F=13{,}284-39{,}846+26{,}564=2</div>
+            <p>as a sphere. Every vertex also records which 1D points it belongs to, for coloring the surface by a 1D simulation in Neuro-VISOR.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ===================== FRAMES ===================== -->
+      <section id="frames" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">The frames</p>
+          <h2>Why tubes twist, and how not to.</h2>
+          <p class="sub">
+            The stripe shows one generator of the tube, the line through vertex 0 of every ring. Switch the frame and
+            watch the stripe. Drag to turn the curve.
+          </p>
+        </div>
+        <div class="builder frames-demo" id="frames-demo">
+          <div class="builder-view">
+            <canvas class="builder-canvas" aria-label="A curve with a tube swept along it using the chosen frame; drag to rotate"></canvas>
+            <p class="builder-hint">Drag to rotate</p>
+          </div>
+          <div class="builder-panel">
+            <h3>Choose a frame</h3>
+            <div class="sb-scenes frame-pick" role="group" aria-label="Frame">
+              <button type="button" data-frame="frenet">Frenet</button>
+              <button type="button" data-frame="rotation">Parallel transport (2023)</button>
+              <button type="button" data-frame="reflection" class="active">Double reflection (2026)</button>
+            </div>
+            <p class="frame-note"></p>
+            <dl class="builder-out frame-out"></dl>
+            <label class="builder-row"><span>Bend out of plane</span><input type="range" min="0" max="1" step="0.01" value="0.25" data-lift /><output></output></label>
+          </div>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">Frenet: follows the curvature</p>
+              <p>The Frenet frame takes the normal from the curvature, <span class="tex">N=T'/\lVert T'\rVert</span>:</p>
+              <div class="tex-block">T'=\kappa N,\qquad N'=-\kappa T+\tau B,\qquad B'=-\tau N</div>
+              <p>Where the curve straightens or changes the side it bends to (<span class="tex">\kappa\to0</span>), <span class="tex">N</span> is undefined and flips. A tube swept with it twists and pinches there.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Rotation-minimizing: no spin</p>
+              <p>A rotation-minimizing (Bishop) frame <span class="tex">(T,r,s)</span> has no component of rotation about the tangent:</p>
+              <div class="tex-block">T'=k_1r+k_2s,\qquad r'=-k_1T,\qquad s'=-k_2T</div>
+              <p>It is defined everywhere, also on straight stretches, and its normals are parallel transported along the curve.</p>
+            </article>
+            <article class="card">
+              <p class="tag">2023 &middot; the rotation method</p>
+              <p>PythonNeuronMeshes transported the normal by rotating it, at every point, by the angle between consecutive tangents about their common normal:</p>
+              <div class="tex-block">b_i=\frac{t_i\times t_{i+1}}{\lVert t_i\times t_{i+1}\rVert},\quad \varphi_i=\arccos(t_i\cdot t_{i+1}),\quad v_{i+1}=R(b_i,\varphi_i)\,v_i</div>
+              <p>Correct, but a trigonometric rotation per point, and each trunk started its own frame from scratch.</p>
+            </article>
+            <article class="card">
+              <p class="tag">2026 &middot; the double reflection method</p>
+              <p>NeuronMesh uses two reflections in planes per step (Wang, Jüttler, Zheng and Liu, 2008), fourth-order accurate and with no trigonometry: with <span class="tex">v_1=p_{i+1}-p_i</span>,</p>
+              <div class="tex-block">r_i^L=r_i-\tfrac{2\,v_1\cdot r_i}{v_1\cdot v_1}v_1,\quad t_i^L=t_i-\tfrac{2\,v_1\cdot t_i}{v_1\cdot v_1}v_1,\quad v_2=t_{i+1}-t_i^L</div>
+              <div class="tex-block">r_{i+1}=r_i^L-\tfrac{2\,v_2\cdot r_i^L}{v_2\cdot v_2}v_2,\qquad s_{i+1}=t_{i+1}\times r_{i+1}</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== THEN AND NOW ===================== -->
+      <section id="compare" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">Then and now</p>
+          <h2>The same cell, two generators.</h2>
+          <p class="sub">
+            Both meshes from the same <code>.swc</code> file, at the same 4 µm spacing and 12 vertices per ring.
+            One camera drives both views: drag, zoom, or jump to the places where my first version fails.
+            Red marks triangles that cut through another triangle (found with TetGen's <code>-d</code> check),
+            yellow the open edges.
+          </p>
+        </div>
+
+        <div class="compare" id="compare-view">
+          <div class="compare-view">
+            <canvas class="compare-canvas" aria-label="Side by side: the PythonNeuronMeshes mesh on the left, the NeuronMesh mesh on the right, seen by the same camera; drag to rotate, scroll to zoom"></canvas>
+            <p class="compare-label left">PythonNeuronMeshes <small>2023</small></p>
+            <p class="compare-label right">NeuronMesh <small>2026</small></p>
+            <p class="compare-count left" id="count-python"></p>
+            <p class="compare-count right" id="count-neuronmesh"></p>
+            <div class="compare-zoom">
+              <button type="button" class="sg-btn" data-zoom="in" aria-label="Zoom in">+</button>
+              <button type="button" class="sg-btn" data-zoom="out" aria-label="Zoom out">&minus;</button>
+            </div>
+          </div>
+          <div class="compare-bar">
+            <div class="sb-scenes compare-spots" role="group" aria-label="Go to"></div>
+            <div class="sb-parts compare-opts" role="group" aria-label="Show">
+              <label><input type="checkbox" data-show="clip" checked /> <span class="k clip">crossing triangles</span></label>
+              <label><input type="checkbox" data-show="open" checked /> <span class="k open">open edges</span></label>
+              <label><input type="checkbox" data-show="wire" /> edges</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="nm-table-wrap">
+          <table class="nm-table">
+            <thead><tr><th></th><th>PythonNeuronMeshes</th><th>NeuronMesh</th></tr></thead>
+            <tbody id="stats-body"></tbody>
+          </table>
+        </div>
+
+        <div class="grid grid-2 nm-why">
+          <article class="card">
+            <p class="tag">Why the first version fails</p>
+            <p>It swept every trunk as its own tube, from branch point to branch point, and placed a separate sphere for the soma. Nothing joins them: the tubes of a branch point overlap each other, their end rings leave open slits beside the overlap, and every dendrite runs into the soma as an open tube. The result is 31 separate pieces, 30 tubes and a sphere, with 720 open edges.</p>
+          </article>
+          <article class="card">
+            <p class="tag">What NeuronMesh does instead</p>
+            <p>It shortens the tubes at each branch point until they no longer overlap and fills the gap with a curved patch, cuts each soma tube exactly where it enters the sphere and welds it in, and closes every tip. The crossings it still has (100 pairs) sit in a few sharp branch points and in collars at the soma, a known open item.</p>
+          </article>
+        </div>
+
+        <figure class="shot nm-problems">
+          <img src="/neuronmesh/img/python_problems.jpg" alt="My notes on the PythonNeuronMeshes mesh at the time: the soma is a mess, ends are open, branch points have gaps and clip into each other" loading="lazy" width="1600" height="786" />
+          <figcaption>My own notes on the Python version, from 2023.</figcaption>
+        </figure>
+      </section>
+
+      <!-- ===================== RUNNING IT ===================== -->
+      <section id="run" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">Running it</p>
+          <h2>One command each.</h2>
+        </div>
+        <div class="grid grid-2">
+          <article class="card nm-cmd">
+            <p class="tag">NeuronMesh</p>
+            <p>One closed surface of the cell, written as <code>.ugx</code> with its 1D skeleton:</p>
+            <pre><code>neuronmesh -i 0-2a.CNG.swc --mesh --method BS --p 3 \
+    --delta 4 --sides 12 --repair --sphere-weld \
+    --junction-refine 0.5 --1d --ugx -o 0-2a.ugx</code></pre>
+            <p>A Neuro-VISOR archive, five levels from 16 to 1 µm:</p>
+            <pre><code>neuronmesh -i 0-2a.CNG.swc --vrn -n 5 --delta 16 \
+    --method BS --p 3 --sides 12 --repair \
+    --sphere-weld --junction-refine 0.5 -o 0-2a.vrn</code></pre>
+            <dl class="nm-flags">
+              <div><dt><code>--method BS --p 3</code></dt><dd>clamped cubic B-spline</dd></div>
+              <div><dt><code>--delta</code></dt><dd>point spacing along the skeleton, µm</dd></div>
+              <div><dt><code>--sides</code></dt><dd>vertices per ring</dd></div>
+              <div><dt><code>--repair</code></dt><dd>collapse the multi-point soma outline first</dd></div>
+              <div><dt><code>--sphere-weld</code></dt><dd>weld every branch into a soma sphere</dd></div>
+              <div><dt><code>--junction-refine 0.5</code></dt><dd>rings 0.5 &times; the radius apart near branch points</dd></div>
+            </dl>
+          </article>
+          <article class="card nm-cmd">
+            <p class="tag">PythonNeuronMeshes</p>
+            <p>Refinement levels of the 1D skeleton, a surface mesh for each, zipped into a <code>.vrn</code>:</p>
+            <pre><code>python3 NEW_generate_meshes.py -n 6 -c 12 -d 32 \
+    -p 10 -q 16 -i cells/0-2a.CNG.swc</code></pre>
+            <dl class="nm-flags">
+              <div><dt><code>-n</code></dt><dd>number of refinements (spacing halves each time)</dd></div>
+              <div><dt><code>-d</code></dt><dd>largest spacing, µm</dd></div>
+              <div><dt><code>-c</code></dt><dd>contour points per ring</dd></div>
+              <div><dt><code>-p</code>, <code>-q</code></dt><dd>soma sphere contours and points per contour</dd></div>
+            </dl>
+            <figure class="shot">
+              <img src="/neuronmesh/img/python_refinements1d.jpg" alt="PythonNeuronMeshes: spline refinements of the 1D geometry" loading="lazy" width="1352" height="678" />
+              <figcaption>PythonNeuronMeshes' spline refinements of the 1D skeleton.</figcaption>
+            </figure>
+          </article>
+        </div>
+        <div class="grid grid-2 nm-figs">
+          <figure class="shot">
+            <img src="/neuronmesh/img/bifurcation_params.jpg" alt="One bifurcation meshed with different junction refinement, bridge samples and sides" loading="lazy" width="1600" height="798" />
+            <figcaption>One branch point at 16 µm spacing. Top: <code>--junction-refine</code> off, 1, 0.5, 0.25; without it the patch spans a whole ring spacing with webbed triangles. Bottom: 4, 12 and 24 Bézier rails, and 24 sides.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="/neuronmesh/img/seam_top.jpg" alt="The soma weld from above at four levels: the refined sphere patch, the graded collar and the seam" loading="lazy" width="1600" height="396" />
+            <figcaption>The soma weld from above, at four levels: the refined patch of the sphere (red), the graded collar and the seam (green). The tube's end at the soma is resampled at its own radius, so the weld is the same at every level.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ===================== VERSUS VR-GRIDS ===================== -->
+      <section id="vrgrids" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">Against another generator</p>
+          <h2>NeuronMesh and vr-grids.</h2>
+          <p class="sub">
+            Neuro-VISOR's meshes used to come from vr-grids, scripts that drive ug4's <code>neuro_collection</code>
+            plugin. I built both archives from the same cell, matched their levels (1D spacing 4 to 0.125 µm), and
+            compared them on every axis I could measure.
+          </p>
+        </div>
+        <div class="nm-table-wrap">
+          <table class="nm-table">
+            <thead><tr><th></th><th>vr-grids</th><th>NeuronMesh</th></tr></thead>
+            <tbody>
+              <tr><th>The whole archive</th><td>380 s</td><td>19.8 s (19&times; faster)</td></tr>
+              <tr><th>Surface at 4 µm</th><td>7 pieces, 84 open edges</td><td>1 closed piece</td></tr>
+              <tr><th>Soma</th><td>a separate sphere at 55% of the recorded radius, six open tubes inside it</td><td>the recorded radius, every branch welded in</td></tr>
+              <tr><th>Twist per segment, median</th><td>1.5&deg; (95th percentile 15&deg;, up to 82&deg;)</td><td>0.003&deg; (95th percentile 0.16&deg;)</td></tr>
+              <tr><th>Twist over the whole cell</th><td>2,300&ndash;3,800&deg;</td><td>30&ndash;40&deg;</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">Where the twist comes from</p>
+              <p>vr-grids projects one fixed reference vector <span class="tex">\mathbf r</span> per neurite onto each ring's plane, <span class="tex">\mathbf p=(\mathbf r-(\mathbf r\cdot\mathbf t)\mathbf t)/\sqrt{1-(\mathbf r\cdot\mathbf t)^2}</span>. Its rate of rotation about the tangent is</p>
+              <div class="tex-block">\omega(s)=-\frac{(\mathbf r\cdot\mathbf t)\;\mathbf t'\cdot(\mathbf t\times\mathbf r)}{1-(\mathbf r\cdot\mathbf t)^2}</div>
+              <p>zero only when the dendrite bends in the plane of <span class="tex">\mathbf t</span> and <span class="tex">\mathbf r</span>, and unbounded as <span class="tex">\mathbf t\to\pm\mathbf r</span>. The rotation-minimizing frame has <span class="tex">\omega\equiv0</span> by construction.</p>
+            </article>
+            <article class="card">
+              <p class="tag">How it was measured</p>
+              <p>For every 1D edge, each vertex of one ring is paired with its neighbor on the next ring of smallest angular offset about the edge's axis; the segment's twist is the median offset over the ring. An untwisted sweep gives offsets near zero, a rolled frame the same offset on every vertex.</p>
+            </article>
+          </div>
+        </div>
+        <div class="grid grid-2 nm-figs">
+          <figure class="shot">
+            <img src="/neuronmesh/img/twist_closeup.jpg" alt="16 µm of dendrite where vr-grids twists most, and the same stretch from NeuronMesh" loading="lazy" width="1600" height="800" />
+            <figcaption>The 16 µm where vr-grids twists most (86&deg; over four segments; top), and the same stretch from NeuronMesh (0.02&deg; over ten; bottom).</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="/neuronmesh/img/soma_vrgrids_vs_neuronmesh.jpg" alt="The soma region from vr-grids and from NeuronMesh at 4 µm spacing" loading="lazy" width="1600" height="800" />
+            <figcaption>The soma at 4 µm: vr-grids' shrunken sphere with open tubes pushed into it, and NeuronMesh's welded soma at its recorded radius.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="cta">
+          <a class="btn" href="https://github.com/jarosado0911/PythonNeuronMeshes" target="_blank" rel="noopener">PythonNeuronMeshes on GitHub</a>
+          <a class="btn btn-ghost" href="/spinebuilder.html">SpineBuilder: meshes of single spines &rarr;</a>
+          <a class="btn btn-ghost" href="/#research">Back to research</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">The background and the comparison are the real meshes of 0-2a.CNG.swc from both tools, rendered live in WebGL.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

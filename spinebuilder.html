@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inside SpineBuilder | James Rosado, Ph.D.</title>
+    <meta name="description" content="SpineBuilder, a desktop application that turns ideal and reconstructed dendritic spines, and whole neurons, into simulation-ready meshes. Its three tabs, the steps, the mathematics, and the meshes in 3D." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="sb">
+    <!-- The background (src/spinebuilder.js): the .ugx meshes of each section, in 3D; drag where there is no text -->
+    <canvas id="sb-bg" aria-label="3D view of the mesh of the current section; drag to rotate"></canvas>
+    <div class="vignette sb-vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="/">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="/#services">Consulting</a>
+        <a href="/#research">Research</a>
+        <a href="/#projects">Software</a>
+        <a href="/#publications">Publications</a>
+        <a href="/#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small" href="/#contact">Contact</a>
+    </header>
+
+    <!-- the background's controls; "Explore in 3D" hides the page and gives the whole screen to the mesh -->
+    <div class="sb-hud" id="sb-hud">
+      <p class="sb-hud-label"><span class="dot"></span><span id="sb-scene-name">Ideal spine</span><span class="sb-hud-hint"> · drag to rotate</span></p>
+      <div class="sb-hud-tools">
+        <div class="sb-scenes" role="group" aria-label="Mesh">
+          <button type="button" data-scene="ideal">Ideal</button>
+          <button type="button" data-scene="process">Processed</button>
+          <button type="button" data-scene="cell">Cell</button>
+        </div>
+        <div class="sb-parts" role="group" aria-label="Show">
+          <label><input type="checkbox" data-part="pm" checked /> <span class="k pm">membrane</span></label>
+          <label><input type="checkbox" data-part="syn" checked /> <span class="k syn">synapse</span></label>
+          <label><input type="checkbox" data-part="er" checked /> <span class="k er">ER</span></label>
+          <label><input type="checkbox" data-part="sa" checked /> <span class="k sa">spine apparatus</span></label>
+        </div>
+        <button type="button" class="sb-chip" id="sb-next-spine">Fly to the next spine</button>
+        <p class="sb-hud-help">Drag to rotate · scroll or pinch to zoom · right-drag to move · Esc to go back</p>
+      </div>
+      <button type="button" class="btn btn-small" id="sb-explore">Explore in 3D</button>
+    </div>
+
+    <main id="top" class="subpage">
+      <section class="page-head sb-head">
+        <a class="back" href="/#research">&larr; Research</a>
+        <p class="eyebrow">Research software &middot; Meshing &middot; Python, Qt, VTK</p>
+        <h1>Inside <em>SpineBuilder.</em></h1>
+        <p class="lede">
+          A calcium simulation is only as good as the shape it runs on. SpineBuilder is a desktop application I wrote
+          that turns dendritic spines, ideal or reconstructed from electron microscopy, and whole neurons into closed,
+          labeled meshes ready for finite element simulation in <a href="https://github.com/UG4" target="_blank" rel="noopener">ug4</a>.
+          It has three tabs, one for each way of getting a mesh.
+        </p>
+        <ol class="sb-tabs-nav">
+          <li><a href="#ideal"><span>01</span>Ideal Spine Builder<small>A spine from a dozen numbers</small></a></li>
+          <li><a href="#process"><span>02</span>Process Spine<small>A real spine, step by step</small></a></li>
+          <li><a href="#cell"><span>03</span>Cell Builder<small>A whole neuron, with spines</small></a></li>
+        </ol>
+        <p class="sb-bg-note muted small">
+          The background is the mesh of the section you're reading, the same <code>.ugx</code> files the app saves.
+          Drag anywhere there's no text to turn it, or press <strong>Explore in 3D</strong>.
+        </p>
+      </section>
+
+      <!-- ===================== 01 IDEAL SPINE BUILDER ===================== -->
+      <section id="ideal" class="section sb-tab" data-scene="ideal">
+        <div class="section-head">
+          <p class="eyebrow">Tab 01 &middot; Ideal Spine Builder</p>
+          <h2>A spine from a dozen numbers.</h2>
+          <p class="sub">
+            The idealized spine of Breit et al. (2018): a dendrite tube with one spine on it, a neck and a head, and
+            optionally the dendritic ER and the spine apparatus inside. Change a number and the mesh is rebuilt as
+            you type; numbers that can't make a valid mesh are listed in red, with the reason.
+          </p>
+        </div>
+
+        <figure class="shot">
+          <img src="/spinebuilder/img/ideal_er_sa.jpg" alt="The Ideal Spine Builder tab: the parameter panel on the left, the spine on its dendrite on the right, with the plasma membrane at 35% opacity so that the ER and spine apparatus show through" loading="lazy" width="1600" height="960" />
+          <figcaption>The Ideal Spine Builder tab, with the ER, the spine apparatus and the synapse turned on, and the membrane made see-through.</figcaption>
+        </figure>
+
+        <!-- the same geometry, rebuilt in the browser (src/idealspine.js) -->
+        <div class="builder" id="builder">
+          <div class="builder-view">
+            <canvas class="builder-canvas" aria-label="The spine built from the sliders; drag to rotate"></canvas>
+            <p class="builder-hint">Try it · drag to rotate</p>
+          </div>
+          <div class="builder-panel">
+            <h3>Try it: the same geometry, in your browser</h3>
+            <div class="builder-sliders"></div>
+            <div class="builder-toggles">
+              <label><input type="checkbox" data-opt="er" checked /> Dendritic ER</label>
+              <label><input type="checkbox" data-opt="sa" checked /> Spine apparatus</label>
+            </div>
+            <dl class="builder-out"></dl>
+            <ul class="builder-errors" aria-live="polite"></ul>
+            <button type="button" class="sb-chip" data-reset>Defaults</button>
+          </div>
+        </div>
+
+        <div class="math">
+          <h3>The math</h3>
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">The shape of the head</p>
+              <p>The spine is a stack of polygonal rings. The neck keeps its radius; the head widens over its first third, stays wide, and closes over its last third:</p>
+              <div class="tex-block">r(y)=\begin{cases} r_n, & y\le y_h \\ r_n+(r_h-r_n)\,\dfrac{3(y-y_h)}{\ell_h}, & y_h&lt;y\le y_h+\tfrac{\ell_h}{3}\\ r_h, & y\le y_h+\tfrac{2\ell_h}{3}\\ r_n+(r_h-r_n)\,\dfrac{3(y_h+\ell_h-y)}{\ell_h}, & y\le y_h+\ell_h \end{cases}</div>
+              <p>with <span class="tex">y_h = R + \ell_n</span>: the dendrite radius plus the neck length. The flat cap at the tip is the synapse.</p>
+            </article>
+            <article class="card">
+              <p class="tag">When the mesh is valid</p>
+              <p>The dendrite is a regular <span class="tex">n</span>-gon of radius <span class="tex">R</span> with a vertex on top. The neck opening has to fit on the two faces next to that vertex, the ER inside the polygon's inscribed circle, and the spine apparatus opening on the ER:</p>
+              <div class="tex-block">r_n &lt; R\sin\frac{2\pi}{n},\qquad r_{er} &lt; R\cos\frac{\pi}{n},\qquad r_{sa} &lt; r_{er}\sin\frac{2\pi}{n_{er}}</div>
+              <p>The spine apparatus must also be narrower than the spine at every height, so it never pierces the membrane.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Volumes, exactly</p>
+              <p>Every membrane is closed and oriented outward, so the divergence theorem turns the volume inside it into a sum over its triangles <span class="tex">(a,b,c)</span>:</p>
+              <div class="tex-block">V=\frac{1}{6}\sum_{\triangle}\, a\cdot(b\times c)</div>
+              <p>For the sliders above, each polygonal frustum of the spine has the exact volume <span class="tex">\tfrac{h}{3}\big(A_0+\sqrt{A_0A_1}+A_1\big)</span>, with <span class="tex">A=\tfrac{n}{2}r^2\sin\tfrac{2\pi}{n}</span>.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 02 PROCESS SPINE ===================== -->
+      <section id="process" class="section sb-tab" data-scene="process">
+        <div class="section-head">
+          <p class="eyebrow">Tab 02 &middot; Process Spine</p>
+          <h2>A real spine, step by step.</h2>
+          <p class="sub">
+            Spines reconstructed from electron microscopy (here one of the 4,223 Kasthuri et al. 2015 spines) arrive
+            as rough, voxel-stepped surfaces in the microscope's coordinates. Six steps, one subtab each, turn one
+            into a clean spine on a dendrite, in the frame of the ideal spine.
+          </p>
+        </div>
+
+        <!-- VIDEO: public/spinebuilder/video/process-steps.*, cut from the app's screen recording by scripts/make_spinebuilder_videos.sh -->
+        <figure class="film screen" id="process-film">
+          <video class="film-video" muted loop playsinline preload="none" poster="/spinebuilder/video/process-steps-poster.jpg"
+                 aria-label="Screen recording of the Process Spine tab: a Kasthuri spine is loaded, reoriented, smoothed and opened at its base, given a synapse, a spine apparatus, a dendrite and an ER">
+            <source src="/spinebuilder/video/process-steps.webm" type="video/webm" />
+            <source src="/spinebuilder/video/process-steps.mp4" type="video/mp4" />
+          </video>
+          <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
+        </figure>
+        <ol class="steps steps-6" data-video="process-film">
+          <li data-from="0" data-to="9.5">
+            <h3>Select and reorient</h3>
+            <p>Click the base of the spine. A plane is fitted through the picks, and the spine is turned so its normal points up (+y), the base at the origin.</p>
+          </li>
+          <li data-from="9.5" data-to="17.5">
+            <h3>Process and cut</h3>
+            <p>Smooth away the voxel steps, coarsen to the edge length of the Vlachos spines, and cut the base open along a plane you can drag.</p>
+          </li>
+          <li data-from="17.5" data-to="20.75">
+            <h3>Synapse</h3>
+            <p>A sphere follows the mouse; a click makes the patch of membrane inside it the postsynaptic density, split exactly along the sphere.</p>
+          </li>
+          <li data-from="20.75" data-to="25.5">
+            <h3>Spine apparatus</h3>
+            <p>An organelle along the spine's centerline: a tube, a fitted tube, a cluster of spheres, or the spine itself, contracted.</p>
+          </li>
+          <li data-from="25.5" data-to="29.5">
+            <h3>Tubes</h3>
+            <p>A dendrite under the spine and an ER inside it, welded to the spine and to its spine apparatus into closed membranes.</p>
+          </li>
+          <li data-from="29.5" data-to="99">
+            <h3>Tetrahedralize</h3>
+            <p>Measurement zones, then a tetrahedral volume mesh by TetGen, with every membrane kept as a labeled surface.</p>
+          </li>
+        </ol>
+
+        <div class="shots" role="list">
+          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_1_base.jpg" alt="Step 1: the picked base of the raw Kasthuri spine, with the fitted plane and its normal" loading="lazy" width="1600" height="960" /><figcaption><span>1</span>The base: 40 picked vertices, the fitted plane and its normal.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_1_reoriented.jpg" alt="Step 1: the spine reoriented, base at the origin, pointing up" loading="lazy" width="1600" height="960" /><figcaption><span>1</span>Reoriented: the normal is now +y.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_2_processed.jpg" alt="Step 2: the processed spine, smooth, coarsened from 11,604 to 1,994 triangles, with its base opened" loading="lazy" width="1600" height="960" /><figcaption><span>2</span>Smoothed, coarsened from 11,604 to 1,994 triangles, and opened.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_3_synapse.jpg" alt="Step 3: the synapse patch on top of the spine head" loading="lazy" width="1600" height="960" /><figcaption><span>3</span>The synapse: 67 triangles, cut exactly along the sphere.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_4_sa.jpg" alt="Step 4: the spine apparatus, a green tube along the red centerline" loading="lazy" width="1600" height="960" /><figcaption><span>4</span>A spine apparatus along the centerline.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_5_tubes.jpg" alt="Step 5: the spine welded to a dendrite tube, with the ER inside" loading="lazy" width="1600" height="960" /><figcaption><span>5</span>Welded to a dendrite, with the ER: two closed membranes.</figcaption></figure>
+        </div>
+
+        <div class="math">
+          <h3>The math</h3>
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">1 &middot; Fitting the base</p>
+              <p>The base plane through the picked points <span class="tex">x_i</span> minimizes the squared distances. Its center is their mean <span class="tex">c</span>, its normal the right singular vector of the smallest singular value:</p>
+              <div class="tex-block">n=\arg\min_{\|n\|=1}\sum_i\big(n\cdot(x_i-c)\big)^2</div>
+              <p>The smallest rotation turning <span class="tex">n</span> onto <span class="tex">e_y</span>, with <span class="tex">v=n\times e_y</span> and <span class="tex">c=n\cdot e_y</span>:</p>
+              <div class="tex-block">R=I+[v]_\times+\frac{[v]_\times^{2}}{1+c}</div>
+            </article>
+            <article class="card">
+              <p class="tag">2 &middot; Smoothing without shrinking</p>
+              <p>Plain Laplacian smoothing shrinks a surface. Taubin's method follows each smoothing step with a slightly larger step back, which cancels the shrinkage but not the smoothing:</p>
+              <div class="tex-block">x\leftarrow x+\lambda\,\Delta x,\qquad x\leftarrow x+\mu\,\Delta x,\qquad \lambda=0.5,\ \mu=-0.53</div>
+              <p>with <span class="tex">\Delta x</span> the mean of a vertex's neighbors minus the vertex, repeated 20 times.</p>
+            </article>
+            <article class="card">
+              <p class="tag">2 &middot; Coarsening</p>
+              <p>Edges are collapsed until the target length (0.068 µm). Each vertex carries the Garland–Heckbert quadric of the planes <span class="tex">p=(a,b,c,d)</span> of its triangles, and the merged vertex goes where it is smallest:</p>
+              <div class="tex-block">Q=\sum_{p} p\,p^{\mathsf T},\qquad \bar x=\arg\min_x \begin{pmatrix}x\\1\end{pmatrix}^{\!\mathsf T}\!Q\begin{pmatrix}x\\1\end{pmatrix}</div>
+              <p>A collapse that would move the surface more than 0.03 µm is refused.</p>
+            </article>
+            <article class="card">
+              <p class="tag">2 &middot; Opening the base</p>
+              <p>The base is cut along a plane, the crossing triangles split exactly. The opening is accepted only if it is a single loop, star-shaped around its center <span class="tex">o</span> (every point of it visible from <span class="tex">o</span>), so it can be joined to a tube:</p>
+              <div class="tex-block">\operatorname{sign}\Big(\big((p_{k}-o)\times(p_{k+1}-o)\big)\cdot e_y\Big)\ \text{the same for every edge } (p_k,p_{k+1})</div>
+            </article>
+            <article class="card">
+              <p class="tag">5 &middot; Welding to the dendrite</p>
+              <p>The opening is dropped onto the tube and surrounded by a graded patch of rings, from the opening's edge length <span class="tex">h_0</span> out to the tube's, each ring wider than the last:</p>
+              <div class="tex-block">h_k=\min\!\big(h_0\,g^{k},\,h_{\text{tube}}\big),\qquad g=1.3</div>
+              <p>The crease where the two meet is rounded: vertices within a radius <span class="tex">\rho</span> move toward the mean of their neighbors by <span class="tex">\tfrac12 w</span>, with <span class="tex">w=(1-d/\rho)^2</span>.</p>
+            </article>
+            <article class="card">
+              <p class="tag">6 &middot; Tetrahedralization</p>
+              <p>The last step fills the closed membranes with tetrahedra (TetGen), keeping every membrane as a labeled surface and cutting the measurement zones along exact planes. It's the heaviest step and the one that needs the cleanest input, which is why steps 1 to 5 check the surfaces so carefully. It's mentioned here only; the meshes on this page are the surfaces.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 03 CELL BUILDER ===================== -->
+      <section id="cell" class="section sb-tab" data-scene="cell">
+        <div class="section-head">
+          <p class="eyebrow">Tab 03 &middot; Cell Builder</p>
+          <h2>A whole neuron, with spines.</h2>
+          <p class="sub">
+            From a 1D reconstruction (an <code>.swc</code> file: points with radii, joined as a tree) to the
+            membranes of the whole cell, made by <a href="https://github.com/NeuroBox3D/AnaMorph" target="_blank" rel="noopener">AnaMorph</a>,
+            with the ER as a thinner copy inside. Then real spines are welded onto it, each with its own synapse and its
+            real spine apparatus, joined to the ER. The background flies from the whole cell down to its spines as you scroll.
+          </p>
+        </div>
+
+        <div class="shots shots-3" role="list">
+          <figure class="shot" role="listitem"><img src="/spinebuilder/img/cell_1_membranes.jpg" alt="Membranes subtab: the sample cell's plasma membrane and ER built by AnaMorph, with the checks passing" loading="lazy" width="1600" height="960" /><figcaption><span>1</span>Membranes: AnaMorph builds the plasma membrane (70,094 triangles) and the ER at a quarter of its radius in 19 s. Closed, one piece, no crossings.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="/spinebuilder/img/cell_2_spines.jpg" alt="Spines subtab: ten spines scattered onto the cell, with the spine apparatus option on" loading="lazy" width="1600" height="960" /><figcaption><span>2</span>Spines: 10 processed spines scattered over the dendrites and welded in, each with its real spine apparatus.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="/spinebuilder/img/cell_3_spine_closeup.jpg" alt="Go to spine: a close-up of one welded spine through the see-through membrane, its spine apparatus in green joined to the ER in magenta" loading="lazy" width="1600" height="960" /><figcaption><span>3</span>Go to spine: one of them close up, through the membrane: its spine apparatus (green) runs down the neck and joins the ER (magenta).</figcaption></figure>
+        </div>
+
+        <div class="anamorph card">
+          <p class="tag">Built with AnaMorph</p>
+          <p>
+            The cell's surfaces come from <a href="https://github.com/NeuroBox3D/AnaMorph" target="_blank" rel="noopener">AnaMorph</a>
+            (NeuroBox3D), which builds watertight neuron surfaces from 1D morphologies. SpineBuilder runs its
+            <code>am_cellgen</code> twice, once for the plasma membrane and once with every radius scaled down for
+            the ER, then checks the result and welds in the spines and their spine apparatus itself.
+          </p>
+          <a class="more" href="https://github.com/NeuroBox3D/AnaMorph" target="_blank" rel="noopener">github.com/NeuroBox3D/AnaMorph &rarr;</a>
+        </div>
+
+        <div class="math">
+          <h3>The math</h3>
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">From a skeleton to a surface</p>
+              <p>An <code>.swc</code> morphology is a tree of points <span class="tex">x_i</span> with radii <span class="tex">r_i</span>. AnaMorph fits splines <span class="tex">\gamma(t)</span> with radii <span class="tex">r(t)</span> through each branch and wraps them in canal surfaces, the envelope of the balls along the curve:</p>
+              <div class="tex-block">S=\partial\bigcup_{t} B\big(\gamma(t),\,r(t)\big)</div>
+              <p>then meshes the union of all the branches and the soma into a single surface.</p>
+            </article>
+            <article class="card">
+              <p class="tag">The ER inside</p>
+              <p>The ER is the same morphology with every radius scaled by a ratio <span class="tex">s</span>, applied after AnaMorph's own preconditioning, so both membranes share one centerline:</p>
+              <div class="tex-block">r^{er}_i=s\,r^{pm}_i,\qquad 0.1\le s&lt;1</div>
+              <p>Scaling the <code>.swc</code> beforehand instead gave over 100 times more membrane crossings.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Checking the surfaces</p>
+              <p>A closed, orientable surface of genus <span class="tex">g</span> has Euler characteristic</p>
+              <div class="tex-block">\chi=V-E+F=2-2g</div>
+              <p>Each membrane must have <span class="tex">\chi=2</span>, every edge in exactly two triangles, used once in each direction. A point is inside a membrane when a ray from it crosses the membrane an odd number of times, which checks that the ER lies inside the plasma membrane.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Placing the spines</p>
+              <p>Sites are drawn uniformly over the membrane: a triangle is picked with probability proportional to its area, then a point in it,</p>
+              <div class="tex-block">P(T)=\frac{|T|}{\sum_{T'}|T'|}</div>
+              <div class="tex-block">x=(1-\sqrt{u})\,a+\sqrt{u}(1-v)\,b+\sqrt{u}\,v\,c</div>
+              <p>with <span class="tex">u,v</span> uniform in <span class="tex">[0,1]</span>, away from the soma. At each site the membrane is refined by longest-edge bisection, a hole is cut along the neck, and a collar of triangles zips the neck in.</p>
+            </article>
+          </div>
+        </div>
+
+        <p class="sb-note muted small">
+          The whole cell can be tetrahedralized too (about 900,000 tetrahedra for this cell with 10 spines). That step
+          is left out here.
+        </p>
+      </section>
+
+      <!-- ===================== PROMESH ===================== -->
+      <section id="promesh" class="section sb-tab" data-scene="process">
+        <div class="section-head">
+          <p class="eyebrow">Open it in ProMesh</p>
+          <h2>Every mesh is a .ugx file.</h2>
+          <p class="sub">
+            SpineBuilder saves ug4's grid format, so its meshes open directly in
+            <a href="https://promesh3d.com" target="_blank" rel="noopener">ProMesh</a>, the mesh editor of the ug4
+            project, where each subset (membrane, synapse, ER, spine apparatus, volumes) can be shown, hidden and cut.
+          </p>
+        </div>
+        <figure class="film screen" id="promesh-film">
+          <video class="film-video" muted loop playsinline preload="none" poster="/spinebuilder/video/promesh-poster.jpg"
+                 aria-label="Screen recording of ProMesh: the saved mesh opened, its subsets turned off and on, a clip plane through the dendrite and the spine">
+            <source src="/spinebuilder/video/promesh.webm" type="video/webm" />
+            <source src="/spinebuilder/video/promesh.mp4" type="video/mp4" />
+          </video>
+          <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
+        </figure>
+        <ol class="steps" data-video="promesh-film">
+          <li data-from="0" data-to="5.25"><h3>Open the .ugx</h3><p>File &rarr; Open, or give the file to ProMesh on the command line.</p></li>
+          <li data-from="5.25" data-to="12.25"><h3>Solid surfaces</h3><p>Hide the vertices and edges to see the membranes.</p></li>
+          <li data-from="12.25" data-to="28.25"><h3>The subsets</h3><p>Every subset in the Scene Inspector, each turned off and on.</p></li>
+          <li data-from="28.25" data-to="34.75"><h3>A clip plane</h3><p>Cut through the dendrite and the spine.</p></li>
+          <li data-from="34.75" data-to="99"><h3>Inside the cut</h3><p>The membranes hidden, the volume subsets in the cut.</p></li>
+        </ol>
+        <div class="cta">
+          <a class="btn" href="https://promesh3d.com" target="_blank" rel="noopener">Get ProMesh</a>
+          <a class="btn btn-ghost" href="/spinebuilder/downloads/spinebuilder_ideal.ugx" download>Ideal spine (.ugx, 103 KB)</a>
+          <a class="btn btn-ghost" href="/spinebuilder/downloads/spinebuilder_process_tubes.ugx" download>Processed spine (.ugx, 590 KB)</a>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="cta">
+          <a class="btn btn-ghost" href="/spines.html">&larr; The spine gallery</a>
+          <a class="btn btn-ghost" href="/#research">Back to research</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">The background meshes are the .ugx files saved by SpineBuilder, rendered live in WebGL.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

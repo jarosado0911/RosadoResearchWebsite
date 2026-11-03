@@ -1,0 +1,21 @@
+{
+ "name": "neuronmesh",
+ "source": "neuronmesh_0-2a.ugx",
+ "unit": "um",
+ "parts": [
+  {
+   "name": "surface",
+   "vertices": 13284,
+   "count": 79692,
+   "positions": 0,
+   "indices": 159408
+  },
+  {
+   "name": "clip",
+   "vertices": 133,
+   "count": 336,
+   "positions": 478176,
+   "indices": 479772
+  }
+ ]
+}

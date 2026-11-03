@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 """Exports the 10 reconstructed Vlachos spines from SpineBuilder for the website's spine gallery.
 
-Input:  <SpineBuilder>/output/plasma_membranes_er/Spine_*_Vlachos.ugx (bin/build_membranes -er): one closed surface
-        per spine in a common frame (dendrite along z from 0 to 10 um, radius 0.45, spine at z = 5 pointing +y),
+Input:  data/spines/Spine_*_Vlachos.ugx, copied from SpineBuilder's output/plasma_membranes_er (bin/build_membranes -er):
+        one closed surface per spine in a common frame (dendrite along z from 0 to 10 um, radius 0.45, spine at z = 5 pointing +y),
         subsets syn (synapse), spine, dend, sa (spine apparatus), er (dendritic ER).
 Output: public/spines/index.json (list with names and measurements) and public/spines/<id>.json, each with
         parts pm (spine + dendrite membrane), syn, sa, er as {p: flat xyz [um], i: triangle indices}.
 The dendrite and its ER are cut to |z - 5| < CROP um around the spine; coordinates are moved so that the spine's
 base on the dendrite axis is at the origin.
 
-Usage: python3 scripts/build_spines.py [path/to/SpineBuilder]
+Usage: python3 scripts/build_spines.py [folder with the .ugx files]
+       (default data/spines; to read SpineBuilder's output directly: ~/projects/SpineBuilder/output/plasma_membranes_er)
 """
 import json, re, sys
 from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
-SB = Path(sys.argv[1]) if len(sys.argv) > 1 else Path.home() / "projects/SpineBuilder"
-SRC = SB / "output/plasma_membranes_er"
+SRC = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "data/spines"
 DST = ROOT / "public/spines"
 CROP = 1.8
 

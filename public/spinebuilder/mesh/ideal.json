@@ -1,0 +1,61 @@
+{
+ "name": "ideal",
+ "source": "ideal.ugx",
+ "unit": "um",
+ "parts": [
+  {
+   "name": "pm",
+   "vertices": 495,
+   "triangles": 972,
+   "positions": 0,
+   "indices": 5940
+  },
+  {
+   "name": "syn",
+   "vertices": 17,
+   "triangles": 16,
+   "positions": 17604,
+   "indices": 17808
+  },
+  {
+   "name": "er",
+   "vertices": 307,
+   "triangles": 604,
+   "positions": 18000,
+   "indices": 21684
+  },
+  {
+   "name": "sa",
+   "vertices": 49,
+   "triangles": 88,
+   "positions": 28932,
+   "indices": 29520
+  }
+ ],
+ "spots": [
+  {
+   "c": [
+    -0.0,
+    1.73,
+    5.0
+   ],
+   "n": [
+    0.0,
+    1.0,
+    -0.0
+   ]
+  }
+ ],
+ "bounds": [
+  [
+   -0.45,
+   -0.45,
+   0.0
+  ],
+  [
+   0.45,
+   1.73,
+   10.0
+  ]
+ ]
+}

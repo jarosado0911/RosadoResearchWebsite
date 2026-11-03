@@ -1,0 +1,61 @@
+{
+ "name": "process",
+ "source": "process_tubes.ugx",
+ "unit": "um",
+ "parts": [
+  {
+   "name": "pm",
+   "vertices": 1640,
+   "triangles": 3257,
+   "positions": 0,
+   "indices": 19680
+  },
+  {
+   "name": "syn",
+   "vertices": 45,
+   "triangles": 67,
+   "positions": 58764,
+   "indices": 59304
+  },
+  {
+   "name": "er",
+   "vertices": 734,
+   "triangles": 1454,
+   "positions": 60108,
+   "indices": 68916
+  },
+  {
+   "name": "sa",
+   "vertices": 1717,
+   "triangles": 3420,
+   "positions": 86364,
+   "indices": 106968
+  }
+ ],
+ "spots": [
+  {
+   "c": [
+    -0.5302,
+    2.4477,
+    0.276
+   ],
+   "n": [
+    -0.3072,
+    0.9466,
+    0.0979
+   ]
+  }
+ ],
+ "bounds": [
+  [
+   -0.5996,
+   -0.9,
+   -5.45
+  ],
+  [
+   0.45,
+   2.5029,
+   5.45
+  ]
+ ]
+}
