@@ -6,7 +6,7 @@
     <title>Inside SpineBuilder | James Rosado, Ph.D.</title>
     <meta name="description" content="SpineBuilder, a desktop application that turns ideal and reconstructed dendritic spines, and whole neurons, into simulation-ready meshes. Its three tabs, the steps, the mathematics, and the meshes in 3D." />
     <meta name="theme-color" content="#05070d" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   </head>
   <body class="sb">
     <!-- The background (src/spinebuilder.js): the .ugx meshes of each section, in 3D; drag where there is no text -->
@@ -14,16 +14,16 @@
     <div class="vignette sb-vignette" aria-hidden="true"></div>
 
     <header class="nav">
-      <a class="brand" href="/">James Rosado</a>
+      <a class="brand" href="./">James Rosado</a>
       <nav aria-label="Main">
-        <a href="/#services">Consulting</a>
-        <a href="/#research">Research</a>
-        <a href="/#projects">Software</a>
-        <a href="/#publications">Publications</a>
-        <a href="/#experience">Experience</a>
+        <a href="./#services">Consulting</a>
+        <a href="./#research">Research</a>
+        <a href="./#projects">Software</a>
+        <a href="./#publications">Publications</a>
+        <a href="./#experience">Experience</a>
       </nav>
-      <a class="btn btn-small btn-ghost nav-cv" href="/resume.html">Résumé</a>
-      <a class="btn btn-small" href="/#contact">Contact</a>
+      <a class="btn btn-small btn-ghost nav-cv" href="resume.html">Résumé</a>
+      <a class="btn btn-small" href="./#contact">Contact</a>
     </header>
 
     <!-- the background's controls; "Explore in 3D" hides the page and gives the whole screen to the mesh -->
@@ -49,7 +49,7 @@
 
     <main id="top" class="subpage">
       <section class="page-head sb-head">
-        <a class="back" href="/#research">&larr; Research</a>
+        <a class="back" href="./#research">&larr; Research</a>
         <p class="eyebrow">Research software &middot; Meshing &middot; Python, Qt, VTK</p>
         <h1>Inside <em>SpineBuilder.</em></h1>
         <p class="lede">
@@ -82,7 +82,7 @@
         </div>
 
         <figure class="shot">
-          <img src="/spinebuilder/img/ideal_er_sa.jpg" alt="The Ideal Spine Builder tab: the parameter panel on the left, the spine on its dendrite on the right, with the plasma membrane at 35% opacity so that the ER and spine apparatus show through" loading="lazy" width="1600" height="960" />
+          <img src="spinebuilder/img/ideal_er_sa.jpg" alt="The Ideal Spine Builder tab: the parameter panel on the left, the spine on its dendrite on the right, with the plasma membrane at 35% opacity so that the ER and spine apparatus show through" loading="lazy" width="1600" height="960" />
           <figcaption>The Ideal Spine Builder tab, with the ER, the spine apparatus and the synapse turned on, and the membrane made see-through.</figcaption>
         </figure>
 
@@ -144,10 +144,10 @@
 
         <!-- VIDEO: public/spinebuilder/video/process-steps.*, cut from the app's screen recording by scripts/make_spinebuilder_videos.sh -->
         <figure class="film screen" id="process-film">
-          <video class="film-video" muted loop playsinline preload="none" poster="/spinebuilder/video/process-steps-poster.jpg"
+          <video class="film-video" muted loop playsinline preload="none" poster="spinebuilder/video/process-steps-poster.jpg"
                  aria-label="Screen recording of the Process Spine tab: a Kasthuri spine is loaded, reoriented, smoothed and opened at its base, given a synapse, a spine apparatus, a dendrite and an ER">
-            <source src="/spinebuilder/video/process-steps.webm" type="video/webm" />
-            <source src="/spinebuilder/video/process-steps.mp4" type="video/mp4" />
+            <source src="spinebuilder/video/process-steps.webm" type="video/webm" />
+            <source src="spinebuilder/video/process-steps.mp4" type="video/mp4" />
           </video>
           <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
         </figure>
@@ -179,12 +179,12 @@
         </ol>
 
         <div class="shots" role="list">
-          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_1_base.jpg" alt="Step 1: the picked base of the raw Kasthuri spine, with the fitted plane and its normal" loading="lazy" width="1600" height="960" /><figcaption><span>1</span>The base: 40 picked vertices, the fitted plane and its normal.</figcaption></figure>
-          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_1_reoriented.jpg" alt="Step 1: the spine reoriented, base at the origin, pointing up" loading="lazy" width="1600" height="960" /><figcaption><span>1</span>Reoriented: the normal is now +y.</figcaption></figure>
-          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_2_processed.jpg" alt="Step 2: the processed spine, smooth, coarsened from 11,604 to 1,994 triangles, with its base opened" loading="lazy" width="1600" height="960" /><figcaption><span>2</span>Smoothed, coarsened from 11,604 to 1,994 triangles, and opened.</figcaption></figure>
-          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_3_synapse.jpg" alt="Step 3: the synapse patch on top of the spine head" loading="lazy" width="1600" height="960" /><figcaption><span>3</span>The synapse: 67 triangles, cut exactly along the sphere.</figcaption></figure>
-          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_4_sa.jpg" alt="Step 4: the spine apparatus, a green tube along the red centerline" loading="lazy" width="1600" height="960" /><figcaption><span>4</span>A spine apparatus along the centerline.</figcaption></figure>
-          <figure class="shot" role="listitem"><img src="/spinebuilder/img/process_5_tubes.jpg" alt="Step 5: the spine welded to a dendrite tube, with the ER inside" loading="lazy" width="1600" height="960" /><figcaption><span>5</span>Welded to a dendrite, with the ER: two closed membranes.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="spinebuilder/img/process_1_base.jpg" alt="Step 1: the picked base of the raw Kasthuri spine, with the fitted plane and its normal" loading="lazy" width="1600" height="960" /><figcaption><span>1</span>The base: 40 picked vertices, the fitted plane and its normal.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="spinebuilder/img/process_1_reoriented.jpg" alt="Step 1: the spine reoriented, base at the origin, pointing up" loading="lazy" width="1600" height="960" /><figcaption><span>1</span>Reoriented: the normal is now +y.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="spinebuilder/img/process_2_processed.jpg" alt="Step 2: the processed spine, smooth, coarsened from 11,604 to 1,994 triangles, with its base opened" loading="lazy" width="1600" height="960" /><figcaption><span>2</span>Smoothed, coarsened from 11,604 to 1,994 triangles, and opened.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="spinebuilder/img/process_3_synapse.jpg" alt="Step 3: the synapse patch on top of the spine head" loading="lazy" width="1600" height="960" /><figcaption><span>3</span>The synapse: 67 triangles, cut exactly along the sphere.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="spinebuilder/img/process_4_sa.jpg" alt="Step 4: the spine apparatus, a green tube along the red centerline" loading="lazy" width="1600" height="960" /><figcaption><span>4</span>A spine apparatus along the centerline.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="spinebuilder/img/process_5_tubes.jpg" alt="Step 5: the spine welded to a dendrite tube, with the ER inside" loading="lazy" width="1600" height="960" /><figcaption><span>5</span>Welded to a dendrite, with the ER: two closed membranes.</figcaption></figure>
         </div>
 
         <div class="math">
@@ -242,9 +242,9 @@
         </div>
 
         <div class="shots shots-3" role="list">
-          <figure class="shot" role="listitem"><img src="/spinebuilder/img/cell_1_membranes.jpg" alt="Membranes subtab: the sample cell's plasma membrane and ER built by AnaMorph, with the checks passing" loading="lazy" width="1600" height="960" /><figcaption><span>1</span>Membranes: AnaMorph builds the plasma membrane (70,094 triangles) and the ER at a quarter of its radius in 19 s. Closed, one piece, no crossings.</figcaption></figure>
-          <figure class="shot" role="listitem"><img src="/spinebuilder/img/cell_2_spines.jpg" alt="Spines subtab: ten spines scattered onto the cell, with the spine apparatus option on" loading="lazy" width="1600" height="960" /><figcaption><span>2</span>Spines: 10 processed spines scattered over the dendrites and welded in, each with its real spine apparatus.</figcaption></figure>
-          <figure class="shot" role="listitem"><img src="/spinebuilder/img/cell_3_spine_closeup.jpg" alt="Go to spine: a close-up of one welded spine through the see-through membrane, its spine apparatus in green joined to the ER in magenta" loading="lazy" width="1600" height="960" /><figcaption><span>3</span>Go to spine: one of them close up, through the membrane: its spine apparatus (green) runs down the neck and joins the ER (magenta).</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="spinebuilder/img/cell_1_membranes.jpg" alt="Membranes subtab: the sample cell's plasma membrane and ER built by AnaMorph, with the checks passing" loading="lazy" width="1600" height="960" /><figcaption><span>1</span>Membranes: AnaMorph builds the plasma membrane (70,094 triangles) and the ER at a quarter of its radius in 19 s. Closed, one piece, no crossings.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="spinebuilder/img/cell_2_spines.jpg" alt="Spines subtab: ten spines scattered onto the cell, with the spine apparatus option on" loading="lazy" width="1600" height="960" /><figcaption><span>2</span>Spines: 10 processed spines scattered over the dendrites and welded in, each with its real spine apparatus.</figcaption></figure>
+          <figure class="shot" role="listitem"><img src="spinebuilder/img/cell_3_spine_closeup.jpg" alt="Go to spine: a close-up of one welded spine through the see-through membrane, its spine apparatus in green joined to the ER in magenta" loading="lazy" width="1600" height="960" /><figcaption><span>3</span>Go to spine: one of them close up, through the membrane: its spine apparatus (green) runs down the neck and joins the ER (magenta).</figcaption></figure>
         </div>
 
         <div class="anamorph card">
@@ -307,10 +307,10 @@
           </p>
         </div>
         <figure class="film screen" id="promesh-film">
-          <video class="film-video" muted loop playsinline preload="none" poster="/spinebuilder/video/promesh-poster.jpg"
+          <video class="film-video" muted loop playsinline preload="none" poster="spinebuilder/video/promesh-poster.jpg"
                  aria-label="Screen recording of ProMesh: the saved mesh opened, its subsets turned off and on, a clip plane through the dendrite and the spine">
-            <source src="/spinebuilder/video/promesh.webm" type="video/webm" />
-            <source src="/spinebuilder/video/promesh.mp4" type="video/mp4" />
+            <source src="spinebuilder/video/promesh.webm" type="video/webm" />
+            <source src="spinebuilder/video/promesh.mp4" type="video/mp4" />
           </video>
           <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
         </figure>
@@ -323,15 +323,15 @@
         </ol>
         <div class="cta">
           <a class="btn" href="https://promesh3d.com" target="_blank" rel="noopener">Get ProMesh</a>
-          <a class="btn btn-ghost" href="/spinebuilder/downloads/spinebuilder_ideal.ugx" download>Ideal spine (.ugx, 103 KB)</a>
-          <a class="btn btn-ghost" href="/spinebuilder/downloads/spinebuilder_process_tubes.ugx" download>Processed spine (.ugx, 590 KB)</a>
+          <a class="btn btn-ghost" href="spinebuilder/downloads/spinebuilder_ideal.ugx" download>Ideal spine (.ugx, 103 KB)</a>
+          <a class="btn btn-ghost" href="spinebuilder/downloads/spinebuilder_process_tubes.ugx" download>Processed spine (.ugx, 590 KB)</a>
         </div>
       </section>
 
       <section class="section">
         <div class="cta">
-          <a class="btn btn-ghost" href="/spines.html">&larr; The spine gallery</a>
-          <a class="btn btn-ghost" href="/#research">Back to research</a>
+          <a class="btn btn-ghost" href="spines.html">&larr; The spine gallery</a>
+          <a class="btn btn-ghost" href="./#research">Back to research</a>
         </div>
       </section>
     </main>

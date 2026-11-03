@@ -6,7 +6,7 @@
     <title>Inside NeuronMesh | James Rosado, Ph.D.</title>
     <meta name="description" content="From a NeuroMorpho reconstruction to one closed neuron surface: the NeuronMesh pipeline (B-splines, rotation-minimizing frames, junction patches, soma weld), compared side by side with my first generator, PythonNeuronMeshes." />
     <meta name="theme-color" content="#05070d" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   </head>
   <body class="sb nm">
     <!-- The background (src/neuronmesh.js): the 0-2a cell at the pipeline step being read; drag where there is no text -->
@@ -14,16 +14,16 @@
     <div class="vignette sb-vignette" aria-hidden="true"></div>
 
     <header class="nav">
-      <a class="brand" href="/">James Rosado</a>
+      <a class="brand" href="./">James Rosado</a>
       <nav aria-label="Main">
-        <a href="/#services">Consulting</a>
-        <a href="/#research">Research</a>
-        <a href="/#projects">Software</a>
-        <a href="/#publications">Publications</a>
-        <a href="/#experience">Experience</a>
+        <a href="./#services">Consulting</a>
+        <a href="./#research">Research</a>
+        <a href="./#projects">Software</a>
+        <a href="./#publications">Publications</a>
+        <a href="./#experience">Experience</a>
       </nav>
-      <a class="btn btn-small btn-ghost nav-cv" href="/resume.html">Résumé</a>
-      <a class="btn btn-small" href="/#contact">Contact</a>
+      <a class="btn btn-small btn-ghost nav-cv" href="resume.html">Résumé</a>
+      <a class="btn btn-small" href="./#contact">Contact</a>
     </header>
 
     <div class="sb-hud" id="sb-hud">
@@ -32,7 +32,7 @@
 
     <main id="top" class="subpage">
       <section class="page-head sb-head">
-        <a class="back" href="/#research">&larr; Research</a>
+        <a class="back" href="./#research">&larr; Research</a>
         <p class="eyebrow">Research software &middot; Meshing &middot; C++17 and Python</p>
         <h1>From a skeleton to <em>a closed surface.</em></h1>
         <p class="lede">
@@ -239,7 +239,7 @@
         </div>
 
         <figure class="shot nm-problems">
-          <img src="/neuronmesh/img/python_problems.jpg" alt="My notes on the PythonNeuronMeshes mesh at the time: the soma is a mess, ends are open, branch points have gaps and clip into each other" loading="lazy" width="1600" height="786" />
+          <img src="neuronmesh/img/python_problems.jpg" alt="My notes on the PythonNeuronMeshes mesh at the time: the soma is a mess, ends are open, branch points have gaps and clip into each other" loading="lazy" width="1600" height="786" />
           <figcaption>My own notes on the Python version, from 2023.</figcaption>
         </figure>
       </section>
@@ -282,18 +282,18 @@
               <div><dt><code>-p</code>, <code>-q</code></dt><dd>soma sphere contours and points per contour</dd></div>
             </dl>
             <figure class="shot">
-              <img src="/neuronmesh/img/python_refinements1d.jpg" alt="PythonNeuronMeshes: spline refinements of the 1D geometry" loading="lazy" width="1352" height="678" />
+              <img src="neuronmesh/img/python_refinements1d.jpg" alt="PythonNeuronMeshes: spline refinements of the 1D geometry" loading="lazy" width="1352" height="678" />
               <figcaption>PythonNeuronMeshes' spline refinements of the 1D skeleton.</figcaption>
             </figure>
           </article>
         </div>
         <div class="grid grid-2 nm-figs">
           <figure class="shot">
-            <img src="/neuronmesh/img/bifurcation_params.jpg" alt="One bifurcation meshed with different junction refinement, bridge samples and sides" loading="lazy" width="1600" height="798" />
+            <img src="neuronmesh/img/bifurcation_params.jpg" alt="One bifurcation meshed with different junction refinement, bridge samples and sides" loading="lazy" width="1600" height="798" />
             <figcaption>One branch point at 16 µm spacing. Top: <code>--junction-refine</code> off, 1, 0.5, 0.25; without it the patch spans a whole ring spacing with webbed triangles. Bottom: 4, 12 and 24 Bézier rails, and 24 sides.</figcaption>
           </figure>
           <figure class="shot">
-            <img src="/neuronmesh/img/seam_top.jpg" alt="The soma weld from above at four levels: the refined sphere patch, the graded collar and the seam" loading="lazy" width="1600" height="396" />
+            <img src="neuronmesh/img/seam_top.jpg" alt="The soma weld from above at four levels: the refined sphere patch, the graded collar and the seam" loading="lazy" width="1600" height="396" />
             <figcaption>The soma weld from above, at four levels: the refined patch of the sphere (red), the graded collar and the seam (green). The tube's end at the soma is resampled at its own radius, so the weld is the same at every level.</figcaption>
           </figure>
         </div>
@@ -338,11 +338,11 @@
         </div>
         <div class="grid grid-2 nm-figs">
           <figure class="shot">
-            <img src="/neuronmesh/img/twist_closeup.jpg" alt="16 µm of dendrite where vr-grids twists most, and the same stretch from NeuronMesh" loading="lazy" width="1600" height="800" />
+            <img src="neuronmesh/img/twist_closeup.jpg" alt="16 µm of dendrite where vr-grids twists most, and the same stretch from NeuronMesh" loading="lazy" width="1600" height="800" />
             <figcaption>The 16 µm where vr-grids twists most (86&deg; over four segments; top), and the same stretch from NeuronMesh (0.02&deg; over ten; bottom).</figcaption>
           </figure>
           <figure class="shot">
-            <img src="/neuronmesh/img/soma_vrgrids_vs_neuronmesh.jpg" alt="The soma region from vr-grids and from NeuronMesh at 4 µm spacing" loading="lazy" width="1600" height="800" />
+            <img src="neuronmesh/img/soma_vrgrids_vs_neuronmesh.jpg" alt="The soma region from vr-grids and from NeuronMesh at 4 µm spacing" loading="lazy" width="1600" height="800" />
             <figcaption>The soma at 4 µm: vr-grids' shrunken sphere with open tubes pushed into it, and NeuronMesh's welded soma at its recorded radius.</figcaption>
           </figure>
         </div>
@@ -351,8 +351,8 @@
       <section class="section">
         <div class="cta">
           <a class="btn" href="https://github.com/jarosado0911/PythonNeuronMeshes" target="_blank" rel="noopener">PythonNeuronMeshes on GitHub</a>
-          <a class="btn btn-ghost" href="/spinebuilder.html">SpineBuilder: meshes of single spines &rarr;</a>
-          <a class="btn btn-ghost" href="/#research">Back to research</a>
+          <a class="btn btn-ghost" href="spinebuilder.html">SpineBuilder: meshes of single spines &rarr;</a>
+          <a class="btn btn-ghost" href="./#research">Back to research</a>
         </div>
       </section>
     </main>

@@ -3,6 +3,9 @@ import { resolve } from 'node:path';
 
 // Local only: http://localhost:5173 (npm run dev) and http://localhost:4173 (npm run preview, the built site)
 export default defineConfig({
+  // relative URLs everywhere, so the built site works at any address: a GitHub Pages sub-folder
+  // (https://jarosado0911.github.io/RosadoResearchWebsite/) or the root of your own domain later
+  base: './',
   server: { host: 'localhost', port: 5173, strictPort: true },
   preview: { host: 'localhost', port: 4173, strictPort: true },
   build: {

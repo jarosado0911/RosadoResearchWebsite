@@ -4,7 +4,7 @@
 // to rotate it, shift-drag (or right-drag) to move it, double-click to put it back.
 import * as THREE from 'three';
 
-const BASE = '/calcsim/';
+const BASE = import.meta.env.BASE_URL + 'calcsim/';
 const FOV = 34;
 const RING = 14;                 // vertices around a tube
 const DEND_R = 0.9;              // [um] drawn radius of the dendrites (they are 0.125 um, too thin to see)
