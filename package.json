@@ -7,10 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "neuron": "python3 scripts/build_neuron.py",
+    "neuron": "python3 scripts/build_neuron_mesh.py",
     "spines": "python3 scripts/build_spines.py",
     "spinebuilder": "python3 scripts/build_spinebuilder.py",
-    "neuronmesh": "python3 scripts/build_neuronmesh.py"
+    "neuronmesh": "python3 scripts/build_neuronmesh.py",
+    "resume-pdf": "node scripts/make_resume_pdf.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.1.0",
@@ -19,6 +20,7 @@
     "three": "0.169.0"
   },
   "devDependencies": {
+    "playwright": "^1.48.2",
     "vite": "8.3.4"
   }
 }

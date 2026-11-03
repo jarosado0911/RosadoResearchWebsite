@@ -1,14 +1,14 @@
-// The animated background: a reconstructed CA1 pyramidal neuron (public/neuron/ca1.json, made by
-// scripts/build_neuron.py) with an action potential spreading from the soma through the dendrites.
+// The animated background: a reconstructed CA1 pyramidal neuron with an action potential spreading from the
+// soma through the dendrites.
 //
-// - The dendrites are tubes along the reconstructed branches, with the reconstructed radii.
-// - Spines are placed at random along the thinner dendrites (they are not in the reconstruction).
+// - The cell's surface was made by my own tools (public/neuron/ca1_mesh.*, see scripts/build_neuron_mesh.py):
+//   NeuronMesh meshed the reconstruction (B-spline tubes, junction patches, the soma welded in) and
+//   SpineBuilder's scatter welded 400 real reconstructed spines onto it.
 // - Every vertex knows its path distance from the soma (aDist); the shader lights up a front moving outward
 //   at uSpeed, with a sharp leading edge, a decaying tail and an amplitude that falls off with distance
 //   (back-propagating action potentials attenuate in distal dendrites).
 // - Bloom makes the spike glow; fog and two faded copies further back give depth.
 import * as THREE from 'three';
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
@@ -24,9 +24,6 @@ const LOOK = {
   spikeFront: 9,           // [um] width of the leading edge
   spikeTail: 55,           // [um] decay length behind the front
   spikeEvery: [3.2, 5.5],  // [s] random interval between spikes
-  spineDensity: 0.9,       // spines per um of dendrite thinner than spineMaxRadius
-  spineMaxRadius: 1.3,     // [um]
-  radialSegments: 10,
   bloom: { strength: 0.95, radius: 0.32, threshold: 0.6 },
   rotationSpeed: 0.045,    // [rad/s]
 };
@@ -39,15 +36,9 @@ const vertexShader = /* glsl */ `
   varying vec3 vViewPos;
   varying float vDist;
   void main() {
-    vec4 p = vec4(position, 1.0);
-    vec3 n = normal;
-    #ifdef USE_INSTANCING
-      p = instanceMatrix * p;
-      n = mat3(instanceMatrix) * n;
-    #endif
-    vec4 mv = modelViewMatrix * p;
+    vec4 mv = modelViewMatrix * vec4(position, 1.0);
     vViewPos = mv.xyz;
-    vN = normalize(normalMatrix * n);
+    vN = normalize(normalMatrix * normal);
     vDist = aDist;
     gl_Position = projectionMatrix * mv;
   }
@@ -123,7 +114,7 @@ function makeMaterial(maxDist) {
   });
 }
 
-// a seeded random generator, so the spines are the same on every load
+// a seeded random generator, so the dust is the same on every load
 function rng(seed) {
   return () => {
     seed = (seed * 1664525 + 1013904223) >>> 0;
@@ -131,132 +122,19 @@ function rng(seed) {
   };
 }
 
-/** Tubes along every branch, one merged geometry with aDist per vertex */
-function buildDendrites(branches) {
-  const S = LOOK.radialSegments;
-  const pos = [], nrm = [], dist = [], idx = [];
-  const t = new THREE.Vector3(), n = new THREE.Vector3(), b = new THREE.Vector3(), tmp = new THREE.Vector3();
-
-  for (const flat of branches) {
-    const m = flat.length / 5;
-    let P = [], R = [], D = [];
-    for (let k = 0; k < m; k++) {
-      P.push(new THREE.Vector3(flat[5 * k], flat[5 * k + 1], flat[5 * k + 2]));
-      R.push(Math.max(flat[5 * k + 3], 0.3));
-      D.push(flat[5 * k + 4]);
-    }
-    // light smoothing of the polyline (keeps the ends)
-    for (let it = 0; it < 2; it++) {
-      const Q = P.map((p) => p.clone());
-      for (let k = 1; k < m - 1; k++) Q[k].copy(P[k - 1]).add(P[k + 1]).multiplyScalar(0.25).addScaledVector(P[k], 0.5);
-      P = Q;
-    }
-
-    const base = pos.length / 3;
-    // parallel-transport frames
-    for (let k = 0; k < m; k++) {
-      t.copy(P[Math.min(k + 1, m - 1)]).sub(P[Math.max(k - 1, 0)]).normalize();
-      if (k === 0) {
-        tmp.set(Math.abs(t.x) < 0.9 ? 1 : 0, Math.abs(t.x) < 0.9 ? 0 : 1, 0);
-        n.crossVectors(t, tmp).normalize();
-      } else {
-        n.addScaledVector(t, -n.dot(t)).normalize();
-      }
-      b.crossVectors(t, n);
-      for (let j = 0; j < S; j++) {
-        const a = (j / S) * Math.PI * 2, c = Math.cos(a), s = Math.sin(a);
-        tmp.copy(n).multiplyScalar(c).addScaledVector(b, s);
-        pos.push(P[k].x + R[k] * tmp.x, P[k].y + R[k] * tmp.y, P[k].z + R[k] * tmp.z);
-        nrm.push(tmp.x, tmp.y, tmp.z);
-        dist.push(D[k]);
-      }
-    }
-    for (let k = 0; k < m - 1; k++)
-      for (let j = 0; j < S; j++) {
-        const a = base + k * S + j, b2 = base + k * S + ((j + 1) % S);
-        idx.push(a, a + S, b2, b2, a + S, b2 + S);
-      }
-    // rounded tip at the far end
-    const tip = pos.length / 3;
-    t.copy(P[m - 1]).sub(P[m - 2]).normalize();
-    pos.push(P[m - 1].x + t.x * R[m - 1] * 0.8, P[m - 1].y + t.y * R[m - 1] * 0.8, P[m - 1].z + t.z * R[m - 1] * 0.8);
-    nrm.push(t.x, t.y, t.z);
-    dist.push(D[m - 1]);
-    const last = base + (m - 1) * S;
-    for (let j = 0; j < S; j++) idx.push(last + j, tip, last + ((j + 1) % S));
-  }
-
+/** The cell's surface (public/neuron/ca1_mesh.*): positions, path distances (aDist) and triangles */
+async function loadCell() {
+  const base = `${import.meta.env.BASE_URL}neuron/ca1_mesh`;
+  const [doc, buf] = await Promise.all([
+    fetch(`${base}.json`).then((r) => r.json()),
+    fetch(`${base}.bin`).then((r) => r.arrayBuffer()),
+  ]);
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
-  g.setAttribute('aDist', new THREE.Float32BufferAttribute(dist, 1));
-  g.setIndex(idx);
-  return g;
-}
-
-/** A pyramidal soma: a sphere drawn out toward the apical trunk (+y) with a little irregularity */
-function buildSoma(R) {
-  const g = new THREE.IcosahedronGeometry(1, 5);
-  const p = g.attributes.position, v = new THREE.Vector3();
-  const dist = new Float32Array(p.count);
-  for (let i = 0; i < p.count; i++) {
-    v.fromBufferAttribute(p, i);
-    const up = Math.max(0, v.y);
-    let r = R * (1 + 0.9 * up ** 3 - 0.12 * Math.max(0, -v.y) ** 2);
-    r *= 1 + 0.04 * Math.sin(5 * v.x + 3 * v.z) * Math.cos(4 * v.y);
-    const narrow = 1 - 0.45 * up ** 2;                     // taper into the trunk
-    v.set(v.x * r * narrow, v.y * r, v.z * r * narrow);
-    p.setXYZ(i, v.x, v.y, v.z);
-    dist[i] = Math.max(0, v.length() - R) * 0.6;
-  }
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(buf, doc.positions, doc.vertices * 3), 3));
+  g.setAttribute('aDist', new THREE.BufferAttribute(new Float32Array(buf, doc.distances, doc.vertices), 1));
+  g.setIndex(new THREE.BufferAttribute(new Uint32Array(buf, doc.indices, doc.triangles * 3), 1));
   g.computeVertexNormals();
-  g.setAttribute('aDist', new THREE.BufferAttribute(dist, 1));
-  return g;
-}
-
-/** Mushroom spines along the thinner dendrites, as one instanced mesh */
-function buildSpines(branches, material) {
-  const neck = new THREE.CylinderGeometry(0.09, 0.12, 1.0, 6, 1, true).translate(0, 0.5, 0);
-  const head = new THREE.SphereGeometry(0.32, 8, 6).scale(1, 0.85, 1).translate(0, 1.15, 0);
-  neck.deleteAttribute('uv'); head.deleteAttribute('uv');
-  const spine = mergeGeometries([neck, head]);
-
-  const rand = rng(7);
-  const mats = [], dists = [];
-  const a = new THREE.Vector3(), b = new THREE.Vector3(), t = new THREE.Vector3(), dir = new THREE.Vector3();
-  const up = new THREE.Vector3(0, 1, 0), q = new THREE.Quaternion(), s = new THREE.Vector3(), M = new THREE.Matrix4();
-  for (const flat of branches) {
-    const m = flat.length / 5;
-    for (let k = 0; k < m - 1; k++) {
-      const r = flat[5 * k + 3], d = flat[5 * k + 4];
-      if (r > LOOK.spineMaxRadius || d < 20) continue;
-      a.set(flat[5 * k], flat[5 * k + 1], flat[5 * k + 2]);
-      b.set(flat[5 * k + 5], flat[5 * k + 6], flat[5 * k + 7]);
-      const len = a.distanceTo(b);
-      let count = len * LOOK.spineDensity;
-      while (count > 0) {
-        if (count < 1 && rand() > count) break;
-        count -= 1;
-        const f = rand();
-        t.copy(b).sub(a).normalize();
-        // a random direction perpendicular to the dendrite, tilted a little along it
-        dir.set(rand() - 0.5, rand() - 0.5, rand() - 0.5).addScaledVector(t, -0.0);
-        dir.addScaledVector(t, -dir.dot(t)).normalize().addScaledVector(t, (rand() - 0.5) * 0.6).normalize();
-        const pos = a.clone().lerp(b, f).addScaledVector(dir, r * 0.85);
-        q.setFromUnitVectors(up, dir);
-        const sc = 0.7 + rand() * 0.8;
-        s.set(sc, sc * (0.8 + rand() * 0.7), sc);
-        M.compose(pos, q, s);
-        mats.push(M.clone());
-        dists.push(d + f * (flat[5 * k + 9] - d));
-      }
-    }
-  }
-  const mesh = new THREE.InstancedMesh(spine, material, mats.length);
-  mats.forEach((m, i) => mesh.setMatrixAt(i, m));
-  spine.setAttribute('aDist', new THREE.InstancedBufferAttribute(new Float32Array(dists), 1));
-  mesh.frustumCulled = false;
-  return mesh;
+  return { doc, geometry: g };
 }
 
 /** Faint drifting specks for depth */
@@ -303,7 +181,7 @@ export async function startNeuron(canvas, { reducedMotion = false, stillTime = n
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.1;
 
-  const data = await (await fetch(`${import.meta.env.BASE_URL}neuron/ca1.json`)).json();
+  const { doc: data, geometry } = await loadCell();
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(LOOK.background);
@@ -311,24 +189,20 @@ export async function startNeuron(canvas, { reducedMotion = false, stillTime = n
 
   // the cell, plus two faded copies further back (their own materials, so they spike on their own)
   const cells = [];
-  const dendrites = buildDendrites(data.branches);
-  const soma = buildSoma(data.somaRadius);
-  const makeCell = (withSpines) => {
+  const makeCell = () => {
     const mat = makeMaterial(data.maxDist);
     const group = new THREE.Group();
-    group.add(new THREE.Mesh(dendrites, mat));
-    group.add(new THREE.Mesh(soma, mat));
-    if (withSpines) group.add(buildSpines(data.branches, mat));
+    group.add(new THREE.Mesh(geometry, mat));
     const cell = { group, mat, next: 0, slot: 0 };
     cells.push(cell);
     return cell;
   };
-  const main = makeCell(true);
+  const main = makeCell();
   const pivot = new THREE.Group();          // rotates the main cell about its own axis
   pivot.add(main.group);
   scene.add(pivot);
 
-  const back1 = makeCell(false), back2 = makeCell(false);
+  const back1 = makeCell(), back2 = makeCell();
   back1.group.position.set(-900, -260, -1500); back1.group.rotation.set(0.15, 1.9, -0.25);
   back2.group.position.set(640, 120, -1300); back2.group.rotation.set(-0.1, -2.4, 0.3);
   back1.mat.uniforms.uIntensity.value = 0.45;

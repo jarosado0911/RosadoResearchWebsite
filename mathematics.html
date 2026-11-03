@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Series &amp; Analysis | James Rosado, Ph.D.</title>
+    <meta name="description" content="My work in pure and applied analysis: a table of 36 definite integrals from the marriage of power and Fourier series (with Thomas J. Osler), and my talks and expository papers in complex, real and functional analysis, PDEs and numerical methods." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="mx">
+    <div class="cv-glow" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="/">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="/#services">Consulting</a>
+        <a href="/#research">Research</a>
+        <a href="/#projects">Software</a>
+        <a href="/#publications">Publications</a>
+        <a href="/#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="/resume.html">Résumé</a>
+      <a class="btn btn-small" href="/#contact">Contact</a>
+    </header>
+
+    <main id="top" class="subpage fr-page">
+      <section class="page-head fr-head">
+        <svg class="mx-hero-art" viewBox="-3.4 -1.6 6.8 3.2" aria-hidden="true"></svg>
+        <a class="back" href="/#research">&larr; Research</a>
+        <p class="eyebrow">Complex analysis &middot; Fourier series &middot; 2014&ndash;2020</p>
+        <h1>Series, integrals <em>and analysis.</em></h1>
+        <p class="lede">
+          At Rowan I worked with Dr. Thomas J. Osler on an unusual way to evaluate definite integrals: never integrate
+          at all. Match the coefficients of two series of the same function, and the integrals fall out. That gave a
+          table of 36 integrals, 25 of which we couldn't find anywhere. Below it are my other talks and papers in
+          analysis, from Cauchy's theorem and the Riemann hypothesis to elliptic PDEs and image segmentation.
+        </p>
+        <div class="nm-tools">
+          <article class="card">
+            <p class="tag">2015 &middot; Scientia, Series A: Mathematical Sciences 26</p>
+            <h3>A table of definite integrals from the marriage of power and Fourier series</h3>
+            <p>With Thomas J. Osler. Universidad Técnica Federico Santa María, Valparaíso, pp. 77&ndash;82.</p>
+            <div class="fr-links">
+              <a class="more" href="/math/Rosado_Osler_2015_Table_of_Definite_Integrals.pdf" download>Download the paper (PDF) &darr;</a>
+            </div>
+          </article>
+          <article class="card">
+            <p class="tag">Presented at</p>
+            <ul class="plain-list mx-venues">
+              <li>Joint Mathematics Meetings, San Antonio, Jan 2015</li>
+              <li>Sigma Xi Research Symposium, St. Joseph's University, May 2015</li>
+              <li>Rowan STEM Symposium, May 2015 (poster)</li>
+              <li>MAA MathFest, Washington, D.C., Aug 2015</li>
+              <li>EPaDel Spring Section Meeting, Philadelphia, Mar 2018</li>
+            </ul>
+          </article>
+        </div>
+        <ul class="facts nm-facts" aria-label="The table">
+          <li><strong>36</strong><span>definite integrals in the table</span></li>
+          <li><strong>25</strong><span>not found in the literature or by Mathematica</span></li>
+          <li><strong>0</strong><span>integrations done to get them</span></li>
+        </ul>
+      </section>
+
+      <!-- ===================== THE MARRIAGE ===================== -->
+      <section id="marriage" class="section">
+        <div class="section-head">
+          <p class="eyebrow">01 &middot; The method</p>
+          <h2>Two series, one function.</h2>
+          <p class="sub">
+            Instead of starting from an integral, start from a function whose Taylor series you know. Put it on a
+            circle in the complex plane; its real and imaginary parts are then Fourier series in the angle. Fourier
+            coefficients are integrals, and Taylor coefficients are known numbers. Setting them equal evaluates the
+            integrals.
+          </p>
+        </div>
+        <!-- the four steps, animated (src/mathematics.js startFlow): the stage shows what the highlighted step does -->
+        <div class="mx-flow" id="mx-flow">
+        <div class="mx-stage" aria-hidden="true">
+          <svg class="mx-stage-svg" viewBox="0 0 900 230"></svg>
+          <p class="mx-stage-cap"></p>
+        </div>
+        <ol class="mx-steps">
+          <li class="card"><span class="num">1</span><p>A known Taylor series</p><div class="tex-block">g(z)=\sum_{n=0}^{\infty}c_nz^n</div></li>
+          <li class="card"><span class="num">2</span><p>On the circle <span class="tex">z=re^{i\theta}</span></p><div class="tex-block">\begin{aligned}g(re^{i\theta})=\;&amp;c_0+\sum_{n\ge1}c_nr^n\cos n\theta\\&amp;+i\sum_{n\ge1}c_nr^n\sin n\theta\end{aligned}</div></li>
+          <li class="card"><span class="num">3</span><p>Split into real and imaginary parts</p><div class="tex-block">g(re^{i\theta})=u(r,\theta)+i\,v(r,\theta)</div></li>
+          <li class="card"><span class="num">4</span><p>Read them as Fourier series in <span class="tex">\theta</span>, so</p><div class="tex-block">\begin{gathered}\int_{-\pi}^{\pi}u\,d\theta=2\pi c_0\\\int_{-\pi}^{\pi}u\cos n\theta\,d\theta=\pi c_nr^n\\\int_{-\pi}^{\pi}v\sin n\theta\,d\theta=\pi c_nr^n\end{gathered}</div></li>
+        </ol>
+        <div class="mx-flow-ctl">
+          <button type="button" class="sb-chip mx-play" aria-pressed="true">Pause</button>
+          <span class="muted small">Click a step to see it; the animation uses g(z) = e<sup>z</sup> with r = 0.8.</span>
+        </div>
+        </div>
+
+        <!-- the marriage, live (src/mathematics.js) -->
+        <div class="builder mx-demo" id="marriage-demo">
+          <div class="builder-view mx-view">
+            <svg class="mx-plot" role="img" aria-label="The integrand over theta from minus pi to pi, its positive area in blue and negative area in orange"></svg>
+            <svg class="mx-coef" role="img" aria-label="Bars comparing the Fourier coefficients of u computed by integration with the Taylor coefficients c_n r^n"></svg>
+          </div>
+          <div class="builder-panel">
+            <h3>Try it: integrate without integrating</h3>
+            <label class="builder-row mx-pick"><span>Function <span class="tex">g(z)</span></span><select data-g></select></label>
+            <div class="sb-scenes fr-modes" role="group" aria-label="Which integral">
+              <button type="button" data-kind="cos" class="active">with cos nθ</button>
+              <button type="button" data-kind="sin">with sin nθ</button>
+            </div>
+            <label class="builder-row"><span>Radius r</span><input type="range" min="0.05" max="1" step="0.01" value="0.6" data-r /><output></output></label>
+            <label class="builder-row"><span>n</span><input type="range" min="0" max="8" step="1" value="2" data-n /><output></output></label>
+            <div class="tex-block tex-dyn mx-integral" aria-live="polite"></div>
+            <dl class="builder-out">
+              <div><dt>Numerically (Simpson, 2,000 steps)</dt><dd data-num></dd></div>
+              <div><dt>From the Taylor coefficient</dt><dd data-exact></dd></div>
+              <div><dt>Difference</dt><dd data-diff></dd></div>
+            </dl>
+            <p class="mx-status" data-status></p>
+          </div>
+        </div>
+
+        <div class="math">
+          <h3>From the table</h3>
+          <div class="math-grid">
+            <article class="card"><p class="tag">No. 14 &middot; from <span class="tex">e^z</span></p><div class="tex-block">\int_{-\pi}^{\pi}e^{r\cos\theta}\cos(r\sin\theta)\cos(n\theta)\,d\theta=\frac{\pi r^n}{n!}</div></article>
+            <article class="card"><p class="tag">No. 17 &middot; from <span class="tex">\tan z</span>, with Bernoulli numbers</p><div class="tex-block">\begin{aligned}&\int_{-\pi}^{\pi}\frac{\sin(2r\cos\theta)\cos((2n-1)\theta)}{\cos(2r\cos\theta)+\cosh(2r\sin\theta)}\,d\theta\\&\quad=\frac{(-1)^{n-1}2^{2n}(2^{2n}-1)B_{2n}\,\pi r^{2n-1}}{(2n)!}\end{aligned}</div></article>
+            <article class="card"><p class="tag">No. 26 &middot; from <span class="tex">e^z/(1-z)</span></p><div class="tex-block">\begin{aligned}&\int_{-\pi}^{\pi}\frac{e^{r\cos\theta}\big(\cos(r\sin\theta)(1-r\cos\theta)-r\sin\theta\sin(r\sin\theta)\big)}{1+r^2-2r\cos\theta}\cos(n\theta)\,d\theta\\&\quad=\pi r^n\sum_{k=0}^{n}\frac1{k!}\end{aligned}</div></article>
+            <article class="card"><p class="tag">No. 35 &middot; from <span class="tex">\sqrt{z+1}</span></p><div class="tex-block">\begin{aligned}&\int_{-\pi}^{\pi}\cos\!\Big(\tfrac12\arctan\tfrac{r\sin\theta}{1+r\cos\theta}\Big)\sqrt[4]{1+r^2+2r\cos\theta}\,\cos(n\theta)\,d\theta\\&\quad=\frac{(-1)^{n+1}(2n-3)!\,\pi r^n}{2^{2n-2}\,n!\,(n-2)!}\end{aligned}</div></article>
+          </div>
+          <p class="cv-note">Of the 36, seven were known (Nos. 1, 6, 13, 19, 25, 28, 31) and four are zero because the integrand is odd (Nos. 7, 10, 16, 22). Mathematica and the standard tables (Gradshteyn&ndash;Ryzhik, Brychkov) gave no closed form for the other 25; we checked those numerically.</p>
+        </div>
+
+        <div class="mx-docs">
+          <a class="mx-doc" href="/math/Rosado_Osler_2015_Table_of_Definite_Integrals.pdf" download><b>The paper</b><span>Scientia 26, 2015 &middot; PDF</span></a>
+          <a class="mx-doc" href="/math/JMM2015_Taylor_and_Fourier_Series_slides.pdf" download><b>JMM 2015 talk</b><span>San Antonio &middot; slides</span></a>
+          <a class="mx-doc" href="/math/abstract_jmm2015.pdf" download><b>JMM 2015 abstract</b><span>1106-VK-338</span></a>
+          <a class="mx-doc" href="/math/talk_rowan_taylor_fourier.pdf" download><b>Rowan talk</b><span>Marriage of Taylor and Fourier series</span></a>
+          <a class="mx-doc" href="/math/poster_two_series.pdf" download><b>Rowan STEM poster</b><span>The marriage of two series, 2015</span></a>
+          <a class="mx-doc" href="/math/talk_epadel.pdf" download><b>EPaDel talk</b><span>Temple, 2018 &middot; slides</span></a>
+        </div>
+      </section>
+
+      <!-- ===================== TALKS ===================== -->
+      <section id="talks" class="section">
+        <div class="section-head">
+          <p class="eyebrow">02 &middot; Talks in analysis and applied mathematics</p>
+          <h2>From Green's functions to level sets.</h2>
+        </div>
+        <div class="skill-grid mx-cards">
+          <a class="cv-card cv-link" href="/math/talk_calculus_of_variations.pdf" download><p class="tag">Temple &middot; Methods in Applied Mathematics &middot; May 2019</p><h3>A Walk Through Calculus of Variations</h3><p>Minimizing functionals: the Euler&ndash;Lagrange equation, solving PDEs as variational problems, and an example with the Beltrami identity.</p><div class="tex mx-mini">\frac{\partial L}{\partial y}-\frac{d}{dx}\frac{\partial L}{\partial y'}=0</div></a>
+          <a class="cv-card cv-link" href="/math/talk_sturm_liouville.pdf" download><p class="tag">Temple &middot; Methods in Applied Mathematics &middot; Dec 2018</p><h3>Sturm&ndash;Liouville Theory: An Example</h3><p>The eigenvalue theorems for second-order linear operators, heat flow with and without a source, and a computational example.</p><div class="tex mx-mini">-(p\,y')'+q\,y=\lambda\,w\,y</div></a>
+          <a class="cv-card cv-link" href="/math/talk_ode_solvers.pdf" download><p class="tag">Temple &middot; Applied Mathematics &middot; Fall 2017</p><h3>Ordinary Differential Equation Solvers</h3><p>Types of ODEs, stability and stiffness, and the explicit and implicit methods used to integrate them.</p><div class="tex mx-mini">y_{k+1}=y_k+h\,f(t_{k+1},y_{k+1})</div></a>
+          <article class="cv-card"><p class="tag">Temple &middot; Numerical PDEs &middot; Dec 2020</p><h3>PDE-Based Image Reconstruction</h3><p>Active contours ("snakes") and level-set methods to outline an object in a noisy image, applied to a dendritic spine.</p><div class="tex mx-mini">\phi_t+F\,|\nabla\phi|=0</div><div class="fr-links"><a class="more" href="/math/talk_pde_image.pdf" download>Slides (PDF) &darr;</a><a class="more" href="/math/report_pde_image.pdf" download>Final report (PDF) &darr;</a></div></article>
+          <a class="cv-card cv-link" href="/math/talk_engineering_analysis.pdf" download><p class="tag">Rowan &middot; Engineering Analysis &middot; Summer 2015</p><h3>Fredholm Alternative and Green's Functions</h3><p>Generalized Green's functions for the steady heat equation, and Green's functions for Poisson's equation.</p><div class="tex mx-mini">L[G(x,\xi)]=\delta(x-\xi)</div></a>
+        </div>
+      </section>
+
+      <!-- ===================== PAPERS ===================== -->
+      <section id="papers" class="section">
+        <div class="section-head">
+          <p class="eyebrow">03 &middot; Expository papers</p>
+          <h2>Working through the classics.</h2>
+          <p class="sub">Written for graduate courses, several of them for Dr. Osler at Rowan: each one takes a theorem apart, line by line, and works examples.</p>
+        </div>
+        <div class="skill-grid mx-cards">
+          <a class="cv-card cv-link" href="/math/paper_cauchy_integral.pdf" download><p class="tag">Complex analysis &middot; Rowan</p><h3>A Study of Cauchy's Integral Theorem</h3><p>Path independence in simply connected regions, contours around singularities, and applications.</p><div class="tex mx-mini">\oint_\gamma f(z)\,dz=0</div></a>
+          <a class="cv-card cv-link" href="/math/paper_riemann_hypothesis.pdf" download><p class="tag">Complex analysis &middot; Rowan &middot; Spring 2014</p><h3>Study of the Riemann Hypothesis</h3><p>The zeros of the zeta function, and how they connect to <span class="tex">\pi(x)</span>, the count of primes.</p><div class="tex mx-mini">\zeta(s)=0\ \Rightarrow\ \operatorname{Re}s=\tfrac12\ \text{(non-trivial)}</div></a>
+          <a class="cv-card cv-link" href="/math/paper_sine_product.pdf" download><p class="tag">Complex analysis &middot; Rowan</p><h3>The Infinite Product for sin(πz)</h3><p>Building a function with a zero at every integer, and why it must be the sine.</p><div class="tex mx-mini">\sin\pi z=\pi z\prod_{n=1}^{\infty}\Big(1-\frac{z^2}{n^2}\Big)</div></a>
+          <a class="cv-card cv-link" href="/math/paper_convergence_theorems.pdf" download><p class="tag">Real analysis &middot; Rowan &middot; Spring 2015</p><h3>A Study of Two Convergence Theorems</h3><p>The monotone and the dominated convergence theorems of Lebesgue integration, their proofs (through Fatou's lemma) and examples.</p><div class="tex mx-mini">\lim_{n\to\infty}\int_A f_n\,dm=\int_A f\,dm</div></a>
+          <a class="cv-card cv-link" href="/math/paper_elliptic_regularity.pdf" download><p class="tag">Partial differential equations &middot; Temple</p><h3>Interior Regularity of Weak Solutions</h3><p>Three theorems from Evans on how weak solutions of second-order elliptic equations <span class="tex">Lu=f</span> become smooth inside the domain.</p><div class="tex mx-mini">f\in H^m(\Omega)\ \Rightarrow\ u\in H^{m+2}_{\mathrm{loc}}(\Omega)</div></a>
+          <a class="cv-card cv-link" href="/math/paper_fundamental_solutions.pdf" download><p class="tag">Engineering Analysis &middot; Rowan &middot; Summer 2015</p><h3>Fundamental Solutions from Fluid Dynamics and Statistical Physics</h3><p>A study of Jorge Aarão's paper on fundamental solutions of partial differential operators.</p><div class="tex mx-mini">L\,\Phi=\delta</div></a>
+          <a class="cv-card cv-link" href="/math/paper_hadamard_steiner_etf.pdf" download><p class="tag">Frame theory &middot; Rowan</p><h3>Complex Hadamard Matrices and Steiner ETFs</h3><p>Hadamard matrices, including complex ones from the Fourier matrix, and the equiangular tight frames built from Steiner systems.</p><div class="tex mx-mini">HH^*=nI</div></a>
+          <a class="cv-card cv-link" href="/math/paper_special_matrix.pdf" download><p class="tag">Linear algebra &middot; Rowan</p><h3>Note on a Special Matrix</h3><p>The spectrum of the symmetric matrix with one value on its diagonal and another everywhere else.</p><div class="tex mx-mini">\sigma=\{a+(n-1)b,\ a-b\}</div></a>
+        </div>
+      </section>
+
+      <!-- ===================== FRAMES TALKS ===================== -->
+      <section id="frames-talks" class="section">
+        <div class="section-head">
+          <p class="eyebrow">04 &middot; Frame theory talks</p>
+          <h2>Partitions of frames, presented.</h2>
+          <p class="sub">The talks and poster of my master's thesis and the frames paper. <a href="/frames.html">The full story, with interactive examples &rarr;</a></p>
+        </div>
+        <div class="mx-docs">
+          <a class="mx-doc" href="/math/talk_jmm2017.pdf" download><b>JMM 2017 talk</b><span>Partitions of Equiangular Tight Frames, Atlanta</span></a>
+          <a class="mx-doc" href="/math/abstract_jmm2017.pdf" download><b>JMM 2017 abstract</b><span>1125-43-1340</span></a>
+          <a class="mx-doc" href="/math/talk_thesis_defense.pdf" download><b>Thesis defense</b><span>Frame Partitioning Algorithms, Apr 2016</span></a>
+          <a class="mx-doc" href="/math/talk_frames_seminar_2017.pdf" download><b>Graduate seminar</b><span>A Study On Frames, Temple, Oct 2017</span></a>
+          <a class="mx-doc" href="/math/poster_frames.pdf" download><b>Rowan STEM poster</b><span>Frame Partitioning Algorithms, 2016</span></a>
+        </div>
+      </section>
+
+      <!-- ===================== VECTORS ===================== -->
+      <section id="vectors" class="section">
+        <div class="section-head">
+          <p class="eyebrow">05 &middot; In print</p>
+          <h2>Mathematics Vectors.</h2>
+          <p class="sub">Rowan University's mathematics department magazine followed my work there, from my first poster to the accepted paper (the issues are on Google Drive).</p>
+        </div>
+        <div class="mx-docs">
+          <a class="mx-doc" href="https://drive.google.com/file/d/1R9oHZ9GikECDQnnmYjad8bnm_2xgMhj2/view?usp=sharing" target="_blank" rel="noopener"><b>Vol. X, No. 2 &middot; May 2017</b><span>Alumni news: the frames paper accepted for publication</span></a>
+          <a class="mx-doc" href="https://drive.google.com/file/d/1jKioa5KkwU8o4qRFlVoGB8D0iXUtg4eM/view?usp=sharing" target="_blank" rel="noopener"><b>Vol. X, No. 1 &middot; Jan 2017</b><span>Presenting the frames research at JMM 2017, Atlanta</span></a>
+          <a class="mx-doc" href="https://drive.google.com/file/d/1Xz744eV3Zo0bBT95j6UMOuVcsjzQlFI6/view?usp=sharing" target="_blank" rel="noopener"><b>Vol. IX, No. 2 &middot; Jul 2016</b><span>Master's thesis presentation, Frame Partitioning Algorithms</span></a>
+          <a class="mx-doc" href="https://drive.google.com/file/d/1OjASGHit7b2SXVD8owHN3bO1Kl-610E3/view?usp=sharing" target="_blank" rel="noopener"><b>Vol. VIII, No. 2 &middot; Jul 2015</b><span>Inducted into Pi Mu Epsilon</span></a>
+          <a class="mx-doc" href="https://drive.google.com/file/d/11VG2KGdwnOR61SwEIpCzJXhKTVc12Eg4/view?usp=sharing" target="_blank" rel="noopener"><b>Vol. VIII, No. 1 &middot; Jan 2015</b><span>JMM 2015 in San Antonio; the integral table in Dr. Osler's Real Analysis class</span></a>
+          <a class="mx-doc" href="https://drive.google.com/file/d/1SGya6NCjxfiG-LytlXTWbh7f6rocFSn2/view?usp=sharing" target="_blank" rel="noopener"><b>Vol. VII, No. 2 &middot; May 2014</b><span>A poster, and a talk on definite integrals from Fourier series</span></a>
+        </div>
+        <div class="cta">
+          <a class="btn btn-ghost" href="/frames.html">Partitions of frames &rarr;</a>
+          <a class="btn btn-ghost" href="/#research">Back to research</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">With thanks to Dr. Thomas J. Osler and Dr. Hieu D. Nguyen, my teachers and coauthors at Rowan.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

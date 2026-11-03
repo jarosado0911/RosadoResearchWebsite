@@ -22,6 +22,7 @@
         <a href="/#publications">Publications</a>
         <a href="/#experience">Experience</a>
       </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="/resume.html">Résumé</a>
       <a class="btn btn-small" href="/#contact">Contact</a>
     </header>
 
@@ -107,14 +108,14 @@
             <span class="num">06</span>
             <h3>Branch points</h3>
             <p>NeuronMesh stops each tube about a radius short of the branch point, and keeps trimming while two tube ends still overlap, <span class="tex">\lVert e_a-e_b\rVert&lt;r_a+r_b</span>. Facing half-rings are then joined by cubic Bézier rails, pulled toward the branch point <span class="tex">O</span>:</p>
-            <div class="tex-block">B(t)=(1-t)^3W_i+3(1-t)^2t\,U_i+3(1-t)t^2\,U_j+t^3W_j,\quad U_i=O+\alpha(W_i-O)</div>
+            <div class="tex-block">\begin{gathered}\begin{aligned}B(t)&amp;=(1-t)^3W_i+3(1-t)^2t\,U_i\\&amp;\quad+3(1-t)t^2\,U_j+t^3W_j,\end{aligned}\\U_i=O+\alpha(W_i-O)\end{gathered}</div>
             <p>with <span class="tex">\alpha=0.5</span>. The two holes left at the poles are closed by fans, and tips by a fan from the last ring's center.</p>
           </li>
           <li class="card" data-stage="weld">
             <span class="num">07</span>
             <h3>Welding into the soma</h3>
             <p>The soma is a sphere of center <span class="tex">c</span> and radius <span class="tex">R</span>. Each tube is cut exactly where it enters it: along each generator, segment <span class="tex">p\to p+d</span> meets the sphere at <span class="tex">p+\tau d</span>, with <span class="tex">w=p-c</span> and</p>
-            <div class="tex-block">\tau=\frac{-b-\sqrt{b^2-4a\gamma}}{2a},\qquad a=d\cdot d,\quad b=2\,w\cdot d,\quad \gamma=w\cdot w-R^2</div>
+            <div class="tex-block">\begin{gathered}\tau=\frac{-b-\sqrt{b^2-4a\gamma}}{2a},\\a=d\cdot d,\quad b=2\,w\cdot d,\quad \gamma=w\cdot w-R^2\end{gathered}</div>
             <p>These points form the seam, the exact curve where tube and sphere meet. The sphere is refined around each seam by longest-edge bisection, a hole is cut, and a collar of rings with geometric radii <span class="tex">\rho_{i}=r_{\text{in}}(r_{\text{out}}/r_{\text{in}})^{i/(m+1)}</span> joins the seam to it.</p>
           </li>
           <li class="card" data-stage="cell">
@@ -171,7 +172,7 @@
             <article class="card">
               <p class="tag">2023 &middot; the rotation method</p>
               <p>PythonNeuronMeshes transported the normal by rotating it, at every point, by the angle between consecutive tangents about their common normal:</p>
-              <div class="tex-block">b_i=\frac{t_i\times t_{i+1}}{\lVert t_i\times t_{i+1}\rVert},\quad \varphi_i=\arccos(t_i\cdot t_{i+1}),\quad v_{i+1}=R(b_i,\varphi_i)\,v_i</div>
+              <div class="tex-block">\begin{gathered}b_i=\frac{t_i\times t_{i+1}}{\lVert t_i\times t_{i+1}\rVert},\quad \varphi_i=\arccos(t_i\cdot t_{i+1}),\\v_{i+1}=R(b_i,\varphi_i)\,v_i\end{gathered}</div>
               <p>Correct, but a trigonometric rotation per point, and each trunk started its own frame from scratch.</p>
             </article>
             <article class="card">

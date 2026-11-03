@@ -22,6 +22,7 @@
         <a href="#publications">Publications</a>
         <a href="#experience">Experience</a>
       </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="/resume.html">Résumé</a>
       <a class="btn btn-small" href="#contact">Contact</a>
     </header>
 
@@ -48,7 +49,8 @@
         </div>
         <p class="caption">
           <span class="dot"></span>
-          Background: a reconstructed CA1 pyramidal neuron with an illustrative back-propagating action potential.
+          <span>Background: a reconstructed CA1 neuron meshed by <a href="/neuronmesh.html">NeuronMesh</a>, 400 real spines welded
+          in by <a href="/spinebuilder.html">SpineBuilder</a>, and an illustrative back-propagating spike.</span>
           <button type="button" class="fire" id="fire">Fire a spike</button>
         </p>
       </section>
@@ -112,9 +114,11 @@
             <h3>Brain stimulation (TMS)</h3>
             <p>A multiscale toolbox that couples the electric fields of transcranial magnetic stimulation to neuron electrical and calcium activity.</p>
           </article>
-          <article class="card">
+          <article class="card card-link card-links">
             <h3>Resilience &amp; Alzheimer's disease</h3>
             <p>A model of how neurons keep calcium signaling working despite synapse loss and calcium leaks, with implications for Alzheimer's disease.</p>
+            <a class="more" href="/calcsim.html">The model, the equations and a calcium wave &rarr;</a>
+            <a class="more" href="https://github.com/NeuroBox3D/CalcSim" target="_blank" rel="noopener">CalcSim on GitHub &rarr;</a>
           </article>
           <article class="card">
             <h3>Simulation in VR</h3>
@@ -126,9 +130,15 @@
             <a class="more" href="/neuronmesh.html">Inside NeuronMesh, from skeleton to surface &rarr;</a>
             <a class="more" href="https://github.com/jarosado0911/PythonNeuronMeshes" target="_blank" rel="noopener">PythonNeuronMeshes, my first version &rarr;</a>
           </article>
-          <article class="card">
+          <article class="card card-link card-links">
             <h3>Frame theory</h3>
             <p>My earlier work in pure mathematics: algorithms for partitioning equiangular tight frames, and evaluating definite integrals with complex analysis.</p>
+            <a class="more" href="/frames.html">Partitions of frames: the thesis and the paper &rarr;</a>
+          </article>
+          <article class="card card-link card-links card-wide">
+            <h3>Series, integrals &amp; analysis</h3>
+            <p>With Dr. Thomas Osler, a table of 36 definite integrals found by marrying power and Fourier series, 25 of them possibly new. Plus my talks and papers in complex, real and functional analysis, PDEs and numerical methods.</p>
+            <a class="more" href="/mathematics.html">The integrals, the talks and the papers &rarr;</a>
           </article>
         </div>
       </section>
@@ -306,7 +316,7 @@
 
     <footer class="footer">
       <p>&copy; <span id="year"></span> James Rosado</p>
-      <p class="muted">The background neuron is a real reconstructed CA1 cell, rendered live in WebGL. The spike is an illustration, not a simulation.</p>
+      <p class="muted">The background neuron is a real reconstructed CA1 cell, meshed by NeuronMesh with 400 reconstructed spines placed and welded in by SpineBuilder, and rendered live in WebGL. The spike is an illustration, not a simulation.</p>
     </footer>
 
     <script type="module" src="/src/main.js"></script>

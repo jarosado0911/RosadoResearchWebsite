@@ -22,6 +22,7 @@
         <a href="/#publications">Publications</a>
         <a href="/#experience">Experience</a>
       </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="/resume.html">Résumé</a>
       <a class="btn btn-small" href="/#contact">Contact</a>
     </header>
 
@@ -107,6 +108,40 @@
         </ol>
       </section>
 
+      <!-- CALCIUM MACHINERY (src/calcium3d.js): the model's components in 3D; drag to turn, hover to name -->
+      <section class="section in ca-section">
+        <div class="section-head">
+          <p class="eyebrow">The model</p>
+          <h2>What moves the calcium.</h2>
+          <p class="sub">
+            The pieces of the calcium model behind these simulations, in one cell: the stores, the channels that release
+            calcium, the pumps that clear it, and the buffers that hold it. Drag to turn it, and point at anything to see
+            what it is.
+          </p>
+        </div>
+        <div class="ca3d" id="ca3d">
+          <canvas class="ca3d-canvas" aria-label="3D model of a cell's calcium machinery; drag to rotate, hover over a part to name it"></canvas>
+          <div class="ca3d-labels" aria-hidden="true"></div>
+          <div class="ca3d-tip" role="status"></div>
+          <div class="sg-controls ca3d-controls">
+            <button type="button" class="sg-btn ca3d-zoom-in" aria-label="Zoom in">+</button>
+            <button type="button" class="sg-btn ca3d-zoom-out" aria-label="Zoom out">&minus;</button>
+          </div>
+          <div class="ca3d-bar">
+            <label class="ca3d-toggle"><input type="checkbox" class="ca3d-show-labels" /> Show labels</label>
+            <label class="ca3d-toggle"><input type="checkbox" class="ca3d-flow" checked /> Calcium flow</label>
+            <p class="ca3d-hint">Drag to turn &middot; hover to name</p>
+          </div>
+          <p class="sg-fallback">The 3D model needs WebGL.</p>
+        </div>
+        <ul class="ca3d-legend" aria-label="Legend">
+          <li><i style="background:#ff5a4a"></i>Ca²⁺</li>
+          <li><i style="background:#c8ceff"></i>IP3</li>
+          <li><i style="background:#3fcf6f"></i>Calbindin (buffer)</li>
+          <li><i style="background:#7fe0a0"></i>ER (calcium store)</li>
+        </ul>
+      </section>
+
       <section class="section in gallery-section">
         <!-- SPINE GALLERY (src/spines.js; data in public/spines/ from scripts/build_spines.py) -->
         <div class="spine-gallery" id="spine-gallery">
@@ -157,7 +192,7 @@
 
     <footer class="footer">
       <p>&copy; <span id="year"></span> James Rosado</p>
-      <p class="muted">The background neuron is a real reconstructed CA1 cell, rendered live in WebGL. The spike is an illustration, not a simulation.</p>
+      <p class="muted">The background neuron is a real reconstructed CA1 cell, meshed by NeuronMesh with 400 reconstructed spines placed and welded in by SpineBuilder, and rendered live in WebGL. The spike is an illustration, not a simulation.</p>
     </footer>
 
     <script type="module" src="/src/main.js"></script>

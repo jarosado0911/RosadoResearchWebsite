@@ -41,13 +41,47 @@ if (canvas) import('./neuron.js')
 // the SpineBuilder and NeuronMesh pages: their own backgrounds (the real meshes), math and viewers
 const sbCanvas = document.getElementById('sb-bg');
 if (sbCanvas) {
-  (sbCanvas.dataset.page === 'neuronmesh'
-    ? import('./neuronmesh.js').then(({ startNeuronMeshPage }) => startNeuronMeshPage(sbCanvas, { reducedMotion }))
-    : import('./spinebuilder.js').then(({ startSpineBuilderPage }) => startSpineBuilderPage(sbCanvas, { reducedMotion })))
+  ({
+    neuronmesh: () => import('./neuronmesh.js').then(({ startNeuronMeshPage }) => startNeuronMeshPage(sbCanvas, { reducedMotion })),
+    calcsim: () => import('./calcsim3d.js').then(({ startCalcSimBackground }) => startCalcSimBackground(sbCanvas, { reducedMotion })),
+  }[sbCanvas.dataset.page] ?? (() => import('./spinebuilder.js').then(({ startSpineBuilderPage }) => startSpineBuilderPage(sbCanvas, { reducedMotion }))))()
     .catch((e) => {
       console.error(e);
       document.body.classList.add('no-webgl');
     });
+}
+
+// the series & analysis page
+if (document.body.classList.contains('mx')) {
+  import('./mathematics.js').then(({ startMathPage }) => startMathPage());
+}
+
+// the CalcSim page: its equations and the diagram of the model
+if (document.body.classList.contains('cs')) {
+  import('./calcsim.js').then(({ startCalcSimPage }) => startCalcSimPage());
+}
+
+// the frames page (thesis and LAA paper)
+if (document.body.classList.contains('fr')) {
+  import('./frames.js').then(({ startFramesPage }) => startFramesPage());
+}
+
+// the résumé page
+if (document.body.classList.contains('cv')) {
+  import('./resume.js').then(({ startResume }) => startResume({ reducedMotion }));
+}
+
+// the 3D calcium machinery (spines page): loaded when it comes near the screen
+const ca3d = document.getElementById('ca3d');
+if (ca3d) {
+  const near = new IntersectionObserver((entries) => {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    near.disconnect();
+    import('./calcium3d.js')
+      .then(({ startCalcium3D }) => startCalcium3D(ca3d, { reducedMotion }))
+      .catch((e) => { console.error(e); ca3d.classList.add('sg-failed'); });
+  }, { rootMargin: '600px 0px' });
+  near.observe(ca3d);
 }
 
 // the spine gallery: loaded when it comes near the screen

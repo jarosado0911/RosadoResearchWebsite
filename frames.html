@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Partitions of Frames | James Rosado, Ph.D.</title>
+    <meta name="description" content="My master's thesis and Linear Algebra and its Applications paper on partitioning finite frames: the Kadison-Singer problem, the Marcus-Spielman-Srivastava theorem, and a linear-time algorithm for equiangular tight frames, with interactive examples." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="fr">
+    <div class="cv-glow" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="/">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="/#services">Consulting</a>
+        <a href="/#research">Research</a>
+        <a href="/#projects">Software</a>
+        <a href="/#publications">Publications</a>
+        <a href="/#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="/resume.html">Résumé</a>
+      <a class="btn btn-small" href="/#contact">Contact</a>
+    </header>
+
+    <main id="top" class="subpage fr-page">
+      <section class="page-head fr-head">
+        <svg class="fr-hero-art" viewBox="-1.1 -1.1 2.2 2.2" aria-hidden="true"></svg>
+        <a class="back" href="/#research">&larr; Research</a>
+        <p class="eyebrow">Frame theory &middot; Linear algebra &middot; 2014&ndash;2017</p>
+        <h1>Splitting a frame, <em>and keeping it balanced.</em></h1>
+        <p class="lede">
+          Before neurons, my research was pure mathematics. A frame is a redundant set of vectors that still spans the
+          space. In 2015 Marcus, Spielman and Srivastava proved that any such set can be split into pieces that are each
+          spread out evenly, which solved the 50-year-old Kadison&ndash;Singer problem. But their proof doesn't say how
+          to find the split. My master's thesis and our paper built the first efficient algorithm for a well-known
+          family of frames.
+        </p>
+        <div class="nm-tools">
+          <article class="card">
+            <p class="tag">2016 &middot; Master's thesis &middot; Rowan University</p>
+            <h3>Partitions of Finite Frames</h3>
+            <p>Advisor: Hieu D. Nguyen. Harmonic frames in the plane, Grassmannian frames, exact norm formulas and the largest subsets that still satisfy the bound.</p>
+            <div class="fr-links">
+              <a class="more" href="/frames/Rosado_2016_Partitions_of_Finite_Frames.pdf" download>Download the thesis (PDF, 78 pages) &darr;</a>
+              <a class="more" href="https://rdw.rowan.edu/etd/1560" target="_blank" rel="noopener">Rowan Digital Works &rarr;</a>
+            </div>
+          </article>
+          <article class="card">
+            <p class="tag">2017 &middot; Linear Algebra and its Applications 526</p>
+            <h3>Partitions of equiangular tight frames</h3>
+            <p>With Hieu D. Nguyen and Lei Cao. A linear-time algorithm for partitions of equiangular tight frames, with a bound sharper than MSS.</p>
+            <div class="fr-links">
+              <a class="more" href="https://doi.org/10.1016/j.laa.2017.03.022" target="_blank" rel="noopener">doi.org/10.1016/j.laa.2017.03.022 &rarr;</a>
+            </div>
+          </article>
+        </div>
+        <ul class="facts nm-facts" aria-label="Results">
+          <li><strong>First</strong><span>efficient algorithm for MSS partitions of a known class of frames</span></li>
+          <li><strong>O(n)</strong><span>time to build the partition</span></li>
+          <li><strong>0.75 vs 1.125</strong><span>our bound against MSS's, for 8 subsets</span></li>
+        </ul>
+      </section>
+
+      <!-- ===================== 01 FRAMES ===================== -->
+      <section id="what" class="section">
+        <div class="section-head">
+          <p class="eyebrow">01 &middot; What a frame is</p>
+          <h2>More vectors than you need, on purpose.</h2>
+          <p class="sub">
+            A basis of the plane has exactly two vectors. A frame can have many, pointing in many directions. The
+            redundancy is the point: if a signal is sent as its inner products with the frame vectors and some are lost
+            or noisy, the rest still recover it. That is why frames run through signal processing, coding and sensor
+            networks.
+          </p>
+        </div>
+        <div class="builder fr-demo" id="frame-demo">
+          <div class="builder-view fr-view">
+            <svg class="fr-svg" viewBox="-1.25 -1.25 2.5 2.5" role="img" aria-label="A harmonic frame of m vectors in the plane and a unit vector x you can drag; the bars show each squared inner product"></svg>
+            <p class="builder-hint">Drag the white vector x around the circle</p>
+          </div>
+          <div class="builder-panel">
+            <h3>A harmonic frame in the plane</h3>
+            <label class="builder-row"><span>Vectors m</span><input type="range" min="3" max="16" step="1" value="3" data-m /><output></output></label>
+            <p class="frame-note">The vectors <span class="tex">f_j=\sqrt{2/m}\,(\cos\frac{2\pi j}{m},\sin\frac{2\pi j}{m})</span> are spaced evenly around the circle. With <span class="tex">m=3</span> it is the Mercedes-Benz frame.</p>
+            <div class="fr-bars" aria-label="Squared inner products with each frame vector"></div>
+            <dl class="builder-out"><div><dt>Sum of the bars, <span class="tex">\sum_j|\langle x,f_j\rangle|^2</span></dt><dd data-sum>1.000</dd></div></dl>
+            <p class="frame-note small">Wherever you point <span class="tex">x</span>, the bars add up to exactly <span class="tex">\lVert x\rVert^2=1</span>: the frame is <em>Parseval</em>, as balanced as an orthonormal basis.</p>
+          </div>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">Frames and frame bounds</p>
+              <p>Vectors <span class="tex">\{f_j\}_{j=1}^n</span> in <span class="tex">\mathbb C^m</span> form a frame if there are constants <span class="tex">0&lt;A\le B</span> with</p>
+              <div class="tex-block">A\lVert x\rVert^2\le\sum_{j=1}^n|\langle x,f_j\rangle|^2\le B\lVert x\rVert^2\quad\text{for every }x.</div>
+              <p>The frame is <em>tight</em> if <span class="tex">A=B</span> and <em>Parseval</em> if <span class="tex">A=B=1</span>, which is the same as its frame operator being the identity:</p>
+              <div class="tex-block">\sum_{j=1}^n f_j f_j^{*}=I_m.</div>
+            </article>
+            <article class="card">
+              <p class="tag">Why the plane example is Parseval</p>
+              <p>For <span class="tex">x=(\cos\phi,\sin\phi)</span>,</p>
+              <div class="tex-block">\sum_{j=0}^{m-1}\frac{2}{m}\cos^2\!\Big(\phi-\frac{2\pi j}{m}\Big)=\frac1m\sum_{j=0}^{m-1}\Big(1+\cos\big(2\phi-\tfrac{4\pi j}{m}\big)\Big)=1,</div>
+              <p>since the cosines of <span class="tex">m</span> evenly spaced angles sum to zero (for <span class="tex">m\ge3</span>).</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 02 THE QUESTION ===================== -->
+      <section id="question" class="section">
+        <div class="section-head">
+          <p class="eyebrow">02 &middot; The question</p>
+          <h2>Can every balanced frame be split into balanced pieces?</h2>
+          <p class="sub">
+            The Kadison&ndash;Singer problem (1959) asked about extending states of operator algebras. Weaver showed it is
+            equivalent to a question about splitting vectors, and in 2015 Marcus, Spielman and Srivastava answered it.
+            Their proof shows that a good split exists, but gives no way to find one. Finding one efficiently was left
+            open at the end of their paper.
+          </p>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card fr-key">
+              <p class="tag">The MSS theorem (2015)</p>
+              <p>If <span class="tex">v_1,\dots,v_n\in\mathbb C^m</span> satisfy <span class="tex">\sum_j v_jv_j^*=I</span> and <span class="tex">\lVert v_j\rVert^2\le\delta</span>, then for every <span class="tex">r</span> there is a partition <span class="tex">S_1,\dots,S_r</span> with</p>
+              <div class="tex-block">\Big\lVert\sum_{j\in S_k}v_jv_j^*\Big\rVert\le\Big(\frac1{\sqrt r}+\sqrt\delta\Big)^2\quad\text{for all }k.</div>
+              <p>Each piece's <em>outer Gramian</em> <span class="tex">F_S=\sum_{j\in S}f_jf_j^*</span> stays bounded: no piece hoards too much of the space.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Not every split works</p>
+              <p>The theorem only says a good partition <em>exists</em>. In the 32-vector frame of the paper, the 16-vector subset</p>
+              <div class="tex-block">S=\{2,5,7,8,9,10,11,13,14,16,17,19,21,25,27,31\}</div>
+              <p>with 16 singletons (<span class="tex">r=17</span>) has <span class="tex">\lVert F_S\rVert=0.998</span>, above the MSS bound <span class="tex">0.902</span>. You can try it below.</p>
+            </article>
+            <article class="card">
+              <p class="tag">The Rado&ndash;Horn theorem</p>
+              <p>The classical side of the story: a frame splits into <span class="tex">K</span> linearly independent sets exactly when every subset <span class="tex">J</span> has</p>
+              <div class="tex-block">\frac{|J|}{\dim\operatorname{span}(F_J)}\le K.</div>
+              <p>It says nothing about the norms of the pieces. Our partitions are both: linearly independent and bounded.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 03 THESIS ===================== -->
+      <section id="thesis" class="section">
+        <div class="section-head">
+          <p class="eyebrow">03 &middot; The thesis</p>
+          <h2>Splitting the circle in two.</h2>
+          <p class="sub">
+            For the harmonic frame of <span class="tex">m</span> vectors, the thesis computes the norm of any run of
+            <span class="tex">n</span> consecutive vectors exactly, and asks how long the run can be before the split
+            into two pieces (<span class="tex">r=2</span>, <span class="tex">\delta=2/m</span>) breaks the MSS bound.
+          </p>
+        </div>
+        <div class="builder fr-demo" id="split-demo">
+          <div class="builder-view fr-view">
+            <svg class="fr-svg" viewBox="-1.25 -1.25 2.5 2.5" role="img" aria-label="The harmonic frame split into a run of n consecutive vectors (orange) and the rest (blue)"></svg>
+          </div>
+          <div class="builder-panel">
+            <h3>Choose the split</h3>
+            <label class="builder-row"><span>Vectors m</span><input type="range" min="6" max="120" step="1" value="40" data-m /><output></output></label>
+            <label class="builder-row"><span>Run length n</span><input type="range" min="1" max="39" step="1" value="20" data-n /><output></output></label>
+            <dl class="builder-out">
+              <div><dt><span class="tex">\lVert F_{S_1}\rVert</span> (the run)</dt><dd data-n1></dd></div>
+              <div><dt><span class="tex">\lVert F_{S_2}\rVert</span> (the rest)</dt><dd data-n2></dd></div>
+              <div><dt>MSS bound <span class="tex">(1/\sqrt2+\sqrt{2/m})^2</span></dt><dd data-b></dd></div>
+              <div><dt>Longest run that passes, <span class="tex">n_{\max}</span></dt><dd data-nmax></dd></div>
+            </dl>
+            <p class="fr-verdict" aria-live="polite"></p>
+            <svg class="fr-curve" viewBox="0 0 320 120" role="img" aria-label="The norm of the run against its length, with the MSS bound as a line"></svg>
+          </div>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">An exact formula</p>
+              <p>The outer Gramian of the run <span class="tex">S_1=\{f_0,\dots,f_{n-1}\}</span> is a 2&times;2 matrix whose largest eigenvalue sums a geometric series of <span class="tex">e^{4\pi ij/m}</span>:</p>
+              <div class="tex-block">\begin{gathered}\lVert F_{S_1}\rVert=\frac nm+\frac{\sin(2\pi n/m)}{m\,\sin(2\pi/m)},\\\lVert F_{S_2}\rVert=\frac{m-n}m+\frac{\sin(2\pi n/m)}{m\,\sin(2\pi/m)}.\end{gathered}</div>
+            </article>
+            <article class="card">
+              <p class="tag">How long can the run be?</p>
+              <p><span class="tex">n_{\max}=\lfloor x\rfloor</span>, where <span class="tex">x</span> solves the non-elementary equation</p>
+              <div class="tex-block">\frac xm+\frac{\sin(2\pi x/m)}{m\sin(2\pi/m)}=\Big(\frac1{\sqrt2}+\sqrt{\frac2m}\Big)^2,</div>
+              <p>solved numerically (the thesis used Mathematica, this page uses bisection). For <span class="tex">m=100</span>, <span class="tex">n_{\max}=84</span>; as <span class="tex">m\to\infty</span>, <span class="tex">n_{\max}/m\to\tfrac12</span>. Even and almost-even splits always pass.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 04 PAPER ===================== -->
+      <section id="paper" class="section">
+        <div class="section-head">
+          <p class="eyebrow">04 &middot; The paper</p>
+          <h2>Equiangular frames, and a partition you can compute.</h2>
+          <p class="sub">
+            Equiangular tight frames (ETFs) are the most spread-out frames there are: every pair of vectors meets at
+            the same angle, as small as possible. We built them from a recursive skew-symmetric conference matrix, and
+            showed that cutting its Gram matrix into blocks along the diagonal gives partitions that beat the MSS bound.
+          </p>
+        </div>
+
+        <div class="fr-rdemo" id="r-demo">
+          <div class="fr-rview">
+            <canvas class="fr-heat" aria-label="The conference matrix C(k) as a grid of plus one (blue) and minus one (orange) entries, with the subsets of the partition outlined"></canvas>
+          </div>
+          <div class="builder-panel fr-rpanel">
+            <h3>Partition an ETF</h3>
+            <label class="builder-row"><span>Size <span class="tex">n=2^k</span></span><input type="range" min="2" max="6" step="1" value="4" data-k /><output></output></label>
+            <label class="builder-row"><span>Subsets r</span><input type="range" min="2" max="16" step="1" value="5" data-r /><output></output></label>
+            <div class="sb-scenes fr-modes" role="group" aria-label="Partition">
+              <button type="button" data-mode="diagonal" class="active">Diagonal (Algorithm 1)</button>
+              <button type="button" data-mode="random">Random</button>
+              <button type="button" data-mode="counter">The counterexample</button>
+            </div>
+            <dl class="builder-out">
+              <div><dt>Largest <span class="tex">\lVert F_{S_h}\rVert</span></dt><dd data-max></dd></div>
+              <div><dt>Our bound <span class="tex">\tfrac12+\tfrac1{\sqrt{2r}}</span> <small class="muted">(diagonal partitions)</small></dt><dd data-ours></dd></div>
+              <div><dt>MSS bound <span class="tex">(1/\sqrt r+1/\sqrt2)^2</span></dt><dd data-mss></dd></div>
+            </dl>
+            <p class="fr-verdict" aria-live="polite"></p>
+            <ol class="fr-subsets"></ol>
+          </div>
+        </div>
+
+        <div class="math">
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">The Welch bound</p>
+              <p>For <span class="tex">n</span> unit vectors in <span class="tex">\mathbb C^m</span>, the largest correlation can't be smaller than</p>
+              <div class="tex-block">\max_{j\ne l}|\langle f_j,f_l\rangle|\ \ge\ \sqrt{\frac{n-m}{m(n-1)}},</div>
+              <p>with equality exactly for equiangular tight frames (Strohmer and Heath): the best possible packings of lines.</p>
+            </article>
+            <article class="card">
+              <p class="tag">A recursive conference matrix</p>
+              <p>Start from <span class="tex">C(1)=\begin{pmatrix}0&amp;-1\\1&amp;0\end{pmatrix}</span> and double:</p>
+              <div class="tex-block">\begin{gathered}C(k)=\begin{pmatrix}C(k-1)&amp;C(k-1)-I\\C(k-1)+I&amp;-C(k-1)\end{pmatrix},\\C C^{\mathsf T}=(n-1)I.\end{gathered}</div>
+              <p>It is skew-symmetric with spectrum <span class="tex">\pm i\sqrt{n-1}</span>, each of multiplicity <span class="tex">n/2</span>.</p>
+            </article>
+            <article class="card">
+              <p class="tag">From the matrix to the frame</p>
+              <p>With <span class="tex">\alpha=1/\sqrt{n-1}</span>, the Hermitian matrix <span class="tex">R=I+i\alpha C</span> has eigenvalues</p>
+              <div class="tex-block">\sigma(R)=\{1\pm\alpha\sqrt{n-1}\}=\{0,\,2\},</div>
+              <p>each <span class="tex">n/2</span> times. Its eigenvectors for 2 give <span class="tex">n=2m</span> vectors in <span class="tex">\mathbb C^m</span>: a Parseval ETF with <span class="tex">\lVert f_j\rVert^2=\delta=\tfrac12</span>, whose Gram matrix is <span class="tex">\tfrac12R</span>.</p>
+            </article>
+            <article class="card fr-key">
+              <p class="tag">The main theorem</p>
+              <p>A subset's norm is half the norm of its block of <span class="tex">R</span>. For a <em>diagonal</em> block of size <span class="tex">2^{k-d}</span> that block is again <span class="tex">R(k-d)</span>, so</p>
+              <div class="tex-block">\lVert F_{S}\rVert=\frac12+\frac12\sqrt{\frac{2^{k-d}-1}{2^k-1}}\ \le\ \frac12+\frac1{\sqrt{2r}}\ \le\ \Big(\frac1{\sqrt r}+\frac1{\sqrt2}\Big)^2.</div>
+              <p>Every diagonal partition with subsets of at most <span class="tex">2^{k-\lfloor\log_2r\rfloor}</span> vectors is an MSS partition, of linearly independent pieces, with a sharper bound.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Algorithm 1: linear time</p>
+              <p>Let <span class="tex">d=\lfloor\log_2 r\rfloor</span>. Cut the first <span class="tex">2(r-2^d)</span> blocks of size <span class="tex">2^{k-d-1}</span>, then the remaining <span class="tex">2^{d+1}-r</span> of size <span class="tex">2^{k-d}</span>:</p>
+              <div class="tex-block">2(r-2^d)\,2^{k-d-1}+(2^{d+1}-r)\,2^{k-d}=2^k.</div>
+              <p>Each block is a run of consecutive indices, so the partition is built in one pass.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Fusion frames</p>
+              <p>The pieces' spans form a fusion frame, the structure behind distributed sensor networks, with bounds</p>
+              <div class="tex-block">\begin{gathered}A=\frac1{\min_h A_h},\qquad B=\frac1{\max_h B_h},\\A_h,B_h=\frac12\mp\frac12\sqrt{\frac{2^{k-d_h}-1}{2^k-1}}.\end{gathered}</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 05 SMALL SUBSETS ===================== -->
+      <section id="small" class="section">
+        <div class="section-head">
+          <p class="eyebrow">05 &middot; Small pieces always work</p>
+          <h2>Any partition into pairs or triples is safe.</h2>
+          <p class="sub">
+            For <em>any</em> ETF, not only ours, the outer Gramian norm of a pair or a triple can be computed exactly, and
+            it always beats the MSS bound. The chart compares all the bounds for <span class="tex">\delta=\tfrac12</span>,
+            as in the paper's Fig. 2.
+          </p>
+        </div>
+        <figure class="fr-chart" id="bounds-chart">
+          <div class="fr-legend" aria-hidden="true"></div>
+          <svg class="fr-chart-svg" role="img" aria-label="Line chart of four norm bounds against the number of subsets r, from 1 to 32"></svg>
+          <div class="fr-tip" role="status"></div>
+          <details class="fr-table">
+            <summary>Show the numbers</summary>
+            <table class="nm-table"><thead><tr><th>r</th><th>MSS</th><th>Theorem 1.5</th><th>|S| &le; 2</th><th>|S| &le; 3 (complex)</th></tr></thead><tbody></tbody></table>
+          </details>
+        </figure>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">Pairs (Lemma 7.1, Theorem 7.2)</p>
+              <div class="tex-block">\lVert F_{\{j,l\}}\rVert=\frac mn\Big(1+\sqrt{\frac{n-m}{m(n-1)}}\Big)\ \le\ \delta+\sqrt{\frac\delta r},\qquad\delta=\frac mn.</div>
+            </article>
+            <article class="card">
+              <p class="tag">Triples (Lemma 7.3, Theorem 7.4)</p>
+              <div class="tex-block">\begin{gathered}\lVert F_{S}\rVert=\frac mn\Big(1+\sqrt{\frac{\ell\,(n-m)}{m(n-1)}}\Big)\ \le\ \delta+\sqrt{\frac{\ell\delta}r},\\\ell=\begin{cases}1\text{ or }2&amp;\text{in }\mathbb R\\3&amp;\text{in }\mathbb C\end{cases}\end{gathered}</div>
+              <p>From four vectors on, the norms are no longer uniform, and whether every partition passes is still open.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 06 OPEN ===================== -->
+      <section id="open" class="section">
+        <div class="section-head">
+          <p class="eyebrow">06 &middot; What's still open</p>
+          <h2>Where it could go next.</h2>
+        </div>
+        <div class="grid grid-3">
+          <article class="card"><h3>Consecutive is safe?</h3><p>The thesis conjectures that, for these Grassmannian frames, partitions into runs of consecutive vectors are always valid, and that non-consecutive ones whose largest piece has at least half the vectors are not.</p></article>
+          <article class="card"><h3>Pieces of four or more</h3><p>Exact norms for subsets of size four and up, and with them a proof that every such partition of an ETF meets the MSS bound, or a counterexample.</p></article>
+          <article class="card"><h3>Other frames</h3><p>Efficient MSS partitions for Gabor frames, and fast norm computations for very large Grassmannian frames.</p></article>
+        </div>
+        <div class="cta">
+          <a class="btn" href="/frames/Rosado_2016_Partitions_of_Finite_Frames.pdf" download>Download the thesis (PDF)</a>
+          <a class="btn btn-ghost" href="https://doi.org/10.1016/j.laa.2017.03.022" target="_blank" rel="noopener">Read the paper</a>
+          <a class="btn btn-ghost" href="/#research">Back to research</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">Every number on this page is computed live in your browser from the formulas above.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

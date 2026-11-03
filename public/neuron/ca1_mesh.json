@@ -1,0 +1,23 @@
+{
+ "name": "CA1 pyramidal neuron (A-Slide-3-section-2-neuron-1), meshed by NeuronMesh, spines by SpineBuilder",
+ "vertices": 100004,
+ "triangles": 200000,
+ "spines": 400,
+ "positions": 0,
+ "distances": 1200048,
+ "indices": 1600064,
+ "somaRadius": 10.231,
+ "maxDist": 519.1,
+ "bounds": [
+  [
+   -150.6,
+   -191.4,
+   -54.3
+  ],
+  [
+   135.3,
+   461.1,
+   45.9
+  ]
+ ]
+}

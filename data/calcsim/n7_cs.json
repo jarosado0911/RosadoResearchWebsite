@@ -1,0 +1,35 @@
+{
+ "source": "Neuro-VISOR-calcium-studies study N7, C# CalciumModel, split level 4",
+ "cell": "NMO_150605",
+ "probe_names": [
+  "soma",
+  "path 0% (start tip)",
+  "path 10%",
+  "path 50%",
+  "path 100% (end tip)"
+ ],
+ "path_length_um": 159.62844421962714,
+ "synapse_total_influx_mol_s": 1.5707963267948965e-19,
+ "pulse": {
+  "t0_ms": 20,
+  "duration_ms": 10,
+  "period_ms": 200
+ },
+ "solver": {
+  "code": "csharp",
+  "n": 11025,
+  "probes": [
+   29,
+   87,
+   89,
+   9797,
+   9801,
+   10208,
+   10815
+  ],
+  "steps": 160000,
+  "setup_s": 0.2665831,
+  "solve_s": 333.0511884,
+  "diverged": false
+ }
+}
