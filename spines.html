@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dendritic Spine Gallery | James Rosado, Ph.D.</title>
+    <meta name="description" content="An interactive 3D gallery of ten reconstructed dendritic spines with their spine apparatus, dendritic ER and synapses." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <!-- The animated neuron (src/neuron.js) draws into this canvas, fixed behind the page -->
+    <canvas id="neuron" aria-hidden="true"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="/">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="/#services">Consulting</a>
+        <a href="/#research">Research</a>
+        <a href="/#projects">Software</a>
+        <a href="/#publications">Publications</a>
+        <a href="/#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small" href="/#contact">Contact</a>
+    </header>
+
+    <main id="top" class="subpage">
+      <section class="page-head">
+        <a class="back" href="/#research">&larr; Research</a>
+        <p class="eyebrow">Research &middot; Dendritic spines</p>
+        <h1>Calcium in <em>dendritic spines.</em></h1>
+        <p class="lede">
+          Dendritic spines are the tiny protrusions where most excitatory synapses in the brain sit. Many of the
+          larger ones contain a spine apparatus, a stack of ER that reaches from the dendrite into the spine.
+          My ultrastructural simulations of these reconstructed spines showed that the spine apparatus can act as an
+          all-or-nothing switch for calcium signals between the spine head and the dendrite.
+        </p>
+      </section>
+
+      <!-- FLY-THROUGH VIDEO (public/video/, recolored from the original; see README) -->
+      <section class="section in film-section">
+        <figure class="film">
+          <video class="film-video" muted loop playsinline preload="none" poster="/video/spine-cell-poster.jpg"
+                 aria-label="Fly-through of a neuron mesh, from the whole cell down to the spines on its dendrites">
+            <source src="/video/spine-cell.webm" type="video/webm" />
+            <source src="/video/spine-cell.mp4" type="video/mp4" />
+          </video>
+          <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
+          <figcaption>
+            <p class="eyebrow">From cell to spine</p>
+            <p>A fly-through of a neuron mesh: from the whole cell, down to the spines along its dendrites, and back to the soma.</p>
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- CALCIUM WAVE VIDEO (public/video/calcium-wave.*, made by scripts/make_wave_video.sh) -->
+      <section class="section in wave-section">
+        <div class="section-head">
+          <p class="eyebrow">Simulation</p>
+          <h2>One spine sets off a calcium wave.</h2>
+          <p class="sub">
+            A simulation of calcium on a spine with a spine apparatus, attached to a long dendrite with ER inside it.
+            The shapes are shown cut open down the middle. Top: a close-up of the spine. Bottom: the whole dendrite,
+            with the close-up area boxed.
+          </p>
+        </div>
+        <figure class="film wave" id="wave-film">
+          <video class="film-video" muted loop playsinline preload="none" poster="/video/calcium-wave-poster.jpg"
+                 aria-label="Simulation: calcium entering a spine head triggers a calcium wave that travels both ways along the dendrite while the ER empties">
+            <source src="/video/calcium-wave.webm" type="video/webm" />
+            <source src="/video/calcium-wave.mp4" type="video/mp4" />
+          </video>
+          <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
+        </figure>
+        <div class="legend">
+          <div class="bar">
+            <span class="bar-name">Calcium in the cytosol</span>
+            <span class="bar-scale"><span>0.05 µM</span><i aria-hidden="true"></i><span>5 µM</span></span>
+          </div>
+          <div class="bar">
+            <span class="bar-name">Calcium in the ER and spine apparatus</span>
+            <span class="bar-scale"><span>0 µM</span><i aria-hidden="true"></i><span>250 µM</span></span>
+          </div>
+        </div>
+        <ol class="steps" data-video="wave-film">
+          <li data-from="0" data-to="1.1">
+            <h3>At rest</h3>
+            <p>The cytosol sits at about 50 nM of calcium (blue), while the ER and the spine apparatus are full, at about 250 µM (magenta).</p>
+          </li>
+          <li data-from="1.1" data-to="2.1">
+            <h3>A synapse fires</h3>
+            <p>Calcium flows in at the synapse on the spine head and spreads down the thin neck. The spine apparatus in the head releases its calcium too.</p>
+          </li>
+          <li data-from="2.1" data-to="3.1">
+            <h3>The dendrite answers</h3>
+            <p>Calcium reaching the dendrite at the base of the spine opens ryanodine receptors on the dendritic ER, which releases more calcium (calcium-induced calcium release).</p>
+          </li>
+          <li data-from="3.1" data-to="8.4">
+            <h3>A wave in both directions</h3>
+            <p>Each stretch of ER that releases raises the calcium enough to trigger the next stretch, so two fronts travel away from the spine, and the ER empties behind them.</p>
+          </li>
+          <li data-from="8.4" data-to="99">
+            <h3>Recovery</h3>
+            <p>The fronts reach both ends. Pumps and buffers bring the cytosol back toward rest, while the ER stays empty: refilling it takes longer than this simulation shows.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section in gallery-section">
+        <!-- SPINE GALLERY (src/spines.js; data in public/spines/ from scripts/build_spines.py) -->
+        <div class="spine-gallery" id="spine-gallery">
+          <div class="sg-head">
+            <h2 class="sg-title">Ten reconstructed spines, and the ER inside them.</h2>
+            <p class="sub">
+              Each spine is shown through its membrane, with the <span class="k sa">spine apparatus</span> (the ER
+              inside the spine), the <span class="k er">dendritic ER</span> and the <span class="k syn">synapse</span>.
+              The spines, synapses and spine apparatus are reconstructions from the Vlachos lab; the dendrite and its
+              ER are idealized cylinders. All of it was processed with SpineBuilder for finite element calcium
+              simulations.
+            </p>
+          </div>
+          <div class="sg-viewer">
+            <canvas class="sg-canvas" aria-label="3D view of the selected dendritic spine; drag to rotate"></canvas>
+            <div class="sg-info" aria-live="polite"></div>
+            <div class="sg-controls">
+              <button type="button" class="sg-btn sg-prev" aria-label="Previous spine">&larr;</button>
+              <button type="button" class="sg-btn sg-next" aria-label="Next spine">&rarr;</button>
+              <button type="button" class="sg-btn sg-zoom-in" aria-label="Zoom in">+</button>
+              <button type="button" class="sg-btn sg-zoom-out" aria-label="Zoom out">&minus;</button>
+            </div>
+            <div class="sg-scale" aria-hidden="true"><span></span>1 µm</div>
+            <p class="sg-hint">Drag to rotate</p>
+            <p class="sg-fallback">The 3D gallery needs WebGL.</p>
+          </div>
+          <div class="sg-strip" role="tablist" aria-label="Spines"></div>
+        </div>
+      </section>
+
+      <section class="section in">
+        <div class="section-head">
+          <p class="eyebrow">Read more</p>
+          <h2>The paper.</h2>
+        </div>
+        <ol class="pubs">
+          <li>
+            <p class="pub-title">Calcium modeling of spine apparatus-containing human dendritic spines demonstrates an &ldquo;all-or-nothing&rdquo; communication switch between the spine head and dendrite</p>
+            <p class="pub-meta">J. M. Rosado, V. D. Bui, C. A. Haas, J. Beck, G. Queisser, A. Vlachos. <em>PLOS Computational Biology</em>, 2022.</p>
+          </li>
+        </ol>
+        <div class="cta"><a class="btn btn-ghost" href="/#research">&larr; Back to research</a></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">The background neuron is a real reconstructed CA1 cell, rendered live in WebGL. The spike is an illustration, not a simulation.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

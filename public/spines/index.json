@@ -1,0 +1,82 @@
+[
+ {
+  "id": "0005",
+  "name": "Spine 5",
+  "type": "Mushroom",
+  "length": 1.78,
+  "psdArea": 0.406,
+  "saArea": 1.72
+ },
+ {
+  "id": "0132",
+  "name": "Spine 13.2",
+  "type": "Mushroom",
+  "length": 1.72,
+  "psdArea": 0.2,
+  "saArea": 1.05
+ },
+ {
+  "id": "0014",
+  "name": "Spine 14",
+  "type": "Mushroom",
+  "length": 1.21,
+  "psdArea": 0.396,
+  "saArea": 1.13
+ },
+ {
+  "id": "0016",
+  "name": "Spine 16",
+  "type": "Mushroom",
+  "length": 1.08,
+  "psdArea": 0.152,
+  "saArea": 0.36
+ },
+ {
+  "id": "0011",
+  "name": "Spine 11",
+  "type": "Mushroom",
+  "length": 1.36,
+  "psdArea": 0.194,
+  "saArea": 0.67
+ },
+ {
+  "id": "0009",
+  "name": "Spine 9",
+  "type": "Thin",
+  "length": 0.82,
+  "psdArea": 0.093,
+  "saArea": 0.27
+ },
+ {
+  "id": "0017",
+  "name": "Spine 17",
+  "type": "Thin",
+  "length": 1.1,
+  "psdArea": 0.128,
+  "saArea": 0.58
+ },
+ {
+  "id": "0006",
+  "name": "Spine 6",
+  "type": "Stubby",
+  "length": 0.9,
+  "psdArea": 0.332,
+  "saArea": 0.91
+ },
+ {
+  "id": "0131",
+  "name": "Spine 13.1",
+  "type": "Stubby",
+  "length": 1.02,
+  "psdArea": 0.265,
+  "saArea": 2.24
+ },
+ {
+  "id": "0018",
+  "name": "Spine 18",
+  "type": "Branched (FIB-SEM)",
+  "length": 4.38,
+  "psdArea": 0.354,
+  "saArea": 4.26
+ }
+]

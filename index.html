@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>James Rosado, Ph.D. | Applied Mathematics, Computational Neuroscience &amp; Scientific Software</title>
+    <meta name="description" content="James Rosado, Ph.D.: applied research mathematician. Computational neuroscience, numerical PDEs, HPC, machine learning and scientific software. Research and consulting." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <!-- The animated neuron (src/neuron.js) draws into this canvas, fixed behind the page -->
+    <canvas id="neuron" aria-hidden="true"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="#top">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="#services">Consulting</a>
+        <a href="#research">Research</a>
+        <a href="#projects">Software</a>
+        <a href="#publications">Publications</a>
+        <a href="#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small" href="#contact">Contact</a>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-text">
+          <p class="eyebrow">Applied mathematics &middot; Computational neuroscience &middot; HPC</p>
+          <h1>Modeling the brain,<br /><em>one membrane at a time.</em></h1>
+          <p class="lede">
+            I'm an applied research mathematician (Ph.D., Temple University) with over ten years of experience
+            turning hard problems into working code: neuron simulations, numerical PDE solvers, HPC automation and
+            machine learning. I take on research and consulting projects.
+          </p>
+          <div class="cta">
+            <a class="btn" href="#contact">Work with me</a>
+            <a class="btn btn-ghost" href="#research">See the research</a>
+          </div>
+          <ul class="facts" aria-label="At a glance">
+            <li><strong>10+</strong><span>years of research &amp; software</span></li>
+            <li><strong>7</strong><span>publications</span></li>
+            <li><strong>1.8M</strong><span>NSF supercomputing hours awarded</span></li>
+          </ul>
+        </div>
+        <p class="caption">
+          <span class="dot"></span>
+          Background: a reconstructed CA1 pyramidal neuron with an illustrative back-propagating action potential.
+          <button type="button" class="fire" id="fire">Fire a spike</button>
+        </p>
+      </section>
+
+      <!-- CONSULTING -->
+      <section id="services" class="section">
+        <div class="section-head">
+          <p class="eyebrow">Consulting</p>
+          <h2>Hard technical problems, solved in code.</h2>
+          <p class="sub">From the mathematics on paper to software that runs, scales and is tested.</p>
+        </div>
+        <div class="grid grid-3">
+          <article class="card">
+            <span class="num">01</span>
+            <h3>Numerical PDEs &amp; simulation</h3>
+            <p>Finite volume and finite element methods, IMEX time stepping, sparse solvers and domain decomposition for reaction-diffusion and cable models.</p>
+          </article>
+          <article class="card">
+            <span class="num">02</span>
+            <h3>Computational neuroscience</h3>
+            <p>Hodgkin-Huxley and calcium models, from single spines to whole neurons, including electric-field effects of transcranial magnetic stimulation.</p>
+          </article>
+          <article class="card">
+            <span class="num">03</span>
+            <h3>HPC &amp; infrastructure automation</h3>
+            <p>MPI and OpenMP parallel codes, Ansible infrastructure as code, CI/CD pipelines, and provisioning and managing compute clusters.</p>
+          </article>
+          <article class="card">
+            <span class="num">04</span>
+            <h3>Machine learning &amp; data science</h3>
+            <p>Model evaluation and analysis in PyTorch and TensorFlow, recommendation systems, signal analysis and search pipelines with Elasticsearch.</p>
+          </article>
+          <article class="card">
+            <span class="num">05</span>
+            <h3>3D &amp; VR visualization</h3>
+            <p>Real-time interactive simulation in Unity (C#) and WebGL, plus mesh generation from neuron reconstructions.</p>
+          </article>
+          <article class="card">
+            <span class="num">06</span>
+            <h3>Teaching &amp; technical training</h3>
+            <p>Eight years teaching high-school mathematics, then college calculus and graduate courses. I can explain technical work clearly to any audience.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- RESEARCH -->
+      <section id="research" class="section">
+        <div class="section-head">
+          <p class="eyebrow">Research</p>
+          <h2>How neurons compute with calcium.</h2>
+          <p class="sub">Multiscale models that keep the cell's real shape, from nanometer spines to whole neurons.</p>
+        </div>
+        <div class="grid grid-3">
+          <a class="card card-link" href="/spines.html">
+            <h3>Calcium in dendritic spines</h3>
+            <p>Ultrastructural simulations of spine-to-dendrite calcium signaling showed that the spine apparatus can act as an all-or-nothing switch between spine head and dendrite.</p>
+            <span class="more">Explore the 3D spine gallery &rarr;</span>
+          </a>
+          <article class="card">
+            <h3>Brain stimulation (TMS)</h3>
+            <p>A multiscale toolbox that couples the electric fields of transcranial magnetic stimulation to neuron electrical and calcium activity.</p>
+          </article>
+          <article class="card">
+            <h3>Resilience &amp; Alzheimer's disease</h3>
+            <p>A model of how neurons keep calcium signaling working despite synapse loss and calcium leaks, with implications for Alzheimer's disease.</p>
+          </article>
+          <article class="card">
+            <h3>Simulation in VR</h3>
+            <p>Neuro-VISOR runs Hodgkin-Huxley simulations of small neuronal networks live in virtual reality, where you stimulate a neuron by touching it.</p>
+          </article>
+          <article class="card">
+            <h3>Morphology to mesh</h3>
+            <p>Pipelines from 1D neuron reconstructions to surface and volume meshes for simulation and VR, built with parallel transport of geometry contours.</p>
+          </article>
+          <article class="card">
+            <h3>Frame theory</h3>
+            <p>My earlier work in pure mathematics: algorithms for partitioning equiangular tight frames, and evaluating definite integrals with complex analysis.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- SOFTWARE -->
+      <section id="projects" class="section">
+        <div class="section-head">
+          <p class="eyebrow">Software</p>
+          <h2>Open-source tools I've built.</h2>
+        </div>
+        <div class="grid grid-2">
+          <article class="card project">
+            <p class="tag">Unity &middot; C# &middot; VR &middot; 2018&ndash;2022</p>
+            <h3>Neuro-VISOR</h3>
+            <p>Virtual Interactive Simulation of Reality, from Temple University's C2M2: real-time Hodgkin-Huxley simulation of neurons and small networks in VR, with sparse solvers and threaded parallelism. It is used in neuroscience classrooms.</p>
+            <a class="more" href="https://github.com/c2m2/Neuro-VISOR" target="_blank" rel="noopener">github.com/c2m2/Neuro-VISOR &rarr;</a>
+          </article>
+          <article class="card project">
+            <p class="tag">Multiscale &middot; TMS &middot; 2018&ndash;2019</p>
+            <h3>NeMo-TMS</h3>
+            <p>Neuron Modeling for TMS: a toolbox for multiscale modeling of how transcranial magnetic stimulation affects single neurons and their subcellular activity.</p>
+            <a class="more" href="https://github.com/OpitzLab/NeMo-TMS" target="_blank" rel="noopener">github.com/OpitzLab/NeMo-TMS &rarr;</a>
+          </article>
+          <article class="card project">
+            <p class="tag">MATLAB &middot; Calcium &middot; 2021&ndash;2023</p>
+            <h3>CalcSim</h3>
+            <p>MATLAB simulation code for intracellular calcium dynamics in single neurons.</p>
+            <a class="more" href="https://github.com/NeuroBox3D/CalcSim" target="_blank" rel="noopener">github.com/NeuroBox3D/CalcSim &rarr;</a>
+          </article>
+          <article class="card project">
+            <p class="tag">Python &middot; Meshing &middot; 2022&ndash;present</p>
+            <h3>PythonNeuronMeshes</h3>
+            <p>Generates surface meshes of neurons from their 1D models, for simulation and visualization.</p>
+            <a class="more" href="https://github.com/jarosado0911/PythonNeuronMeshes" target="_blank" rel="noopener">github.com/jarosado0911/PythonNeuronMeshes &rarr;</a>
+          </article>
+        </div>
+      </section>
+
+      <!-- PUBLICATIONS -->
+      <section id="publications" class="section">
+        <div class="section-head">
+          <p class="eyebrow">Publications</p>
+          <h2>Papers &amp; theses.</h2>
+        </div>
+        <ol class="pubs">
+          <li>
+            <p class="pub-title">Neuronal resilience and calcium signaling pathways in the context of synapse loss and calcium leaks: a computational modeling study and implications for Alzheimer's disease</p>
+            <p class="pub-meta">J. M. Rosado, P. R. Borole, M. Neal, G. Queisser. <em>SIAM Journal on Applied Mathematics</em> 83(6), 2418&ndash;2442, 2023.</p>
+          </li>
+          <li>
+            <p class="pub-title">Calcium modeling of spine apparatus-containing human dendritic spines demonstrates an &ldquo;all-or-nothing&rdquo; communication switch between the spine head and dendrite</p>
+            <p class="pub-meta">J. M. Rosado, V. D. Bui, C. A. Haas, J. Beck, G. Queisser, A. Vlachos. <em>PLOS Computational Biology</em>, 2022.</p>
+          </li>
+          <li>
+            <p class="pub-title">Ultrastructural neuronal modeling of calcium dynamics under transcranial magnetic stimulation</p>
+            <p class="pub-meta">J. M. Rosado. Doctoral dissertation, Temple University, 2022.</p>
+          </li>
+          <li>
+            <p class="pub-title">Multiscale modeling toolbox for single neuron and subcellular activity under transcranial magnetic stimulation</p>
+            <p class="pub-meta">J. M. Rosado, S. Shirinpour, N. Hananeia, H. Tran, C. Galanis, A. Vlachos, P. Jedlicka, G. Queisser, A. Opitz. <em>Brain Stimulation</em> 14(6), 1470&ndash;1482, 2021.</p>
+          </li>
+          <li>
+            <p class="pub-title">Partitions of equiangular tight frames</p>
+            <p class="pub-meta">J. M. Rosado, H. D. Nguyen, L. Cao. <em>Linear Algebra and its Applications</em> 526, 95&ndash;120, 2017.</p>
+          </li>
+          <li>
+            <p class="pub-title">Partitions of finite frames</p>
+            <p class="pub-meta">J. M. Rosado. Master's thesis, Rowan University, 2016.</p>
+          </li>
+          <li>
+            <p class="pub-title">A table of definite integrals from the marriage of power and Fourier series</p>
+            <p class="pub-meta">J. M. Rosado, T. Osler. <em>Scientia</em> 26, 77&ndash;82, 2015.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- EXPERIENCE -->
+      <section id="experience" class="section">
+        <div class="section-head">
+          <p class="eyebrow">Experience</p>
+          <h2>From the classroom to the cluster.</h2>
+        </div>
+        <ol class="timeline">
+          <li>
+            <span class="when">2025 &ndash; present</span>
+            <div>
+              <h3>Software Integration Engineer</h3>
+              <p>HPC infrastructure automation: Ansible infrastructure as code, AWX job templates, CI/CD, server lights-out management, Keycloak identity management, and Python modules for device provisioning.</p>
+            </div>
+          </li>
+          <li>
+            <span class="when">2022 &ndash; 2025</span>
+            <div>
+              <h3>Applied Research Mathematician, U.S. Department of Defense</h3>
+              <p>Research and software engineering in machine learning, AI model evaluation, graph-based search algorithms, signal analysis and HPC performance. I received several awards for software engineering and research.</p>
+            </div>
+          </li>
+          <li>
+            <span class="when">2018 &ndash; 2022</span>
+            <div>
+              <h3>Researcher, Temple University (C2M2 &amp; Queisser Group)</h3>
+              <p>I led development of Neuro-VISOR, and built ultrastructural calcium simulation pipelines in UG4 with MPI. I ran them on NSF XSEDE supercomputers (EXPANSE, COMET) for three years running, and collaborated with groups at the University of Minnesota and the University of Freiburg.</p>
+            </div>
+          </li>
+          <li>
+            <span class="when">2009 &ndash; 2022</span>
+            <div>
+              <h3>Educator</h3>
+              <p>I taught high-school mathematics at Clearview Regional (2009&ndash;2017), then was an adjunct professor at Rowan University and a graduate teaching assistant at Temple University.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="grid grid-2 edu">
+          <article class="card">
+            <h3>Education</h3>
+            <ul class="plain">
+              <li><strong>Ph.D., Mathematics</strong> &middot; Temple University, 2022</li>
+              <li><strong>M.A., Mathematics</strong> &middot; Rowan University, 2016</li>
+              <li><strong>B.S., Electrical &amp; Computer Engineering</strong> &middot; Rutgers University, 2007</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Selected honors</h3>
+            <ul class="plain">
+              <li>NSF XSEDE compute awards, 2020, 2021 and 2022</li>
+              <li>Jay Novik Graduate Student Fellowship, Temple, 2022</li>
+              <li>Dissertation Completion Grant, Temple, 2022</li>
+              <li>Excellence in Teaching Award, Temple Mathematics, 2019</li>
+              <li>President, Temple University SIAM Chapter, 2018&ndash;2022</li>
+              <li>Edward J. Bloustein Distinguished Scholar, Rutgers</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" class="section">
+        <div class="about">
+          <div>
+            <p class="eyebrow">About</p>
+            <h2>Where mathematics, neuroscience and software meet.</h2>
+          </div>
+          <div class="about-text">
+            <p>
+              I started as an electrical and computer engineer, became a mathematics teacher, and went on to a
+              Ph.D. in mathematics at Temple University. My dissertation modeled calcium dynamics in neurons under
+              transcranial magnetic stimulation, down to the ultrastructure of single dendritic spines.
+            </p>
+            <p>
+              Since then I've worked as an applied research mathematician and software engineer on machine learning,
+              high-performance computing and infrastructure automation. I still build neuron simulations, from
+              finite element calcium models to the VR simulator behind this page's background.
+            </p>
+            <p class="muted small">I work in C/C++, Python, C#/Unity, MATLAB, Mathematica and Lua, on Linux HPC systems. I speak English and Spanish.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="section contact">
+        <p class="eyebrow">Contact</p>
+        <h2>Have a hard modeling problem?</h2>
+        <p class="sub">Tell me about it. I'm open to research collaborations and consulting projects.</p>
+        <div class="cta center">
+          <a class="btn" href="mailto:jarosado0911@gmail.com">jarosado0911@gmail.com</a>
+        </div>
+        <ul class="links">
+          <li><a href="https://github.com/jarosado0911" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a class="todo" href="#" data-todo="link">LinkedIn</a></li>
+          <li><a class="todo" href="#" data-todo="link">Google Scholar</a></li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">The background neuron is a real reconstructed CA1 cell, rendered live in WebGL. The spike is an illustration, not a simulation.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
