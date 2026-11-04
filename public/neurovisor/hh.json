@@ -1,0 +1,34 @@
+{
+ "frameMs": 0.1,
+ "vmin": -80.0,
+ "vmax": 50.0,
+ "runs": [
+  {
+   "label": "Touch at the tip of the apical tuft",
+   "stimPoint": 643,
+   "frames": 121,
+   "clampMs": [
+    0.5,
+    1.5
+   ]
+  },
+  {
+   "label": "Touch at a basal dendrite tip: the spike dies out before the soma",
+   "stimPoint": 2038,
+   "frames": 121,
+   "clampMs": [
+    0.5,
+    1.5
+   ]
+  },
+  {
+   "label": "Touch at the soma",
+   "stimPoint": 0,
+   "frames": 121,
+   "clampMs": [
+    0.5,
+    1.5
+   ]
+  }
+ ]
+}

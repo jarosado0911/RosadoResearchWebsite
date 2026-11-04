@@ -44,11 +44,28 @@ if (sbCanvas) {
   ({
     neuronmesh: () => import('./neuronmesh.js').then(({ startNeuronMeshPage }) => startNeuronMeshPage(sbCanvas, { reducedMotion })),
     calcsim: () => import('./calcsim3d.js').then(({ startCalcSimBackground }) => startCalcSimBackground(sbCanvas, { reducedMotion })),
+    'nv-electrical': () => startNeuroVisor('electrical'),
+    'nv-calcium': () => startNeuroVisor('calcium'),
   }[sbCanvas.dataset.page] ?? (() => import('./spinebuilder.js').then(({ startSpineBuilderPage }) => startSpineBuilderPage(sbCanvas, { reducedMotion }))))()
     .catch((e) => {
       console.error(e);
       document.body.classList.add('no-webgl');
     });
+}
+
+// the two Neuro-VISOR pages: their background replays a simulation; the caption follows it; their math
+function startNeuroVisor(mode) {
+  import('./math.js').then(({ renderMath }) => renderMath());
+  const label = document.getElementById('nv-label'), time = document.getElementById('nv-time');
+  let last = '';
+  return import('./nvbackground.js').then(({ startNeuroVisorBackground }) => startNeuroVisorBackground(sbCanvas, {
+    mode, reducedMotion,
+    still: (() => { const v = new URLSearchParams(location.search).get('nvt'); if (!v) return null; const [r, ms] = v.split(':').map(Number); return { run: r, ms }; })(),
+    onFrame: ({ label: l, ms }) => {
+      if (l !== last) { label.textContent = l; last = l; }
+      time.textContent = `t = ${ms.toFixed(mode === 'calcium' ? 0 : 1)} ms`;
+    },
+  }));
 }
 
 // the series & analysis page

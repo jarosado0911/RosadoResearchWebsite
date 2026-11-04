@@ -1,0 +1,14 @@
+{
+ "frames": 201,
+ "frameMs": 2.0,
+ "stimPoint": 18,
+ "holdMs": [
+  5.0,
+  25.0
+ ],
+ "cytUM": [
+  0.05,
+  100.0
+ ],
+ "erRestUM": 250.0
+}

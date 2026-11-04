@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neuro-VISOR: Electrical Dynamics | James Rosado, Ph.D.</title>
+    <meta name="description" content="Neuro-VISOR's electrical model: a Hodgkin-Huxley cable on reconstructed neurons, solved in real time in virtual reality with SBDF2, with AMPA, NMDA and GABA synapses between cells." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="sb nv">
+    <!-- The background (src/nvbackground.js): the CA1 cell replaying three Hodgkin-Huxley simulations of it -->
+    <canvas id="sb-bg" data-page="nv-electrical" aria-label="3D view of a reconstructed CA1 neuron replaying simulated action potentials started by touches at different places"></canvas>
+    <div class="vignette sb-vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="./">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="./#services">Consulting</a>
+        <a href="./#research">Research</a>
+        <a href="./#projects">Software</a>
+        <a href="./#publications">Publications</a>
+        <a href="./#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="resume.html">Résumé</a>
+      <a class="btn btn-small" href="./#contact">Contact</a>
+    </header>
+
+    <div class="sb-hud">
+      <p class="sb-hud-label"><span class="dot"></span><span id="nv-label">Hodgkin&ndash;Huxley on a CA1 neuron</span> <span id="nv-time"></span><span class="sb-hud-hint">drag to rotate · double-click to reset</span></p>
+      <p class="sb-hud-help">Background: a real simulation of this cell with Neuro-VISOR's model and scheme, slowed about 400&times;</p>
+    </div>
+
+    <main id="top" class="subpage cs-page">
+      <section class="page-head">
+        <a class="back" href="./#projects">&larr; Software</a>
+        <p class="eyebrow">Neuro-VISOR &middot; Electrical dynamics</p>
+        <h1>Touch a neuron, <em>watch it fire.</em></h1>
+        <p class="lede">
+          Neuro-VISOR (Virtual Interactive Simulation of Reality) puts a reconstructed neuron in a virtual room and
+          simulates it while you watch. Reach out and touch a dendrite: the VR hand clamps the membrane there at
+          +50 mV, an action potential starts, and you see it sweep through the branches in real time. Connect two
+          cells with a synapse and the spike crosses over.
+        </p>
+        <div class="nm-tools">
+          <article class="card">
+            <p class="tag">Unity &middot; C# &middot; VR &middot; Temple University C2M2</p>
+            <h3>Neuro-VISOR</h3>
+            <p>The open-source simulator: real-time Hodgkin&ndash;Huxley on reconstructed cells, VR interaction, synapses, clamps, plots and probes.</p>
+            <div class="fr-links">
+              <a class="more" href="https://github.com/c2m2/Neuro-VISOR" target="_blank" rel="noopener">github.com/c2m2/Neuro-VISOR &rarr;</a>
+            </div>
+          </article>
+          <article class="card">
+            <p class="tag">Calcium in VR</p>
+            <h3>The calcium model</h3>
+            <p>The same simulator with calcium, the ER and a soma resolved in 3D.</p>
+            <div class="fr-links">
+              <a class="more" href="neurovisor-calcium.html">Neuro-VISOR: calcium dynamics &rarr;</a>
+            </div>
+          </article>
+        </div>
+        <ul class="facts nm-facts" aria-label="The model at a glance">
+          <li><strong>4</strong><span>unknowns per node: voltage and three gates</span></li>
+          <li><strong>&le; 32 µs</strong><span>time step, second order in time (SBDF2)</span></li>
+          <li><strong>3</strong><span>synapse models: AMPA, NMDA, GABA<sub>A</sub></span></li>
+        </ul>
+      </section>
+
+      <!-- ===================== 01 IN VR ===================== -->
+      <section id="vr" class="section">
+        <div class="section-head">
+          <p class="eyebrow">01 &middot; In VR</p>
+          <h2>One touch, one spike through the whole cell.</h2>
+          <p class="sub">
+            Recorded in Neuro-VISOR itself (the <code>synapseVisualization</code> branch), not drawn afterwards: the
+            simulator's own coloring of the membrane potential, captured frame by frame while the solver ran. A hand
+            touches the tip of the dendrite farthest from the soma for 1 ms, on the cell's finest grid (refinement 7,
+            4,357 nodes). Left: the cell alone. Right: the whole cell in the VR room. One frame is 0.1 ms of simulated time.
+          </p>
+        </div>
+        <figure class="film cs-film" id="nv-film">
+          <video class="film-video" muted loop playsinline preload="none" poster="video/nv-electrical-poster.jpg"
+                 aria-label="Recording from Neuro-VISOR: an action potential starts where the dendrite is touched and travels through the whole neuron">
+            <source src="video/nv-electrical.webm" type="video/webm" />
+            <source src="video/nv-electrical.mp4" type="video/mp4" />
+          </video>
+          <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
+        </figure>
+        <ol class="steps" data-video="nv-film" id="nv-steps">
+          <li data-from="0" data-to="0.21">
+            <h3>At rest</h3>
+            <p>Every node sits at &minus;70 mV, its gates at their steady state for that voltage, so nothing moves.</p>
+          </li>
+          <li data-from="0.21" data-to="0.63">
+            <h3>The touch</h3>
+            <p>The hand clamps one node at +50 mV. The clamp is a Dirichlet condition added to the already factored matrix, so it costs nothing to switch on.</p>
+          </li>
+          <li data-from="0.63" data-to="1.3">
+            <h3>The spike travels</h3>
+            <p>Current flows to the neighbours, their sodium gates open, and the action potential regenerates itself node by node down the dendrite.</p>
+          </li>
+          <li data-from="1.3" data-to="2.05">
+            <h3>Through the soma</h3>
+            <p>It reaches the soma 2.8 ms after the touch began and invades every other branch from there. Thin and thick dendrites conduct at different speeds.</p>
+          </li>
+          <li data-from="2.05" data-to="99">
+            <h3>Recovery</h3>
+            <p>Potassium repolarizes the membrane; behind the spike the sodium gates stay inactivated for a few milliseconds, so it cannot turn back.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ===================== 02 THE MODEL ===================== -->
+      <section id="model" class="section">
+        <div class="section-head">
+          <p class="eyebrow">02 &middot; The model</p>
+          <h2>A Hodgkin&ndash;Huxley cable on the real shape.</h2>
+          <p class="sub">
+            The neuron is its 1D skeleton: a graph of nodes with a radius each, refined so no edge is too long. Along
+            the arc length <span class="tex">x</span> the membrane potential <span class="tex">V</span> obeys the cable
+            equation with Hodgkin&ndash;Huxley sodium, potassium and leak currents, in the Traub&ndash;Miles form used for
+            cortical and hippocampal cells.
+          </p>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card cs-wide">
+              <p class="tag">The cable</p>
+              <div class="tex-block">\begin{aligned}C_m\,\partial_tV&amp;=\frac{1}{2R_a\,r}\,\partial_x\big(r^2\,\partial_xV\big)-\bar g_{K}\,n^4(V-E_K)\\&amp;\quad-\bar g_{Na}\,m^3h\,(V-E_{Na})-\bar g_L(V-E_L)-I_{\mathrm{syn}}\end{aligned}</div>
+              <p>The radius <span class="tex">r(x)</span> sits inside the derivative: a thin branch has more membrane per volume to charge, so it conducts more slowly and loads its parent less. <span class="tex">I_{\mathrm{syn}}</span> is the synaptic current per area (section 03).</p>
+            </article>
+            <article class="card">
+              <p class="tag">Gates</p>
+              <div class="tex-block">\frac{ds}{dt}=\alpha_s(V)(1-s)-\beta_s(V)\,s,\qquad s=n,m,h</div>
+              <p>Each gate relaxes toward <span class="tex">\alpha_s/(\alpha_s+\beta_s)</span>. The cell starts at rest, with every gate at its steady state at <span class="tex">-70</span> mV.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Traub&ndash;Miles rates [1/ms], <span class="tex">v=V-V_T</span> in mV</p>
+              <div class="tex-block">\begin{gathered}\alpha_n=\frac{0.032\,(15-v)}{e^{(15-v)/5}-1},\quad\beta_n=0.5\,e^{(10-v)/40}\\ \alpha_m=\frac{0.32\,(13-v)}{e^{(13-v)/4}-1},\quad\beta_m=\frac{0.28\,(v-40)}{e^{(v-40)/5}-1}\\ \alpha_h=0.128\,e^{(17-v)/18},\quad\beta_h=\frac{4}{1+e^{(40-v)/5}}\end{gathered}</div>
+              <p>With the threshold shift <span class="tex">V_T=-55</span> mV. Where a denominator vanishes the code uses its limit.</p>
+            </article>
+          </div>
+        </div>
+        <div class="nm-table-wrap">
+          <table class="nm-table">
+            <thead><tr><th>Parameter</th><th>Value</th><th>Parameter</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><th><span class="tex">C_m</span></th><td>1 µF/cm²</td><th><span class="tex">R_a</span></th><td>300 &Omega;&middot;cm</td></tr>
+              <tr><th><span class="tex">\bar g_{Na}</span></th><td>50 mS/cm²</td><th><span class="tex">E_{Na}</span></th><td>+50 mV</td></tr>
+              <tr><th><span class="tex">\bar g_K</span></th><td>5 mS/cm²</td><th><span class="tex">E_K</span></th><td>&minus;90 mV</td></tr>
+              <tr><th><span class="tex">\bar g_L</span></th><td>0.1 mS/cm²</td><th><span class="tex">E_L</span>, rest</th><td>&minus;70 mV</td></tr>
+              <tr><th>Touch (clamp)</th><td>+50 mV</td><th>Spike detection</th><td>+38 mV</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================== 03 SYNAPSES ===================== -->
+      <section id="synapses" class="section">
+        <div class="section-head">
+          <p class="eyebrow">03 &middot; Synapses</p>
+          <h2>Wire cells together with your hands.</h2>
+          <p class="sub">
+            In VR you place a presynaptic marker on one cell and a postsynaptic one on another (or the same) cell. When
+            the voltage at the presynaptic node crosses +38 mV on its way up, the synapse activates at that time
+            <span class="tex">t_s</span>, and the postsynaptic node gets a conductance-based current that decays from
+            there. Three receptor models follow Rothman.
+          </p>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">AMPA &middot; fast excitation</p>
+              <div class="tex-block">\begin{gathered}I=g\,a(t)\,(V-E),\\ a(t)=\frac{\big(1-e^{-(t-t_s)/\tau_r}\big)^2\,e^{-(t-t_s)/\tau_d}}{a_{\mathrm{norm}}}\end{gathered}</div>
+              <p><span class="tex">g=25</span> nS, <span class="tex">E=0</span>, <span class="tex">\tau_d=4</span> ms, <span class="tex">\tau_r=0.2</span> ms. <span class="tex">a_{\mathrm{norm}}</span> scales the peak of <span class="tex">a</span> to 1.</p>
+            </article>
+            <article class="card">
+              <p class="tag">NMDA &middot; slow, voltage-gated</p>
+              <div class="tex-block">I=\frac{g\,e^{-(t-t_s)/\tau_d}}{1+e^{-(V-V_{1/2})/k}}\,(V-E)</div>
+              <p>The magnesium block: the channel only conducts once the cell is already depolarized. <span class="tex">g=1</span> nS, <span class="tex">\tau_d=50</span> ms, <span class="tex">V_{1/2}=-12.8</span> mV, <span class="tex">k=22.4</span> mV.</p>
+            </article>
+            <article class="card">
+              <p class="tag">GABA<sub>A</sub> &middot; inhibition</p>
+              <div class="tex-block">I=g\,e^{-(t-t_s)/\tau_d}\,(V-E_{\mathrm{GABA}})</div>
+              <p><span class="tex">E_{\mathrm{GABA}}=-80</span> mV, below rest, so it pulls the cell away from firing. <span class="tex">g=1</span> nS, <span class="tex">\tau_d=6.5</span> ms.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Stability</p>
+              <div class="tex-block">g\le 39\ \tfrac{\mathrm{nS}}{\mu\mathrm m^2}\sqrt{\tfrac{32\,\mu\mathrm s}{\Delta t}}\;A_{\mathrm{node}}</div>
+              <p>The synaptic current is taken explicitly, so a strong synapse on a tiny patch of membrane could blow up. Its conductance is capped by the membrane area of its node, a bound measured for the scheme.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 04 NUMERICS ===================== -->
+      <section id="numerics" class="section">
+        <div class="section-head">
+          <p class="eyebrow">04 &middot; Numerics</p>
+          <h2>Fast enough for VR, checked against NEURON.</h2>
+          <p class="sub">
+            A VR frame lasts 11 ms, so every step has to be cheap. The cable is linear and stiff, so it is taken
+            implicitly; the gates and channel currents are nonlinear, so they are taken explicitly. The matrix then
+            never changes and is factored once, when the cell loads.
+          </p>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card cs-wide">
+              <p class="tag">SBDF2: second-order semi-implicit backward differences</p>
+              <div class="tex-block">\frac{3V^{k+1}-4V^k+V^{k-1}}{2\Delta t}=A\,V^{k+1}+2F(V^k,s^k)-F(V^{k-1},s^{k-1})</div>
+              <p><span class="tex">A</span> is the discrete cable operator (a Hines matrix: tridiagonal along each branch, with extra entries at branch points) and <span class="tex">F</span> all ionic and synaptic currents. Every step solves <span class="tex">\big(I-\tfrac23\Delta t\,A\big)V^{k+1}=r</span> with the same sparse LU factorization (CSparse, minimum-degree ordering). The gates use the same two-level extrapolation. The first step, which has no <span class="tex">V^{k-1}</span>, is an IMEX Euler step with its own factorization, so the scheme stays second order from the start.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Touching without refactoring</p>
+              <div class="tex-block">x=y+Z\,(I-R\,Z)^{-1}R\,y</div>
+              <p>A hand or clamp pins a few nodes to a voltage. Instead of factoring a new matrix, the solver applies a rank-<span class="tex">k</span> (Sherman&ndash;Morrison&ndash;Woodbury) update to the existing LU: one extra solve per clamped node.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Validated</p>
+              <p>The solver was checked node for node against NEURON and the Rallpack benchmarks in a separate C# study. That study showed second-order convergence in time and fixed two conductances (<span class="tex">\bar g_K</span>, <span class="tex">\bar g_{Na}</span>) that had made spikes travel 2.6% too fast. The time step is capped at 32 µs, below where SBDF2 diverges on the test cells.</p>
+            </article>
+          </div>
+        </div>
+        <div class="cs-cta">
+          <a class="btn" href="https://github.com/c2m2/Neuro-VISOR" target="_blank" rel="noopener">Neuro-VISOR on GitHub &rarr;</a>
+          <a class="btn btn-ghost" href="neurovisor-calcium.html">The calcium model &rarr;</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">Equations and values as in Neuro-VISOR's <code>SparseSolverTestv1</code> and synapse models. Background: the same model and scheme on the CA1 cell (NeuroVISOR-CSharpStudies solver, 20 µs steps).</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

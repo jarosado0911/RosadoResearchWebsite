@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Neuro-VISOR's calcium model compiled outside Unity, from the calcium-model branch's working tree on D:.
+       Build/run with the Windows dotnet (see the README). -->
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>disable</Nullable>
+  <EnableDefaultCompileItems>false</EnableDefaultCompileItems><NoWarn>CS0168;CS0219;CS0414;CS1591</NoWarn>
+  <NV>D:\other_branches\Neuro-VISOR-rosado-calcium\Assets\</NV></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="$(NV)Scripts\C2M2\NeuronalDynamics\Simulation\SomaLattice.cs" />
+    <Compile Include="$(NV)Scripts\C2M2\NeuronalDynamics\Simulation\CalciumGeometry.cs" />
+    <Compile Include="$(NV)Scripts\C2M2\NeuronalDynamics\Simulation\CalciumModel.cs" />
+    <Compile Include="$(NV)3rdParty\CSparse\**\*.cs" />
+  </ItemGroup>
+</Project>

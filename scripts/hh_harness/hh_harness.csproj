@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Runs NeuroVISOR-CSharpStudies' SBDF2 Hodgkin-Huxley solver (the same model and scheme as Neuro-VISOR's
+       SparseSolverTestv1) on the website's CA1 graph and records the voltage of every node, for the
+       electrical page's background. Build/run with the Windows dotnet (see README). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <NoWarn>$(NoWarn);CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8625;CS8632</NoWarn>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <Studies>..\..\..\NeuroVISOR-CSharpStudies\src\csharp\</Studies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="$(Studies)Sbdf2Solver.cs" />
+    <Compile Include="$(Studies)SwcMorphology.cs" />
+    <Compile Include="$(Studies)SimParams.cs" />
+    <Compile Include="$(Studies)ClampStrategy.cs" />
+    <Compile Include="$(Studies)CSparse\**\*.cs" />
+    <EmbeddedResource Include="$(Studies)CSparse\Properties\Resources.resx">
+      <LogicalName>CSparse.Properties.Resources.resources</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neuro-VISOR: Calcium Dynamics | James Rosado, Ph.D.</title>
+    <meta name="description" content="Neuro-VISOR's calcium model in VR: cytosolic and ER calcium, buffers, pumps and ryanodine receptors on reconstructed neurons, with the soma resolved as a 3D lattice so waves spread through it." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="sb nv">
+    <!-- The background (src/nvbackground.js): the CA1 cell replaying Neuro-VISOR's calcium model -->
+    <canvas id="sb-bg" data-page="nv-calcium" aria-label="3D view of a reconstructed CA1 neuron with its ER inside, replaying a simulated calcium wave"></canvas>
+    <div class="vignette sb-vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="./">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="./#services">Consulting</a>
+        <a href="./#research">Research</a>
+        <a href="./#projects">Software</a>
+        <a href="./#publications">Publications</a>
+        <a href="./#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="resume.html">Résumé</a>
+      <a class="btn btn-small" href="./#contact">Contact</a>
+    </header>
+
+    <div class="sb-hud">
+      <p class="sb-hud-label"><span class="dot"></span><span id="nv-label">Calcium wave</span> <span id="nv-time"></span><span class="sb-hud-hint">drag to rotate · double-click to reset</span></p>
+      <p class="sb-hud-help">Membrane: cytosolic Ca²⁺ (log scale) · inner tube: ER Ca²⁺ · Neuro-VISOR's model on this cell, slowed about 25&times;</p>
+    </div>
+
+    <main id="top" class="subpage cs-page">
+      <section class="page-head">
+        <a class="back" href="./#projects">&larr; Software</a>
+        <p class="eyebrow">Neuro-VISOR &middot; Calcium dynamics</p>
+        <h1>Calcium in VR, <em>down to the soma.</em></h1>
+        <p class="lede">
+          The calcium model of our SIAM paper, running live in Neuro-VISOR on reconstructed neurons. Click and hold on
+          a dendrite to let calcium in. If enough comes in, ryanodine receptors on the ER answer with more, and a wave
+          of calcium-induced calcium release runs to the cell body. The soma is no longer one node: it is a 3D lattice
+          of cells with the ER inside, so you can watch the wave arrive at its surface and work its way in.
+        </p>
+        <div class="nm-tools">
+          <article class="card">
+            <p class="tag">The model &middot; SIAM J. Appl. Math. 2023</p>
+            <h3>Neuronal resilience and calcium signaling</h3>
+            <p>The cytosol and ER calcium model this port is built on, from our 2023 paper with the Queisser group.</p>
+            <div class="fr-links">
+              <a class="more" href="calcsim.html">The CalcSim page &rarr;</a>
+            </div>
+          </article>
+          <article class="card">
+            <p class="tag">Electrical dynamics</p>
+            <h3>The Hodgkin&ndash;Huxley model</h3>
+            <p>The same simulator with voltage, action potentials and synapses between cells.</p>
+            <div class="fr-links">
+              <a class="more" href="neurovisor-electrical.html">Neuro-VISOR: electrical dynamics &rarr;</a>
+            </div>
+          </article>
+        </div>
+        <ul class="facts nm-facts" aria-label="The model at a glance">
+          <li><strong>4</strong><span>species: cytosolic and ER calcium, calbindin, calreticulin</span></li>
+          <li><strong>1,357</strong><span>3D lattice cells resolving the CA1 soma</span></li>
+          <li><strong>50 µs</strong><span>time step, 10 per VR frame (SBDF2)</span></li>
+        </ul>
+      </section>
+
+      <!-- ===================== 01 IN VR ===================== -->
+      <section id="vr" class="section">
+        <div class="section-head">
+          <p class="eyebrow">01 &middot; In VR</p>
+          <h2>A held click becomes a wave.</h2>
+          <p class="sub">
+            Recorded in Neuro-VISOR (the <code>calcium-model</code> branch) on a reconstructed CA1 pyramidal cell.
+            The click is held for 20 ms on the thick apical trunk, 35 µm from the soma. Left: the soma close up, its
+            surface colored by cytosolic calcium and the ER visible inside. Right: the whole cell in the VR room. One frame
+            is 2 ms of simulated time.
+          </p>
+        </div>
+        <figure class="film cs-film" id="nv-film">
+          <video class="film-video" muted loop playsinline preload="none" poster="video/nv-calcium-poster.jpg"
+                 aria-label="Recording from Neuro-VISOR: calcium let in on the apical trunk triggers release from the ER that spreads into the soma, filling it from the surface inward">
+            <source src="video/nv-calcium.webm" type="video/webm" />
+            <source src="video/nv-calcium.mp4" type="video/mp4" />
+          </video>
+          <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
+        </figure>
+        <ol class="steps" data-video="nv-film" id="nv-steps">
+          <li data-from="0" data-to="0.1">
+            <h3>At rest</h3>
+            <p>Cytosol at 50 nM, the ER full at 250 µM. Every pump and leak balances, so nothing changes until you touch the cell.</p>
+          </li>
+          <li data-from="0.1" data-to="0.52">
+            <h3>The click</h3>
+            <p>Holding the click lets a steady influx of calcium in through the membrane at the touched nodes, for as long as it is held.</p>
+          </li>
+          <li data-from="0.52" data-to="1.45">
+            <h3>The ER answers</h3>
+            <p>The local calcium crosses the ryanodine receptors' threshold. They open, the ER releases, and the released calcium opens the next receptors.</p>
+          </li>
+          <li data-from="1.45" data-to="3.5">
+            <h3>Into the soma</h3>
+            <p>The wave reaches the soma's surface at about 70 ms. In the lattice it spreads in from there, and the ER empties from its surface inward.</p>
+          </li>
+          <li data-from="3.5" data-to="99">
+            <h3>The cell fills</h3>
+            <p>The wave spreads on through the dendrites while the soma keeps filling: about 54 µM on average by 400 ms. The pumps bring it back down over seconds, far longer than this 300 ms clip.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ===================== 02 THE MODEL ===================== -->
+      <section id="model" class="section">
+        <div class="section-head">
+          <p class="eyebrow">02 &middot; The model</p>
+          <h2>Two compartments in every dendrite.</h2>
+          <p class="sub">
+            Each node of the neuron's 1D graph is a cylinder of radius <span class="tex">R</span> with the ER a coaxial
+            cylinder of radius <span class="tex">r=\rho R</span> inside it, <span class="tex">\rho=0.625</span>. The
+            cytosol is the annulus between them. Calcium diffuses along both and binds to a buffer in each; the
+            membranes exchange it through fluxes <span class="tex">J</span> [mol m⁻² s⁻¹].
+          </p>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card cs-wide">
+              <p class="tag">Cytosol and ER</p>
+              <div class="tex-block">\begin{aligned}\partial_t c_c&amp;=\frac{1}{A_c}\partial_x\big(A_cD_c\,\partial_xc_c\big)+\kappa_b^-(b_{\mathrm{tot}}-b)-\kappa_b^+b\,c_c+g_{PM}J_{PM}+g_{ERc}J_{ERM}\\ \partial_t c_e&amp;=\frac{1}{A_e}\partial_x\big(A_eD_e\,\partial_xc_e\big)+\kappa_{be}^-(b_{e,\mathrm{tot}}-b_e)-\kappa_{be}^+b_e\,c_e-g_{ERe}J_{ERM}+g_{ERe}J_{SOC}\end{aligned}</div>
+              <p>The buffers calbindin <span class="tex">b</span> and calreticulin <span class="tex">b_e</span> diffuse and react the same way. <span class="tex">A_c=\pi(R^2-r^2)</span> and <span class="tex">A_e=\pi r^2</span> are the cross sections, so a thickening dendrite carries more calcium past a point.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Area to volume</p>
+              <div class="tex-block">g_{PM}=\frac{2R}{R^2-r^2},\quad g_{ERc}=\frac{2r}{R^2-r^2},\quad g_{ERe}=\frac{2}{r}</div>
+              <p>The factors turn a flux through a membrane into a rate of change of concentration. Thin branches have far more membrane per volume, so the same flux moves their calcium much faster.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Plasma membrane</p>
+              <div class="tex-block">\begin{gathered}J_{PM}=-\rho_PI_P\frac{c_c^2}{K_P^2+c_c^2}-s_N\rho_NI_N\frac{c_c}{K_N+c_c}\\+v_{l,p}(c_o-c_c)+J_{\mathrm{click}}\end{gathered}</div>
+              <p>PMCA and NCX pump calcium out (the VR app uses five times the paper's NCX, <span class="tex">s_N=5</span>), a leak lets it in, and the click adds an influx while it is held.</p>
+            </article>
+            <article class="card">
+              <p class="tag">ER membrane</p>
+              <div class="tex-block">\begin{gathered}J_{ERM}=\rho_R(o_1+o_2)I_R\frac{c_e-c_c}{c_{e,\mathrm{ref}}}\\-\rho_SI_S\frac{c_c}{(K_S+c_c)\,c_e}+v_{l,e}(c_e-c_c)\end{gathered}</div>
+              <p>Ryanodine receptors release, SERCA pumps back, a leak balances them. The leak velocities <span class="tex">v_{l,e},v_{l,p}</span> are not free: they are set so the resting state has zero net flux.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Ryanodine receptor</p>
+              <div class="tex-block">\begin{gathered}\dot o_2=k_b^+c_c^3o_1-k_b^-o_2,\quad \dot c_1=k_a^-o_1-k_a^+c_c^4c_1,\\ \dot c_2=k_c^+o_1-k_c^-c_2,\quad o_1=1-c_1-o_2-c_2\end{gathered}</div>
+              <p>The steep <span class="tex">c_c^3</span> and <span class="tex">c_c^4</span> make release all-or-nothing: below a threshold the receptors stay shut, above it they open and recruit their neighbours.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Store-operated refill</p>
+              <div class="tex-block">J_{SOC}=\rho_{SOC}\,f(c_e)\,\frac{I_{SOC}\ln(10\,c_o/c_e)}{F\,z\,A_{\mathrm{Orai}}}</div>
+              <p>When the ER runs low, Orai channels open (<span class="tex">f</span> grows with the depletion) and refill it from outside the cell.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 03 THE SOMA LATTICE ===================== -->
+      <section id="lattice" class="section">
+        <div class="section-head">
+          <p class="eyebrow">03 &middot; Volume diffusion</p>
+          <h2>The soma, resolved in 3D.</h2>
+          <p class="sub">
+            On the cable the soma used to be a single node, so it filled all at once, as if it were perfectly mixed.
+            Now it is a lattice of cubic cells, and calcium has to diffuse through it.
+          </p>
+        </div>
+        <ol class="steps cs-protocol">
+          <li>
+            <h3>Cells</h3>
+            <p>Cubes of side 1.5 µm fill the soma sphere: 1,357 of them for the CA1 cell's 10.2 µm soma. The ER is a concentric sphere of radius <span class="tex">\rho R</span>.</p>
+          </li>
+          <li>
+            <h3>Volumes and areas</h3>
+            <p>Each cell's share of cytosol and ER is sampled, and so is its share of both membranes. A cell cut by the ER sphere gets ER membrane and both kinds of fluxes.</p>
+          </li>
+          <li>
+            <h3>Coupling</h3>
+            <p>Neighbouring cells exchange calcium through their shared faces, by the same finite-volume diffusion as the cable, in both compartments.</p>
+          </li>
+          <li>
+            <h3>Junctions</h3>
+            <p>Where a dendrite leaves the soma, its last node is joined to the surface cell it meets, conserving mass. The old 1D nodes inside the soma are taken out.</p>
+          </li>
+          <li>
+            <h3>Coloring</h3>
+            <p>The soma's surface and ER mesh are colored by trilinear interpolation over the cells of their own phase, so cubes don't show as a checkerboard.</p>
+          </li>
+        </ol>
+        <div class="nm-table-wrap">
+          <table class="nm-table">
+            <thead><tr><th>Mean cytosolic calcium in the soma</th><th>at 120 ms</th><th>at 400 ms</th></tr></thead>
+            <tbody>
+              <tr><th>Soma as a 3D lattice</th><td>1.1 µM</td><td>54 µM</td></tr>
+              <tr><th>Soma as one node</th><td>38 µM</td><td>127 µM</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="cs-note">
+          With the lattice the calcium arrives as a front and takes time to fill the cell body; as a single node the
+          soma lit up at once. Same cell and stimulus, computed with the model's own code outside Unity.
+        </p>
+      </section>
+
+      <!-- ===================== 04 NUMERICS ===================== -->
+      <section id="numerics" class="section">
+        <div class="section-head">
+          <p class="eyebrow">04 &middot; Numerics</p>
+          <h2>Four factorizations, then only solves.</h2>
+          <p class="sub">
+            Diffusion is linear and stiff and is taken implicitly; every reaction and membrane flux is taken
+            explicitly. Each species has its own diffusion matrix, factored once when the cell loads.
+          </p>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card cs-wide">
+              <p class="tag">SBDF2</p>
+              <div class="tex-block">\frac{3u^{k+1}-4u^k+u^{k-1}}{2\Delta t}=\mathcal D\,u^{k+1}+2F(u^k)-F(u^{k-1})</div>
+              <p><span class="tex">u=(c_c,c_e,b,b_e)</span> on every node and lattice cell. The four matrices <span class="tex">I-\tfrac23\Delta t\,\mathcal D</span> are LU-factored once (CSparse). The RyR states are advanced by backward Euler, solved in closed form at every node. With <span class="tex">\Delta t=50</span> µs and 10 steps per frame, one simulated second of the CA1 cell takes about 40 seconds of real time.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Refinement</p>
+              <p>Before the solver starts, the cell's graph is refined until no edge is longer than 1 µm, so a wave front spans several nodes. A minimum radius keeps the thinnest branches' area-to-volume factors from making the explicit fluxes unstable.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Write-up</p>
+              <p>The full description, with every parameter, where to change it in the code, stills from VR and the comparisons above.</p>
+              <div class="fr-links">
+                <a class="more" href="neurovisor/calcium_writeup.pdf" target="_blank" rel="noopener">The calcium model write-up (PDF) &rarr;</a>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div class="cs-cta">
+          <a class="btn" href="https://github.com/c2m2/Neuro-VISOR" target="_blank" rel="noopener">Neuro-VISOR on GitHub &rarr;</a>
+          <a class="btn btn-ghost" href="neurovisor-electrical.html">The electrical model &rarr;</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">Equations as in Neuro-VISOR's <code>CalciumModel</code>, <code>SomaLattice</code> and <code>CalciumGeometry</code>. Background: the same code on the CA1 cell outside Unity.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

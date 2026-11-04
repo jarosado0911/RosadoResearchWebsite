@@ -56,3 +56,29 @@ screenshots needs the SpineBuilder application itself.
 `public/video/spine-cell.{webm,mp4}` and the poster were made from the original `Video Project.mp4`:
 the axis marker removed, recolored to the site's blues, the silent audio dropped, fades added for the loop.
 The ffmpeg commands are in `scripts/make_video.sh`.
+
+## The Neuro-VISOR pages (neurovisor-electrical.html, neurovisor-calcium.html)
+
+Their backgrounds replay real simulations of the CA1 cell, made in four steps (Windows `dotnet.exe` from WSL):
+
+```bash
+python3 scripts/build_nv_cell.py                 # public/neurovisor/cell.json: the cell, thinned for the browser
+D="/mnt/c/Program Files/dotnet/dotnet.exe"
+# electrical: NeuroVISOR-CSharpStudies' SBDF2 Hodgkin-Huxley solver; three touches (tuft tip, basal tip 8599, soma 0)
+"$D" build -c Release "$(wslpath -w scripts/hh_harness)\hh_harness.csproj" -o <bin>
+"$D" <bin>\hh_harness.dll <graph> <out>\run1 0.03 2e-5 5               # touch: the farthest tip
+"$D" <bin>\hh_harness.dll <graph> <out>\run2 0.03 2e-5 5 0.0005 0.001 8599
+"$D" <bin>\hh_harness.dll <graph> <out>\run3 0.03 2e-5 5 0.0005 0.001 0
+# calcium: Neuro-VISOR's CalciumModel + SomaLattice from D:\other_branches\Neuro-VISOR-rosado-calcium
+"$D" build -c Release "$(wslpath -w scripts/ca_harness)\harness.csproj" -o <bin2>
+"$D" <bin2>\harness.dll <graph> <out2> 0.4 0.002 0.02
+python3 scripts/pack_nv_frames.py <out> <out2>    # public/neurovisor/hh.* and ca.*
+```
+
+The videos are recorded in Unity by the editor scripts `Assets/Editor/ElectricalVideo.cs` (synapseVisualization
+branch) and `Assets/Editor/CalciumVideo.cs` (calcium-model branch):
+`Unity.exe -projectPath <project> -executeMethod ElectricalVideo.Run -logFile <log>` writes PNG frames to
+`C:\Users\JamesRosado\nv_capture\`, then `scripts/make_nv_videos.sh` makes `public/video/nv-*.{mp4,webm}`.
+The scripts slow the solver thread so every frame lands on an exact simulated time.
+
+Debug: `?nvt=1:1.6` freezes the background at run 1 (0-based), 1.6 ms.
