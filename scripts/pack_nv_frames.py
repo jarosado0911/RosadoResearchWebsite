@@ -35,7 +35,7 @@ def point_of(node):
 VMIN, VMAX, FRAME_END_MS = -80.0, 50.0, 12.0
 RUNS = [("run1", "Touch at the tip of the apical tuft"),
         ("run2", "Touch at a basal dendrite tip: the spike dies out before the soma"),
-        ("run3", "Touch at the soma")]
+        ("run3", "3 nA injected into the soma: it charges up and fires")]
 blobs, runs = [], []
 for name, label in RUNS:
     m = meta(hh_dir / name); n = int(m["nodes"]); fdt = float(m["frame_dt_s"]) * 1e3

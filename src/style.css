@@ -402,6 +402,8 @@ body.sb.sb-explore { touch-action: none; overflow: hidden; }
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 #sb-scene-name { color: var(--text); }
+/* the live clock: equal-width digits in a fixed slot, so the pill doesn't jitter as the time ticks */
+#nv-time { display: inline-block; min-width: 11ch; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .sb-hud-tools {
   display: none; flex-direction: column; gap: 10px; align-items: flex-end;
   background: rgba(8, 12, 22, 0.82); border: 1px solid var(--panel-border); border-radius: var(--radius);

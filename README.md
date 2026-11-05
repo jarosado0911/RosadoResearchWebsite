@@ -68,7 +68,7 @@ D="/mnt/c/Program Files/dotnet/dotnet.exe"
 "$D" build -c Release "$(wslpath -w scripts/hh_harness)\hh_harness.csproj" -o <bin>
 "$D" <bin>\hh_harness.dll <graph> <out>\run1 0.03 2e-5 5               # touch: the farthest tip
 "$D" <bin>\hh_harness.dll <graph> <out>\run2 0.03 2e-5 5 0.0005 0.001 8599
-"$D" <bin>\hh_harness.dll <graph> <out>\run3 0.03 2e-5 5 0.0005 0.001 0
+"$D" <bin>\hh_harness.dll <graph> <out>\run3 0.03 2e-5 5 0.0005 0.001 0 3   # 3 nA into the soma (a clamp there hides its spike)
 # calcium: Neuro-VISOR's CalciumModel + SomaLattice from D:\other_branches\Neuro-VISOR-rosado-calcium
 "$D" build -c Release "$(wslpath -w scripts/ca_harness)\harness.csproj" -o <bin2>
 "$D" <bin2>\harness.dll <graph> <out2> 0.4 0.002 0.02

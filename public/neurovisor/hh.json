@@ -22,7 +22,7 @@
    ]
   },
   {
-   "label": "Touch at the soma",
+   "label": "3 nA injected into the soma: it charges up and fires",
    "stimPoint": 0,
    "frames": 121,
    "clampMs": [
