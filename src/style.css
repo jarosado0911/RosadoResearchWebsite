@@ -1051,3 +1051,79 @@ body.sb.sb-explore { touch-action: none; overflow: hidden; }
 /* the page passes drags to the 3D background (.sb main * none): the diagram's parts take the pointer again */
 .sb main .csd-stage, .sb main .csd-svg, .sb main .csd-part, .sb main .csd-part * { pointer-events: auto; }
 .sb main .csd-ion, .sb main .csd-sym { pointer-events: none; }
+
+/* ---------- Whole-cell page (wholecell.html, src/wholecell.js) ---------- */
+/* the cell's colors: cytosol on jet (log), the ER's store map (dark when empty, mint when full) */
+.wc-jet { background: linear-gradient(90deg, #00007f, #0000ff, #007fff, #00ffff, #7fff7f, #ffff00, #ff7f00, #ff0000, #7f0000); }
+.wc-store, .wc-kymo-key-er i { background: linear-gradient(90deg, #1a1c42, #2980c7, #85fab8); }
+/* labels pinned to the 3D cell: above the background, under the page's text */
+.wc-labels { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.wc-label { position: absolute; left: 0; top: 0; transition: opacity 0.3s; will-change: transform; }
+.wc-label i { position: absolute; left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.wc-label b {
+  position: absolute; left: 9px; bottom: 7px; white-space: nowrap; font-size: 0.76rem; font-weight: 600; color: var(--text);
+  background: rgba(8, 12, 22, 0.72); border: 1px solid rgba(233, 238, 247, 0.18); border-radius: 999px; padding: 0.1rem 0.55rem;
+}
+/* the player */
+.wc-hud { max-width: min(600px, calc(100vw - 36px)); }
+.wc-player {
+  display: flex; align-items: center; gap: 10px; flex: 1 1 300px; min-width: 0;
+  background: rgba(8, 12, 22, 0.78); border: 1px solid var(--panel-border); border-radius: 999px; padding: 0.3rem 0.85rem 0.3rem 0.35rem;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.wc-play {
+  flex: none; width: 2rem; height: 2rem; border-radius: 50%; cursor: pointer; font: inherit; font-size: 0.72rem; line-height: 1;
+  color: var(--accent); background: rgba(255, 179, 71, 0.12); border: 1px solid rgba(255, 179, 71, 0.6);
+}
+.wc-play:hover { background: rgba(255, 179, 71, 0.22); }
+.wc-scrub { flex: 1; min-width: 90px; accent-color: var(--accent); }
+.wc-time { flex: none; font-size: 0.8rem; color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 6.4em; }
+.wc .sb-hud-label { white-space: nowrap; }
+.wc-keys { flex-basis: 100%; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 16px; font-size: 0.72rem; color: var(--muted); text-shadow: 0 1px 4px #05070d; }
+.wc-key i { display: inline-block; width: 46px; height: 7px; border-radius: 4px; margin-right: 0.45rem; vertical-align: 0.05em; }
+@media (max-width: 700px) { .wc-keys, .wc-labels, .wc .sb-hud-label { display: none; } }
+/* the story: far apart, so each card holds its scene for a while */
+.wc-steps { gap: 44vh; }
+.wc-steps .card b { color: var(--text); font-weight: 600; }
+@media (max-width: 800px) { .wc-steps { gap: 22vh; } }
+.wc-nav { grid-template-columns: repeat(3, minmax(0, 15rem)); }
+@media (max-width: 760px) { .wc-nav { grid-template-columns: 1fr; } }
+/* the video */
+.film.wc-film { background: #0a1120; }        /* the video's own background color */
+.film.wc-film .film-video { aspect-ratio: 1920 / 810; mix-blend-mode: normal; object-fit: contain; }
+.film.wc-film .film-toggle { top: 14px; bottom: auto; right: 14px; }
+/* the kymographs */
+.wc-kymos { margin-top: 26px; padding: 20px 22px 18px; background: rgba(8, 12, 22, 0.92); border: 1px solid var(--panel-border); border-radius: var(--radius); }
+.wc-fields { justify-content: flex-start; margin-bottom: 18px; }
+.wc-kymo-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 22px; }
+.wc-kymo { margin: 0; min-width: 0; }
+.wc-kymo figcaption { font-size: 0.86rem; color: #c0cadb; margin-bottom: 8px; line-height: 1.35; min-height: 2.9em; }
+.wc-kymo figcaption b { font-family: var(--serif); font-weight: 400; font-size: 1.15rem; color: var(--text); margin-right: 0.3rem; }
+.wc-kymo figcaption small { display: block; color: var(--muted); font-size: 0.78rem; }
+.wc-kymo-plot { position: relative; height: 190px; border-left: 1px solid rgba(233, 238, 247, 0.28); border-bottom: 1px solid rgba(233, 238, 247, 0.28); }
+.wc-kymo-plot canvas { position: absolute; left: 0; bottom: 0; width: 100%; height: calc(var(--len, 1) * 100%); cursor: crosshair; }
+/* grid: every 50 um up, every 25 ms across */
+.wc-kymo-plot::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(to top, transparent 0 calc(27.47% - 1px), rgba(255, 255, 255, 0.13) calc(27.47% - 1px) 27.47%),
+    repeating-linear-gradient(to right, transparent 0 calc(25% - 1px), rgba(255, 255, 255, 0.1) calc(25% - 1px) 25%);
+}
+.wc-now { position: absolute; top: 0; bottom: 0; left: calc(var(--now, 0) * 100%); width: 1px; background: rgba(255, 255, 255, 0.8); box-shadow: 0 0 6px rgba(255, 255, 255, 0.6); pointer-events: none; z-index: 1; }
+.wc-kymo-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin-top: 18px; }
+.wc-readout { margin: 0; flex: 1; min-width: 260px; font-size: 0.86rem; color: #c0cadb; font-variant-numeric: tabular-nums; }
+.wc-kymo-key { min-width: 260px; flex: 0 1 340px; }
+.wc-kymo-key-er { display: none; }
+.wc-er .wc-kymo-key-er { display: flex; }
+.wc-er .cs-jet.wc-kymo-key { display: none; }
+@media (max-width: 1000px) { .wc-kymo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .wc-kymo-grid { grid-template-columns: minmax(0, 1fr); } .wc-kymos { padding: 16px 14px; } }
+/* thin against thick, to scale */
+.wc-xsec { margin: 26px 0 0; padding: 18px 20px 14px; background: rgba(8, 12, 22, 0.92); border: 1px solid var(--panel-border); border-radius: var(--radius); }
+.wc-xsec svg { display: block; width: 100%; max-width: 840px; height: auto; margin: 0 auto; font-family: var(--sans); }
+.wc-xs-name { font-family: var(--serif); font-size: 19px; fill: var(--text); }
+.wc-xs-num { font-size: 13.5px; fill: #c0cadb; }
+.wc-xs-big { font-family: var(--serif); font-size: 22px; fill: var(--accent); }
+.wc-xsec figcaption { margin-top: 8px; font-size: 0.85rem; color: var(--muted); text-align: center; }
+.wc-next { margin-top: 64px; margin-bottom: 22px; }
+.wc-next h3 { font-size: 1.6rem; }

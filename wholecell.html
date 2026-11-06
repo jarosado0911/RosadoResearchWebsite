@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A Whole-Cell Calcium Wave | James Rosado, Ph.D.</title>
+    <meta name="description" content="A 3D finite volume simulation of calcium in a whole reconstructed neuron with its ER: one synapse starts a wave that crosses the cell, except its thick apical dendrite. Replayed in 3D from the simulation's output, with the soma cut open, kymographs of every dendrite, and why the wave stops." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="sb wc">
+    <!-- The background (src/wholecell.js): the simulated cell replaying its calcium wave; the story card in view sets the scene -->
+    <canvas id="sb-bg" data-page="wholecell" aria-label="3D view of the simulated neuron: its plasma membrane glowing with cytosolic calcium and its ER inside, replaying the calcium wave; drag to rotate"></canvas>
+    <div class="vignette sb-vignette" aria-hidden="true"></div>
+    <div class="wc-labels" id="wc-labels" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="./">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="./#services">Consulting</a>
+        <a href="./#research">Research</a>
+        <a href="./#projects">Software</a>
+        <a href="./#publications">Publications</a>
+        <a href="./#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="resume.html">Résumé</a>
+      <a class="btn btn-small" href="./#contact">Contact</a>
+    </header>
+
+    <div class="sb-hud wc-hud">
+      <div class="wc-player">
+        <button type="button" class="wc-play" aria-label="Pause">❚❚</button>
+        <input type="range" class="wc-scrub" min="0" max="100" step="0.1" value="0" aria-label="Simulated time, ms" />
+        <output class="wc-time">t = 0.0 ms</output>
+      </div>
+      <p class="sb-hud-label"><span class="dot"></span><span id="sb-scene-name">The whole cell</span><span class="sb-hud-hint"> · drag to turn · double-click to reset</span></p>
+      <div class="wc-keys">
+        <span class="wc-key"><i class="wc-jet" aria-hidden="true"></i>cytosol Ca²⁺ 0.05&ndash;100 µM (log)</span>
+        <span class="wc-key"><i class="wc-store" aria-hidden="true"></i>ER Ca²⁺ 0&ndash;260 µM</span>
+      </div>
+    </div>
+
+    <main id="top" class="subpage wc-page">
+      <section class="page-head sb-head">
+        <a class="back" href="./#research">&larr; Research</a>
+        <p class="eyebrow">Research &middot; Dendritic spines &middot; The full simulation</p>
+        <h1>One synapse, <em>a whole neuron.</em></h1>
+        <p class="lede">
+          My spine models, scaled up to a whole reconstructed cell: its real plasma membrane, an ER tube inside every
+          dendrite, 1.47 million tetrahedra. One synapse lets calcium in, and the ER carries it on as a wave, into the
+          soma and out to the tips of the dendrites. All but one. The background is that simulation, replayed from its
+          own output. Scroll to follow the wave; drag to turn the cell.
+        </p>
+        <ul class="facts nm-facts" aria-label="The run at a glance">
+          <li><strong>1.47M</strong><span>tetrahedra of cytosol and ER lumen, 175,046 membrane vertices</span></li>
+          <li><strong>49.5 h</strong><span>on 12 MPI ranks for 100 ms of calcium</span></li>
+          <li><strong>73 GB</strong><span>of output: 1,001 frames, one every 0.1 ms</span></li>
+        </ul>
+        <ol class="sb-tabs-nav wc-nav">
+          <li><a href="#story"><span>01</span>The wave<small>Scroll through it in 3D</small></a></li>
+          <li><a href="#video"><span>02</span>The video<small>Every view at once</small></a></li>
+          <li><a href="#dendrites"><span>03</span>Six dendrites<small>Where the front was, and when</small></a></li>
+          <li><a href="#thick"><span>04</span>Why it stops<small>The thick apical dendrite</small></a></li>
+          <li><a href="#model"><span>05</span>The model<small>Equations, numerics, a positivity fix</small></a></li>
+        </ol>
+      </section>
+
+      <!-- ===================== 01 THE STORY (each card sets the background's scene) ===================== -->
+      <section id="story" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">01 &middot; The wave</p>
+          <h2>Follow the calcium.</h2>
+          <p class="sub">
+            Scroll through the run. The background flies to each part of the cell and plays that stretch of time; the
+            player at the bottom right pauses it or scrubs through all 100 ms.
+          </p>
+        </div>
+
+        <ol class="nm-steps wc-steps">
+          <li class="card" data-scene="cell">
+            <span class="num">01</span>
+            <h3>The cell</h3>
+            <p>A rat layer-5 pyramidal neuron, <code>0-2a</code> from <a href="https://neuromorpho.org" target="_blank" rel="noopener">NeuroMorpho.org</a>: its membrane meshed with AnaMorph, the soma shrunk to a 4.8 µm radius, an ER tube at 0.4 times the radius inside every dendrite and an ER ball of 3.4 µm inside the soma. Six dendrites leave the soma. d5, the thick apical dendrite, runs 480 µm to the right.</p>
+            <p>The membrane glows with the free calcium in the cytosol just inside it. The ER is mint green while it is full, at 250 µM, and darkens as it empties.</p>
+          </li>
+          <li class="card" data-scene="syn">
+            <span class="num">02</span>
+            <h3>A synapse opens</h3>
+            <p><b>syn1</b> sits on dendrite d4, 30 µm from the soma center. For 10 ms it lets calcium in, and IP3 for 200 ms. Calcium there reaches 67 µM at 8 ms. Under it, ryanodine receptors on the ER open and release more calcium: calcium-induced calcium release. Their open probability is a steep switch,</p>
+            <div class="tex-block">P_R(c)=\frac{1+K_Bc^3}{1+K_C+(K_Ac^4)^{-1}+K_Bc^3}</div>
+            <p>almost shut at rest (3&times;10⁻⁴ at 50 nM), half open at 1.5 µM. Two fronts leave syn1, toward the soma and toward the tip, at 2.5&ndash;3 µm per ms.</p>
+          </li>
+          <li class="card" data-scene="soma">
+            <span class="num">03</span>
+            <h3>The wave reaches the soma</h3>
+            <p>The front arrives at 7.5&ndash;8 ms. The soma's membrane flashes to about 2 µM at 10 ms, then settles at 0.1&ndash;0.4 µM while the front passes: the soma is large, and its own release is slow. It keeps filling for the rest of the run, to 2.1 µM at 100 ms.</p>
+          </li>
+          <li class="card" data-scene="cut">
+            <span class="num">04</span>
+            <h3>Inside the soma</h3>
+            <p>The membranes peel back to the same cut as in the video: through the soma center along the incoming dendrite, bent by at most 0.6 µm to follow it down to syn1. On the cut is the calcium inside the volume, in the cytosol and in the ER lumen.</p>
+            <p>The soma ER empties from the outside in: 250 µM at rest, 151 at 20 ms, 57 at 50 ms, 24 at 100 ms. The cytosol is brightest right next to the ER membrane, where the release happens.</p>
+          </li>
+          <li class="card" data-scene="thin">
+            <span class="num">05</span>
+            <h3>Out along the thin dendrites</h3>
+            <p>From the soma the wave enters the thin dendrites d0&ndash;d3 at 10&ndash;12 ms and runs at a steady 2.7&ndash;2.8 µm per ms, 5&ndash;8 µM at the front. Behind it the ER is down to 30&ndash;45 µM. The front reaches the tip of d3 at 50 ms and the end of d1, 181 µm out, at 78 ms.</p>
+          </li>
+          <li class="card" data-scene="thick">
+            <span class="num">06</span>
+            <h3>The thick dendrite gives up</h3>
+            <p>d5 is five times wider than the thin dendrites, 1.5&ndash;1.8 µm in radius. What enters it reaches only 0.5&ndash;0.7 µM at the membrane, slows to 1.6 µm per ms, and stops 25&ndash;28 µm from the soma center. Next to its ER the peak falls from 6.4 to 1.9 µM over those 20 µm.</p>
+            <p>This is an abortive wave, as in Breit and Queisser's parameter study (2018). <a href="#thick">Why it happens &darr;</a></p>
+          </li>
+          <li class="card" data-scene="late">
+            <span class="num">07</span>
+            <h3>100 ms later</h3>
+            <p>The thin dendrites sit at a raised 0.2&ndash;0.3 µM with their ER mostly emptied; across the cell the ER is down from 250 to 103 µM on average. Beyond its first 40 µm, d5 never noticed. Refilling the ER takes far longer than this run.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ===================== 02 THE VIDEO (public/video/wholecell-wave.*, scripts/make_wholecell_video.sh) ===================== -->
+      <section id="video" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">02 &middot; The video</p>
+          <h2>Every view at once.</h2>
+          <p class="sub">
+            Rendered from the full-resolution output: the whole cell (its membrane half see-through over the ER), close-ups
+            of the soma and syn1, the cut through the soma on the right, and the calcium at syn1 and in the soma along
+            the bottom. One second of video is 2 ms of the simulation.
+          </p>
+        </div>
+        <figure class="film wc-film" id="wc-film">
+          <video class="film-video" muted loop playsinline preload="none" poster="video/wholecell-wave-poster.jpg"
+                 aria-label="Simulation video: calcium entering at one synapse starts a wave that reaches the soma and travels out along the thin dendrites while the ER empties; the thick apical dendrite stays at rest">
+            <source src="video/wholecell-wave.webm" type="video/webm" />
+            <source src="video/wholecell-wave.mp4" type="video/mp4" />
+          </video>
+          <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
+        </figure>
+        <div class="legend">
+          <div class="bar">
+            <span class="bar-name">Calcium in the cytosol, on the membrane and in the cut (log scale)</span>
+            <span class="bar-scale cs-jet"><span>0.05 µM</span><i aria-hidden="true"></i><span>100 µM</span></span>
+          </div>
+          <div class="bar">
+            <span class="bar-name">Calcium in the ER, on its membrane and in the cut</span>
+            <span class="bar-scale cs-jet"><span>20 µM</span><i aria-hidden="true"></i><span>260 µM</span></span>
+          </div>
+        </div>
+        <ol class="steps" data-video="wc-film">
+          <li data-from="0" data-to="4">
+            <h3>syn1 fires</h3>
+            <p>Calcium pours in at syn1 and the ER under it releases. Two fronts set off along d4.</p>
+          </li>
+          <li data-from="4" data-to="6.5">
+            <h3>Through the soma</h3>
+            <p>At 8 ms the front reaches the soma. Its ER starts to drain from the outside in (right pane).</p>
+          </li>
+          <li data-from="6.5" data-to="15">
+            <h3>Into the dendrites</h3>
+            <p>Fronts leave the soma into every thin dendrite at once, yellow bands moving outward.</p>
+          </li>
+          <li data-from="15" data-to="40">
+            <h3>To the tips</h3>
+            <p>The fronts reach the tips of d3 (50 ms), d0, d2 and d1 (78 ms). The thick dendrite on the right stays dark.</p>
+          </li>
+          <li data-from="40" data-to="99">
+            <h3>After the wave</h3>
+            <p>The cytosol settles at a raised level, the soma keeps filling, and the ER behind the fronts stays low.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ===================== 03 KYMOGRAPHS (src/wholecell.js, public/wholecell/kymo.bin) ===================== -->
+      <section id="dendrites" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">03 &middot; Six dendrites</p>
+          <h2>Where the front was, and when.</h2>
+          <p class="sub">
+            One panel per dendrite leaving the soma: distance from the soma center upward, time across, colored by the
+            calcium in each 1 µm slice. A wave at constant speed is a straight bright edge, and its slope is the speed.
+            Point at a panel to read it; click to send the 3D cell to that moment.
+          </p>
+        </div>
+        <div class="wc-kymos" id="wc-kymos">
+          <div class="sb-scenes wc-fields" role="group" aria-label="What to show">
+            <button type="button" data-field="0" class="active">At the membrane</button>
+            <button type="button" data-field="1">Next to the ER</button>
+            <button type="button" data-field="2">Inside the ER</button>
+          </div>
+          <div class="wc-kymo-grid">
+            <figure class="wc-kymo" data-d="0"><figcaption><b>d0</b> basal<small>2.82 µm/ms &middot; tip, 165 µm, at 66 ms</small></figcaption><div class="wc-kymo-plot"><canvas aria-label="Kymograph of dendrite d0"></canvas><i class="wc-now"></i></div></figure>
+            <figure class="wc-kymo" data-d="1"><figcaption><b>d1</b> basal<small>2.84 µm/ms &middot; tip, 181 µm, at 78 ms</small></figcaption><div class="wc-kymo-plot"><canvas aria-label="Kymograph of dendrite d1"></canvas><i class="wc-now"></i></div></figure>
+            <figure class="wc-kymo" data-d="2"><figcaption><b>d2</b> basal, wider at 20&ndash;40 µm<small>2.78 µm/ms &middot; peak down to 2.5 µM in the wide part</small></figcaption><div class="wc-kymo-plot"><canvas aria-label="Kymograph of dendrite d2"></canvas><i class="wc-now"></i></div></figure>
+            <figure class="wc-kymo" data-d="3"><figcaption><b>d3</b> basal<small>2.69 µm/ms &middot; tip, 120 µm, at 50 ms</small></figcaption><div class="wc-kymo-plot"><canvas aria-label="Kymograph of dendrite d3"></canvas><i class="wc-now"></i></div></figure>
+            <figure class="wc-kymo" data-d="4"><figcaption><b>d4</b> syn1's dendrite<small>syn1 at 30 µm &middot; 2.47 µm/ms &middot; tip at 42 ms</small></figcaption><div class="wc-kymo-plot"><canvas aria-label="Kymograph of dendrite d4"></canvas><i class="wc-now"></i></div></figure>
+            <figure class="wc-kymo" data-d="5"><figcaption><b>d5</b> thick apical (first 182 of 481 µm)<small>&asymp;1.6 µm/ms, then stops at 25&ndash;28 µm</small></figcaption><div class="wc-kymo-plot"><canvas aria-label="Kymograph of dendrite d5"></canvas><i class="wc-now"></i></div></figure>
+          </div>
+          <div class="wc-kymo-foot">
+            <p class="wc-readout" aria-live="polite">Distance 0&ndash;182 µm upward, time 0&ndash;100 ms across. The thin line is the 3D cell's clock.</p>
+            <span class="bar-scale cs-jet wc-kymo-key"><span>0.05 µM</span><i aria-hidden="true"></i><span>100 µM</span></span>
+            <span class="bar-scale wc-kymo-key wc-kymo-key-er"><span>0 µM</span><i aria-hidden="true"></i><span>260 µM</span></span>
+          </div>
+        </div>
+        <p class="cs-note">
+          &ldquo;At the membrane&rdquo; is the highest cytosolic calcium on the plasma membrane in each slice, &ldquo;next to
+          the ER&rdquo; the mean at the ER membrane, &ldquo;inside the ER&rdquo; the lumen's calcium at its membrane.
+          In d5 the two cytosol views disagree tenfold: the release next to its ER never reaches its plasma membrane.
+        </p>
+      </section>
+
+      <!-- ===================== 04 WHY IT STOPS ===================== -->
+      <section id="thick" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">04 &middot; Why it stops</p>
+          <h2>A thick dendrite dilutes its store.</h2>
+          <p class="sub">
+            The ER is 0.4 times the radius everywhere, and every channel and pump has the same density per µm² of
+            membrane. But membrane grows with the radius and volume with its square, so per µm³ of cytosol the thick
+            dendrite has five times less ER membrane, and five times fewer ryanodine receptors, than a thin one.
+          </p>
+        </div>
+        <figure class="wc-xsec">
+          <svg viewBox="0 0 840 300" role="img" aria-label="Cross-sections to scale: a thin dendrite of radius 0.30 micrometers and the thick apical dendrite of radius 1.65 micrometers, each with its ER at 0.4 times the radius">
+            <defs>
+              <radialGradient id="wc-cyt" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#16294a" /><stop offset="100%" stop-color="#0d1a33" /></radialGradient>
+            </defs>
+            <g transform="translate(130 120)">
+              <circle r="27" fill="url(#wc-cyt)" stroke="#9fc4ff" stroke-width="2" />
+              <circle r="10.8" fill="#4fd59a" stroke="#c9ffe2" stroke-width="1.5" />
+              <text y="70" text-anchor="middle" class="wc-xs-name">d3, thin</text>
+              <text y="94" text-anchor="middle" class="wc-xs-num">R = 0.30 µm</text>
+              <text y="116" text-anchor="middle" class="wc-xs-num">ER membrane / cytosol</text>
+              <text y="140" text-anchor="middle" class="wc-xs-big">3.2 µm⁻¹</text>
+            </g>
+            <g transform="translate(430 150)">
+              <circle r="148.5" fill="url(#wc-cyt)" stroke="#9fc4ff" stroke-width="2" />
+              <circle r="59.4" fill="#4fd59a" stroke="#c9ffe2" stroke-width="1.5" />
+            </g>
+            <g transform="translate(605 100)">
+              <text class="wc-xs-name">d5, thick apical</text>
+              <text y="24" class="wc-xs-num">R &asymp; 1.65 µm</text>
+              <text y="46" class="wc-xs-num">ER membrane / cytosol</text>
+              <text y="70" class="wc-xs-big">0.6 µm⁻¹</text>
+            </g>
+            <g transform="translate(605 270)"><line x1="0" x2="90" y1="0" y2="0" stroke="#e9eef7" stroke-width="2" /><text x="45" y="-8" text-anchor="middle" class="wc-xs-num">1 µm</text></g>
+          </svg>
+          <figcaption>Two cross-sections from the mesh's own radii, to scale: plasma membrane (blue line), cytosol, ER (green).</figcaption>
+        </figure>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">Membrane per volume</p>
+              <div class="tex-block">\alpha_e=\frac{A_{\mathrm{ER}}}{V_{\mathrm{cyt}}}=\frac{2\rho}{R\,(1-\rho^2)},\qquad \alpha_p=\frac{A_{\mathrm{PM}}}{V_{\mathrm{cyt}}}=\frac{\alpha_e}{\rho}</div>
+              <p>For a tube of radius <span class="tex">R</span> with its ER at <span class="tex">\rho R</span>, <span class="tex">\rho=0.4</span>. Every membrane flux per volume of cytosol falls as <span class="tex">1/R</span>: release, uptake and extrusion alike. Calcium binding to calbindin and diffusion happen in the volume and do not.</p>
+            </article>
+            <article class="card">
+              <p class="tag">Thick is thin with faster buffer</p>
+              <div class="tex-block">t=\tfrac{R}{R_0}\,\tau,\quad x=\sqrt{\tfrac{R}{R_0}}\;\xi\ \Longrightarrow\ k_{\mathrm{on}},\,k_{\mathrm{off}}\ \to\ \tfrac{R}{R_0}\,k_{\mathrm{on}},\,\tfrac{R}{R_0}\,k_{\mathrm{off}}</div>
+              <p>Rescaling time and space turns the cable equations of a dendrite of radius <span class="tex">R</span> into those of one of radius <span class="tex">R_0</span>, except that calbindin binds <span class="tex">R/R_0</span> times faster. d5 behaves like a thin dendrite whose buffer is 5.7 times faster, and that dendrite has no wave.</p>
+            </article>
+            <article class="card cs-wide">
+              <p class="tag">The race: release against binding</p>
+              <div class="tex-block">\Lambda(c)=\frac{\alpha_e\,j_{\mathrm{ER}}(c,e_0,p_0)+\alpha_p\,j_{\mathrm{PM}}(c)}{k_{\mathrm{on}}\,b_0\,(c-c_0)}</div>
+              <p>Where <span class="tex">\Lambda&gt;1</span> the release raises free calcium faster than calbindin (160 µM of sites, a buffer capacity of about 200) can bind it, the ryanodine receptors see the excess, and the release feeds itself. Its maximum, near 2 µM where the receptor opens, is 3.1 in the thin dendrites, 2.3 in d4, 1.4 in d2's wide stretch (which carried a weakened wave) and 0.55 in d5, where the release never wins.</p>
+            </article>
+          </div>
+        </div>
+        <div class="nm-table-wrap">
+          <table class="nm-table">
+            <thead><tr><th>Dendrite</th><th>Radius</th><th>ER membrane / cytosol</th><th><span class="tex">\Lambda_{\max}</span></th><th>Speed</th><th>Peak at the membrane</th><th>Reach</th></tr></thead>
+            <tbody>
+              <tr><th>d0</th><td>0.31 µm</td><td>3.1&ndash;3.3 µm⁻¹</td><td>3.1</td><td>2.82 µm/ms</td><td>5.8&ndash;7.8 µM</td><td>tip, 165 µm, at 66 ms</td></tr>
+              <tr><th>d1</th><td>0.30 µm</td><td>3.1&ndash;3.2 µm⁻¹</td><td>3.1</td><td>2.84 µm/ms</td><td>5.9&ndash;7.1 µM</td><td>tip, 181 µm, at 78 ms</td></tr>
+              <tr><th>d2 (wide stretch)</th><td>0.65 µm</td><td>1.5&ndash;1.7 µm⁻¹</td><td>1.4</td><td>2.78 µm/ms</td><td>2.3&ndash;3.0 µM</td><td>tip, 169 µm, at 70 ms</td></tr>
+              <tr><th>d3</th><td>0.30 µm</td><td>3.2 µm⁻¹</td><td>3.1</td><td>2.69 µm/ms</td><td>5.5&ndash;8.5 µM</td><td>tip, 120 µm, at 50 ms</td></tr>
+              <tr><th>d4 (syn1)</th><td>0.40 µm</td><td>2.4&ndash;2.8 µm⁻¹</td><td>2.3</td><td>2.47 µm/ms</td><td>4.6&ndash;6.6 µM</td><td>tip, 132 µm, at 42 ms</td></tr>
+              <tr><th>d5 (apical)</th><td>1.5&ndash;1.8 µm</td><td>0.55&ndash;0.70 µm⁻¹</td><td>0.55</td><td>&asymp;1.6, then 0</td><td>0.5&ndash;0.7 µM</td><td>stalls at 25&ndash;28 µm</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="section-head wc-next">
+          <h3>What could carry it further</h3>
+          <p class="sub">Tested first in a reduced 1D cable model with the same transporters, which confirms the picture: with this calbindin, waves exist up to a radius of 0.4 µm and fail from 0.6 µm, whatever the stimulus.</p>
+        </div>
+        <div class="grid grid-3">
+          <article class="card">
+            <p class="tag">Most direct</p>
+            <h3>Receptors that scale with radius</h3>
+            <p>Give d5's ER more ryanodine receptors per µm², in proportion to its radius, and rebalance SERCA so the resting state holds. In the cable model it is the only single change that also starts a wave from the soma's own drive.</p>
+          </article>
+          <article class="card">
+            <p class="tag">Anatomical</p>
+            <h3>A thicker ER</h3>
+            <p>An ER at 0.6&ndash;0.7 times the radius in the thick dendrite puts more store membrane against less cytosol, and its large store keeps releasing behind the front.</p>
+          </article>
+          <article class="card">
+            <p class="tag">Check first</p>
+            <h3>A finer mesh in d5</h3>
+            <p>d5's cytosol ring between ER and membrane is only about one tetrahedron wide, so the thin layer next to the ER, where the release briefly does win, is under-resolved. The 3D result may be pessimistic.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================== 05 THE MODEL ===================== -->
+      <section id="model" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">05 &middot; The model</p>
+          <h2>Four species, two compartments, every membrane.</h2>
+          <p class="sub">
+            The whole-cell version of the spine model from the PLOS Computational Biology paper, in UG4 with the
+            neuro_collection plugin: free calcium <span class="tex">c</span>, the buffer calbindin <span class="tex">b</span>
+            and IP3 <span class="tex">p</span> in the cytosol, calcium <span class="tex">e</span> in the ER lumen. Every
+            channel and pump sits on the real 3D membranes.
+          </p>
+        </div>
+        <div class="math">
+          <div class="math-grid">
+            <article class="card">
+              <p class="tag">In the volumes</p>
+              <div class="tex-block">\begin{aligned}\partial_t c&amp;=\nabla\!\cdot(D_c\nabla c)-k_{\mathrm{on}}cb+k_{\mathrm{off}}(B_{\mathrm{tot}}-b)\\ \partial_t b&amp;=\nabla\!\cdot(D_b\nabla b)-k_{\mathrm{on}}cb+k_{\mathrm{off}}(B_{\mathrm{tot}}-b)\\ \partial_t p&amp;=\nabla\!\cdot(D_p\nabla p)-k_p(p-p_0)\\ \partial_t e&amp;=\nabla\!\cdot(D_e\nabla e)\end{aligned}</div>
+              <p>Calbindin holds 160 µM of binding sites; at rest it buffers 199 of every 200 calcium ions, within about 0.25 ms.</p>
+            </article>
+            <article class="card">
+              <p class="tag">On the membranes</p>
+              <div class="tex-block">\begin{gathered}D_c\,\partial_nc=j_{\mathrm{ER}}=-D_e\,\partial_{n_e}e\quad\text{on the ER},\\ j_{\mathrm{ER}}=\rho_RJ_R+\rho_IJ_I+\kappa_e(e-c)-\rho_SJ_S,\\ D_c\,\partial_nc=\kappa_p(c_o-c)-\rho_PJ_P-\rho_NJ_N\ (+j_{\mathrm{syn}})\end{gathered}</div>
+              <p>Ryanodine and IP3 receptors release, SERCA pumps back into the ER; PMCA and NCX pump out of the cell. SERCA's density is set so that every flux balances at rest.</p>
+            </article>
+            <article class="card cs-wide">
+              <p class="tag">A positivity guard (my change to neuro_collection)</p>
+              <div class="tex-block">g_\varepsilon(x)=\frac{x+\sqrt{x^2+\varepsilon^2}}{2}=\frac{\varepsilon^2/4}{\sqrt{x^2+\varepsilon^2}-x},\qquad \varepsilon=10^{-12}\ \mathrm{mM}</div>
+              <p>On this mesh 22.8% of the edges give the diffusion matrix a positive off-diagonal entry, so the finite volume scheme is not monotone and steep fronts can undershoot below zero. The transporter formulas then misbehave: SERCA divides by the ER's calcium, the receptors raise negative numbers to powers. Their concentration inputs now pass through a smooth positive part, written in its second, cancellation-free form for negative <span class="tex">x</span>. Above a picomolar it changes nothing (relative change below <span class="tex">\varepsilon^2/4x^2</span>), and calcium stays conserved, since the same guarded flux leaves one compartment and enters the other. It let the run past the step where it had aborted at 11 ms; the dip itself, down to &minus;0.27 µM next to the soma, needs a better mesh.</p>
+            </article>
+          </div>
+        </div>
+        <div class="nm-table-wrap">
+          <table class="nm-table">
+            <thead><tr><th>Numerics</th><th></th><th>Run</th><th></th></tr></thead>
+            <tbody>
+              <tr><th>Space</th><td>vertex-centered finite volumes (UG4 <code>fv1</code>)</td><th>Mesh</th><td>1,102,507 cytosol + 368,020 ER tetrahedra (TetGen)</td></tr>
+              <tr><th>Time</th><td>implicit Euler, &Delta;t = 5 µs, halved when Newton fails</td><th>Steps</th><td>20,040; 4 Newton failures, all recovered</td></tr>
+              <tr><th>Solver</th><td>Newton, every unknown checked separately; BiCGStab with ILU</td><th>Hardware</th><td>12 MPI ranks, 10.8 GB, 49.5 h wall time</td></tr>
+              <tr><th>Rest</th><td><span class="tex">c_0=50</span> nM, <span class="tex">e_0=250</span> µM, <span class="tex">p_0=40</span> nM</td><th>Diffusion</th><td><span class="tex">D_c=D_e=220,\ D_p=280,\ D_b=20</span> µm²/s</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="cs-cta">
+          <a class="btn" href="spines.html">The spine simulations &rarr;</a>
+          <a class="btn btn-ghost" href="neuronmesh.html">The same cell, meshed by NeuronMesh &rarr;</a>
+          <a class="btn btn-ghost" href="./#research">&larr; Back to research</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">The background replays the simulation's output: both membranes decimated four to six times for the browser, the calcium on patches of about 1 µm of membrane every 0.5 ms, the cut as computed from the tetrahedra. The video is rendered from the full-resolution output.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

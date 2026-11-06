@@ -12,7 +12,7 @@ npm run build        # static site in dist/
 npm run preview      # http://localhost:4173  (serves dist/, what a host would serve)
 ```
 
-Debug URL parameters: `?t=0.9` freezes the background 0.9 s after a spike; `?scroll=0.5` jumps half way down (`?scroll=spine-gallery` jumps to the gallery).
+Debug URL parameters: `?t=0.9` freezes the background 0.9 s after a spike; `?scroll=0.5` jumps half way down (`?scroll=spine-gallery` jumps to the gallery); on `wholecell.html`, `?scene=cut&wct=30` holds the background on one scene (`cell`, `syn`, `soma`, `cut`, `thin`, `thick`, `late`) at 30 ms.
 
 ## Where things are
 
@@ -39,12 +39,14 @@ Debug URL parameters: `?t=0.9` freezes the background 0.9 s after a spike; `?scr
 | SpineBuilder screenshots | `public/spinebuilder/img/`, taken by `scripts/spinebuilder_screens.py` (drives the app on a hidden X display; also saves the `.ugx` files) |
 | NeuronMesh page | `neuronmesh.html`; background pipeline, frame demo and side-by-side comparison in `src/neuronmesh.js`; data in `public/neuronmesh/`, made from `data/neuronmesh/` by `npm run neuronmesh`; the source meshes (both generators on `0-2a.CNG.swc`, and their crossing triangles from TetGen `-d`) by `scripts/make_neuronmesh_meshes.sh`, which needs `~/projects/neuronmesh` and `~/projects/PythonNeuronMeshes`; figures in `public/neuronmesh/img/` are from their docs |
 | SpineBuilder videos | `public/spinebuilder/video/`, cut from `data/spinebuilder/process_spine_tour.mp4` by `scripts/make_spinebuilder_videos.sh`; the step texts under them are in `spinebuilder.html` (`data-from`/`data-to`) |
+| Whole-cell page | `wholecell.html` (SpineBuilder's 100 ms ug4 run of the 0-2a cell in `ca_ug4_cell_test`: story cards that set the background's scene, the video, kymographs, why the thick dendrite fails, the model); background, player and kymographs in `src/wholecell.js` (camera, time window and labels per card in `scenes()`), styles under "Whole-cell page" in `src/style.css`. Data `public/wholecell/` by `~/.venvs/website/bin/python scripts/build_wholecell.py`, which reads the run's output in `~/projects/SpineBuilder/ca_ug4_cell_test/output/{vtk,video}` (73 GB, not in this repo); the venv once: `python3 -m venv --system-site-packages ~/.venvs/website && ~/.venvs/website/bin/pip install fast-simplification`. Video `public/video/wholecell-wave.*` by `scripts/make_wholecell_video.sh` from SpineBuilder's `calcium_erjet_slice_..._run100ms.mp4`; its step texts in `wholecell.html` (`data-from`/`data-to` = seconds of the video) |
 
 Users who set "reduce motion" in their OS get a still frame instead of the animation.
 
 Everything the pages need is in this project: `data/` holds the sources (the CA1 graph, the spine meshes, the
 SpineBuilder `.ugx` files and screen recording), `public/` what the site serves. Only remaking the SpineBuilder
-screenshots needs the SpineBuilder application itself.
+screenshots needs the SpineBuilder application itself, and remaking the whole-cell page's data and video needs the
+simulation's output in the SpineBuilder project.
 
 ## Going live later
 

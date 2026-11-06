@@ -16,7 +16,7 @@
   "dependencies": {
     "@fontsource-variable/fraunces": "5.1.0",
     "@fontsource-variable/inter": "5.1.0",
-    "katex": "0.16.11",
+    "katex": "^0.16.47",
     "three": "0.169.0"
   },
   "devDependencies": {

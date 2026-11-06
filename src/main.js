@@ -44,6 +44,7 @@ if (sbCanvas) {
   ({
     neuronmesh: () => import('./neuronmesh.js').then(({ startNeuronMeshPage }) => startNeuronMeshPage(sbCanvas, { reducedMotion })),
     calcsim: () => import('./calcsim3d.js').then(({ startCalcSimBackground }) => startCalcSimBackground(sbCanvas, { reducedMotion })),
+    wholecell: () => import('./wholecell.js').then(({ startWholeCellPage }) => startWholeCellPage(sbCanvas, { reducedMotion })),
     'nv-electrical': () => startNeuroVisor('electrical'),
     'nv-calcium': () => startNeuroVisor('calcium'),
   }[sbCanvas.dataset.page] ?? (() => import('./spinebuilder.js').then(({ startSpineBuilderPage }) => startSpineBuilderPage(sbCanvas, { reducedMotion }))))()
