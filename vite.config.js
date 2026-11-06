@@ -17,6 +17,8 @@ export default defineConfig({
         spines: resolve(import.meta.dirname, 'spines.html'),
         spinebuilder: resolve(import.meta.dirname, 'spinebuilder.html'),
         neuronmesh: resolve(import.meta.dirname, 'neuronmesh.html'),
+        tetraneuron: resolve(import.meta.dirname, 'tetraneuron.html'),
+        nemotms: resolve(import.meta.dirname, 'nemotms.html'),
         resume: resolve(import.meta.dirname, 'resume.html'),
         frames: resolve(import.meta.dirname, 'frames.html'),
         mathematics: resolve(import.meta.dirname, 'mathematics.html'),

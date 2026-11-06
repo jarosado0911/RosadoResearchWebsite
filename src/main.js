@@ -43,6 +43,8 @@ const sbCanvas = document.getElementById('sb-bg');
 if (sbCanvas) {
   ({
     neuronmesh: () => import('./neuronmesh.js').then(({ startNeuronMeshPage }) => startNeuronMeshPage(sbCanvas, { reducedMotion })),
+    nemotms: () => import('./nemotms.js').then(({ startNeMoTMSPage }) => startNeMoTMSPage(sbCanvas, { reducedMotion })),
+    tetraneuron: () => import('./tetraneuron.js').then(({ startTetraNeuronPage }) => startTetraNeuronPage(sbCanvas, { reducedMotion })),
     calcsim: () => import('./calcsim3d.js').then(({ startCalcSimBackground }) => startCalcSimBackground(sbCanvas, { reducedMotion })),
     wholecell: () => import('./wholecell.js').then(({ startWholeCellPage }) => startWholeCellPage(sbCanvas, { reducedMotion })),
     'nv-electrical': () => startNeuroVisor('electrical'),

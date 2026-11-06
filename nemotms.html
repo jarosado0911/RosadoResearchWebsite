@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeMo-TMS: One Pulse, Three Scales | James Rosado, Ph.D.</title>
+    <meta name="description" content="NeMo-TMS follows a transcranial magnetic stimulation pulse from the electric field in the head to the voltage of one neuron and the calcium inside it. An interactive tour, including the calcium model I wrote." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="sb nt">
+    <!-- The background (src/nemotms.js): one run of the toolbox's sample cell, its voltage and then its calcium -->
+    <canvas id="sb-bg" data-page="nemotms" aria-label="3D view of a neuron replaying a simulated spike, then the passive calcium that follows, glowing across the cell; drag to rotate"></canvas>
+    <div class="vignette sb-vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="./">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="./#services">Consulting</a>
+        <a href="./#research">Research</a>
+        <a href="./#projects">Software</a>
+        <a href="./#publications">Publications</a>
+        <a href="./#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="resume.html">Résumé</a>
+      <a class="btn btn-small" href="./#contact">Contact</a>
+    </header>
+
+    <div class="sb-hud nt-hud">
+      <div class="nt-hud-tools">
+        <div class="sb-scenes" role="group" aria-label="What the neuron shows">
+          <button type="button" data-nt-mode="v" class="active">Voltage</button>
+          <button type="button" data-nt-mode="ca">Calcium</button>
+        </div>
+        <button type="button" class="sb-chip" id="nt-pause">Pause</button>
+      </div>
+      <p class="sb-hud-label"><span class="dot"></span><span id="sb-scene-name">Membrane voltage</span><span id="nt-time">t = 0.00 ms</span><span class="bar-scale nt-scale" aria-hidden="true"><span id="nt-scale-low">-90 mV</span><i id="nt-scale" data-mode="v"></i><span id="nt-scale-high">+50 mV</span></span></p>
+    </div>
+
+    <main id="top" class="subpage cs-page">
+      <section class="page-head sb-head">
+        <a class="back" href="./#research">&larr; Research</a>
+        <p class="eyebrow">Multi-scale modeling &middot; TMS &middot; <em>Brain Stimulation</em> 2021</p>
+        <h1>One pulse, <em>three scales.</em></h1>
+        <p class="lede">
+          Transcranial magnetic stimulation is widely used, but how a neuron responds to it is still poorly understood.
+          NeMo-TMS, an open-source toolbox from a team led by Alexander Opitz, follows one pulse from the electric field
+          in the head, to the voltage of a single realistic neuron, to the calcium inside it. I wrote the calcium part.
+          The cell behind this text is replaying a spike and the passive calcium that follows it.
+        </p>
+        <div class="nm-tools">
+          <article class="card">
+            <p class="tag">The paper &middot; 2021</p>
+            <h3>Multi-scale modeling toolbox for single neuron and subcellular activity under TMS</h3>
+            <p>S. Shirinpour, N. Hananeia, J. M. Rosado, H. Tran, C. Galanis, A. Vlachos, P. Jedlicka, G. Queisser, A. Opitz. <em>Brain Stimulation</em> 14(6), 1470&ndash;1482.</p>
+            <a class="more" href="https://doi.org/10.1016/j.brs.2021.09.004" target="_blank" rel="noopener">Read the paper &rarr;</a>
+          </article>
+          <article class="card">
+            <p class="tag">My part</p>
+            <h3>The calcium scale</h3>
+            <p>I wrote the UG4 script that turns NEURON's voltages into calcium in the cell. My credited roles on the paper: methodology, software, validation, visualization and writing.</p>
+            <a class="more" href="#calcium">The calcium model &darr;</a>
+          </article>
+        </div>
+        <ul class="facts nm-facts" aria-label="The paper in numbers">
+          <li><strong>3</strong><span>scales in one pipeline: head, neuron, calcium</span></li>
+          <li><strong>~0.1 ms</strong><span>shift in spike timing from turning the field 45&deg;</span></li>
+          <li><strong>30 min, 24 h</strong><span>neuron, then calcium, for one of the paper's rTMS runs on a desktop</span></li>
+        </ul>
+      </section>
+
+      <!-- ===================== THE CHAIN ===================== -->
+      <section id="chain" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">The chain</p>
+          <h2>Each tool hands its answer to the next.</h2>
+          <p class="sub">No single simulator covers centimeters of head and micrometers of cell, so the toolbox connects four steps.</p>
+        </div>
+        <div class="grid grid-2 nt-chain">
+          <article class="card nt-chain-head">
+            <span class="num">01</span>
+            <div>
+              <p class="tag">SimNIBS &middot; finite elements</p>
+              <h3>The field in the head</h3>
+              <p>A coil's changing current induces an electric field, computed across a model of the head or a dish of tissue. At these frequencies its pattern in space and its shape in time can be treated separately.</p>
+            </div>
+            <figure class="nt-coil">
+              <svg viewBox="0 0 220 170" role="img" aria-label="Schematic: a figure-8 coil above a head, with the induced field strongest under the coil's center">
+                <defs><radialGradient id="nt-field-glow"><stop offset="0" stop-color="#ffb347" stop-opacity="0.9" /><stop offset="1" stop-color="#ffb347" stop-opacity="0" /></radialGradient></defs>
+                <path d="M34 164 C20 120 24 66 110 58 C196 66 200 120 186 164" fill="#0d1526" stroke="#5d6677" stroke-width="2" />
+                <path d="M48 164 C38 124 44 82 110 74 C176 82 182 124 172 164" fill="none" stroke="#3a4557" stroke-width="2" stroke-dasharray="5 6" />
+                <ellipse cx="110" cy="84" rx="44" ry="18" fill="url(#nt-field-glow)" />
+                <ellipse cx="72" cy="28" rx="36" ry="13" fill="none" stroke="#6fd3ff" stroke-width="3" />
+                <ellipse cx="148" cy="28" rx="36" ry="13" fill="none" stroke="#6fd3ff" stroke-width="3" />
+              </svg>
+              <figcaption>Schematic, not a simulation</figcaption>
+            </figure>
+          </article>
+          <article class="card">
+            <span class="num">02</span>
+            <p class="tag">MATLAB &middot; the coupling</p>
+            <h3>From a field to a neuron</h3>
+            <p>The cell is placed in the model, by default upright against the grey matter surface. The field is read at each segment and summed along the tree into quasipotentials, which NEURON can use:</p>
+            <div class="tex-block">\psi_i=\psi_{\text{parent}}-\tfrac12\big(E_i+E_{\text{parent}}\big)\cdot s_i</div>
+          </article>
+          <article class="card">
+            <span class="num">03</span>
+            <p class="tag">NEURON &middot; 5 or 25 &micro;s steps</p>
+            <h3>The membrane answers</h3>
+            <p>Quasipotentials times the pulse's shape become the extracellular potential of every segment of a realistic model cell. NEURON saves the membrane voltage everywhere, at every step.</p>
+          </article>
+          <article class="card">
+            <span class="num">04</span>
+            <p class="tag">UG4 &middot; my part</p>
+            <h3>Calcium follows</h3>
+            <p>Those voltages open calcium channels. Calcium flows in, diffuses, is buffered and is pumped out, solved as diffusion-reaction equations on the 1D tree of the cell.</p>
+            <a class="more" href="#calcium">The model &darr;</a>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================== ONE RUN ===================== -->
+      <section id="run" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">One run</p>
+          <h2>Passive calcium: it glows where the spike goes.</h2>
+          <p class="sub">
+            This run demonstrates passive calcium behavior only. Voltage opens channels, calcium flows in, diffuses, is buffered and is pumped out. The ER
+            is off, so nothing releases more calcium and nothing can carry it onward as a wave. Drag across a chart to move the neuron in the background to that moment.
+          </p>
+        </div>
+        <div class="nt-run-grid">
+          <figure class="card nt-chart-card">
+            <div class="nt-chart" id="nt-chart-v"></div>
+            <div class="nt-chart" id="nt-chart-ca"></div>
+            <details class="nt-table">
+              <summary>Show the numbers</summary>
+              <table><thead><tr><th>ms</th><th>Soma mV</th><th>Soma µM</th><th>Axon median µM</th></tr></thead><tbody id="nt-run-table"></tbody></table>
+            </details>
+          </figure>
+          <ol class="nt-run-notes">
+            <li class="card"><strong>0.38 ms</strong><p>The first spike appears far out on the axon, about 1,090 µm from the soma.</p></li>
+            <li class="card"><strong>1.15 ms</strong><p>It reaches the soma, peaking near +41 mV.</p></li>
+            <li class="card"><strong>2.45 ms</strong><p>Calcium peaks. At the soma, about 0.93 µM, up from 0.05 µM at rest. Across 97% of the axon it at least doubles, to a median of about 0.13 µM, then fades close to rest by about 5 ms.</p></li>
+            <li class="card"><strong>Dendrites</strong><p>Far dendrites stay dark. The spike fades as it enters them, to about −37 mV by 60–150 µm from the soma, too little to open many channels.</p></li>
+            <li class="card"><strong>A real wave?</strong><p>Waves need the ER to release calcium. See one driven by a single synapse in <a href="calcsim.html">the CalcSim model</a>.</p></li>
+          </ol>
+        </div>
+        <p class="cs-note">
+          How this run differs from the toolbox: its script keeps the axon's calcium at rest, while here the axon has the same channels, pumps, buffer and diffusion as the rest of the cell, including
+          stretches that would be myelinated, so the calcium can be seen across the whole cell. The saved voltage lasts 2.9 ms; after that each point relaxes to rest with a 5 ms time constant,
+          an approximation of mine so the glow can fade. The sample did not record its stimulus settings or step; its 120 frames are taken as 25 µs apart, the toolbox's default, which gives a spike of a realistic length.
+        </p>
+      </section>
+
+      <!-- ===================== AIM THE FIELD ===================== -->
+      <section id="field" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">Aim the field</p>
+          <h2>Direction decides where a neuron starts.</h2>
+          <p class="sub">
+            In the paper's third example, the field along the cell's axis fired it at 275 V/m, from the long axon's terminal. Turned 45&deg;, it took 280 V/m and
+            the spike started at a different terminal, the one better aligned with the field. Try it on three of the toolbox's cells.
+          </p>
+        </div>
+        <div class="builder" id="nt-field">
+          <div class="builder-view">
+            <canvas class="builder-canvas" aria-label="A neuron colored by the quasipotential of a uniform electric field, with an arrow for the field's direction; drag to rotate"></canvas>
+            <p class="bar-scale nt-field-scale"><span class="nt-field-low"></span><i></i><span class="nt-field-high"></span></p>
+            <p class="builder-hint">Drag to rotate</p>
+          </div>
+          <div class="builder-panel">
+            <h3>The cell</h3>
+            <div class="sb-scenes frame-pick" role="group" aria-label="Neuron">
+              <button type="button" data-cell="ca1" class="active">Rat CA1</button>
+              <button type="button" data-cell="l23">Human L2/3</button>
+              <button type="button" data-cell="l5">Human L5</button>
+            </div>
+            <p class="nt-field-note"></p>
+            <h3>The field</h3>
+            <div class="sb-scenes frame-pick" role="group" aria-label="Field presets">
+              <button type="button" data-preset data-tilt="0" data-amp="275">Along the cell, 275 V/m</button>
+              <button type="button" data-preset data-tilt="45" data-amp="280">At 45&deg;, 280 V/m</button>
+            </div>
+            <div class="builder-sliders">
+              <label class="builder-row"><span>Tilt from the cell's axis</span><input type="range" min="0" max="180" step="1" value="0" data-field="tilt" /><output data-for="tilt"></output></label>
+              <label class="builder-row nt-turn-row"><span>Turn around it</span><input type="range" min="0" max="359" step="1" value="0" data-field="turn" /><output data-for="turn"></output></label>
+              <p class="nt-turn-hint">Pointing along the axis, turning changes nothing. Tilt the field first.</p>
+              <label class="builder-row"><span>Strength</span><input type="range" min="0" max="400" step="5" value="275" data-field="amp" /><output data-for="amp"></output></label>
+            </div>
+            <dl class="builder-out nt-field-out"></dl>
+            <p class="cs-note nt-field-caveat">
+              Color is the toolbox's uniform-field formula, <span class="tex">\psi=-E\cdot r</span>, relative to the soma. The white ring marks the axon end with the
+              biggest field drop along its last branch: a rule of thumb, not a simulation. The 275 and 280 V/m are thresholds of the paper's cell, shown here for scale.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== THE PULSE ===================== -->
+      <section id="pulse" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">The pulse</p>
+          <h2>Under a millisecond, repeated for effect.</h2>
+          <p class="sub">The toolbox's two pulse shapes, then how repeating them shapes the calcium in the paper's results. Hover the curves for values.</p>
+        </div>
+        <div class="grid grid-2 nt-pulse" id="nt-pulse">
+          <figure class="card nt-chart-card">
+            <p class="tag">One pulse</p>
+            <div class="nt-chart nt-chart-pulse"></div>
+            <p class="nt-chart-note">Both swing the other way after their first peak: to 30% of the peak for monophasic, 90% for biphasic.</p>
+          </figure>
+          <figure class="card nt-chart-card">
+            <p class="tag">One second of pulses</p>
+            <div class="sb-scenes frame-pick" role="group" aria-label="Protocol">
+              <button type="button" data-protocol="single">Single pulse</button>
+              <button type="button" data-protocol="ten">10 Hz rTMS</button>
+              <button type="button" data-protocol="tbs">Theta burst</button>
+            </div>
+            <div class="nt-train"></div>
+            <p class="nt-protocol-count"></p>
+            <p class="nt-protocol-text" aria-live="polite"></p>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ===================== CALCIUM ===================== -->
+      <section id="calcium" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">The calcium model</p>
+          <h2>What the voltage sets in motion.</h2>
+          <p class="sub">A cut along a dendrite, as my script sets it up. Calcium modeling matters here because NEURON models usually lack it or simplify it, leaving out details such as its diffusion.</p>
+        </div>
+        <figure class="csd" id="nt-diagram">
+          <div class="csd-stage"></div>
+          <figcaption class="csd-info" aria-live="polite">
+            <p class="csd-name"></p>
+            <p class="csd-desc"></p>
+          </figcaption>
+        </figure>
+        <p class="cs-note">
+          In the toolbox's script these mechanisms are on the soma and dendrites; this page's run adds them to the axon. The solver halves its time step when a Newton solve fails and doubles it again after a run of successes, so it can take small steps through a spike. Voltage passes one way, from NEURON to the calcium model, so its step can differ from NEURON's.
+        </p>
+      </section>
+
+      <!-- ===================== FINDINGS ===================== -->
+      <section id="findings" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">From the paper</p>
+          <h2>What the examples showed.</h2>
+        </div>
+        <div class="grid grid-2">
+          <article class="card"><p class="tag">A tissue culture in a dish</p><h3>A spike that starts far from the soma</h3><p>A single pulse depolarized an axon terminal enough to fire. Through the myelinated axon, the spike reached the soma around 1 ms later, and dendrites followed by diffusion.</p></article>
+          <article class="card"><p class="tag">10 Hz against theta burst</p><h3>Two routes to a calcium build-up</h3><p>Both protocols built up somatic calcium over time, in different patterns. Initial tissue-culture experiments showed the 10 Hz rise too; the authors call for fuller validation.</p></article>
+          <article class="card"><p class="tag">A uniform field, two angles</p><h3>Orientation moves the starting point</h3><p>275 V/m along the somatodendritic axis, 280 V/m at 45&deg;, a different starting terminal, and a shift of about 0.1 ms that also delayed the calcium.</p></article>
+          <article class="card"><p class="tag">A human neuron in a head model</p><h3>Not every pulse fires</h3><p>In a 10 Hz protocol over the motor cortex, the neuron's slow recovery meant it did not fire with every pulse. Synaptic input timed to the pulses lowered its threshold.</p></article>
+        </div>
+        <div class="cta">
+          <a class="btn" href="https://doi.org/10.1016/j.brs.2021.09.004" target="_blank" rel="noopener">Read the paper</a>
+          <a class="btn btn-ghost" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8608742/" target="_blank" rel="noopener">Free full text</a>
+          <a class="btn btn-ghost" href="https://github.com/OpitzLab/NeMo-TMS" target="_blank" rel="noopener">The toolbox on GitHub</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">NeMo-TMS is GPL-3.0 open source from the Opitz Lab and collaborators. The replay is the toolbox's sample cell, drawn thicker than life so it can be seen, with passive calcium from its calcium script, re-run in 2026 with those mechanisms on the axon too. Color is capped at 0.3 µM, so low levels show; the soma goes above it. The charts and demos are redrawn from the toolbox's data and code; the findings are from the paper.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

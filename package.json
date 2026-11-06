@@ -11,6 +11,8 @@
     "spines": "python3 scripts/build_spines.py",
     "spinebuilder": "python3 scripts/build_spinebuilder.py",
     "neuronmesh": "python3 scripts/build_neuronmesh.py",
+    "tetraneuron": "python3 scripts/build_tetraneuron.py",
+    "nemotms": "python3 scripts/build_nemotms.py",
     "resume-pdf": "node scripts/make_resume_pdf.mjs"
   },
   "dependencies": {

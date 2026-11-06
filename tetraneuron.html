@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TetraNeuron, in development | James Rosado, Ph.D.</title>
+    <meta name="description" content="TetraNeuron is in development: a first look at a real neuron, from its raw reconstruction to growing out from a single point." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="sb tn">
+    <!-- The film (src/tetraneuron.js): one real cell, read in, regularized and grown from a point; drag where there is no text -->
+    <canvas id="sb-bg" data-page="tetraneuron" aria-label="A neuron being read from its file, its points settling, then growing out from a single point inside an expanding sphere; drag to rotate"></canvas>
+    <div class="vignette sb-vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="./">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="./#services">Consulting</a>
+        <a href="./#research">Research</a>
+        <a href="./#projects">Software</a>
+        <a href="./#publications">Publications</a>
+        <a href="./#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="resume.html">Résumé</a>
+      <a class="btn btn-small" href="./#contact">Contact</a>
+    </header>
+
+    <!-- the rows of the real .swc file, as they are read -->
+    <div class="tn-reader" id="tn-reader" aria-hidden="true">
+      <p>0-2a.CNG.swc</p>
+      <pre><span class="tn-reader-head">  # t       x       y       z     r par</span>
+<code></code></pre>
+    </div>
+
+    <div class="sb-hud" id="sb-hud">
+      <p class="sb-hud-label"><span class="dot"></span><span id="sb-scene-name">Reading the raw .swc</span><span class="sb-hud-hint"> · drag to rotate</span></p>
+      <button type="button" class="sb-chip" id="tn-pause">Pause</button>
+    </div>
+
+    <main id="top" class="subpage">
+      <section class="page-head sb-head tn-head">
+        <a class="back" href="./#research">&larr; Research</a>
+        <p class="eyebrow">Research software <span class="dev-pill">In development</span></p>
+        <h1>TetraNeuron: a neuron, <em>grown from a point.</em></h1>
+        <p class="lede">
+          Something new is taking shape in my meshing work. I'm not ready to say how it works, but I can show you what it
+          looks like.
+        </p>
+
+        <ol class="tn-chapters" aria-label="Chapters of the film">
+          <li>
+            <button type="button" data-chapter="read">
+              <span class="num">01</span>
+              <strong>The raw file</strong>
+              <small>A real cell, read in one row at a time: points and radii, just as they were traced.</small>
+              <span class="tn-bar" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li>
+            <button type="button" data-chapter="regularize">
+              <span class="num">02</span>
+              <strong>Regularized</strong>
+              <small>The same neuron. The sharp corners soften and the points even out.</small>
+              <span class="tn-bar" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li>
+            <button type="button" data-chapter="grow">
+              <span class="num">03</span>
+              <strong>Grown</strong>
+              <small>From one spark, a sphere opens. The soma fills out, then every dendrite reaches out behind it.</small>
+              <span class="tn-bar" aria-hidden="true"></span>
+            </button>
+          </li>
+          <li>
+            <button type="button" data-chapter="done">
+              <span class="num">04</span>
+              <strong>What comes next</strong>
+              <small>Still in development. More here when it's ready.</small>
+              <span class="tn-bar" aria-hidden="true"></span>
+            </button>
+          </li>
+        </ol>
+
+        <div class="cta tn-cta">
+          <a class="btn btn-ghost" href="./#contact">Curious? Get in touch</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer tn-footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">An impression, rendered live in WebGL. The cell is real, from <a href="https://neuromorpho.org" target="_blank" rel="noopener">NeuroMorpho.org</a>; the tubes and the growth are drawn for this page.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
