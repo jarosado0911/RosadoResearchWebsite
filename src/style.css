@@ -626,6 +626,16 @@ body.sb.sb-explore { touch-action: none; overflow: hidden; }
 .tn-cta { margin-top: 1.3rem; }
 .tn-cta .btn { background: var(--panel); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .tn-footer { background: linear-gradient(180deg, rgba(5, 7, 13, 0), rgba(5, 7, 13, 0.8)); }
+.tn-app { padding-top: 60px; }
+.film.tn-film { background: #fff; }
+.film.tn-film .film-video { aspect-ratio: 16 / 9; mix-blend-mode: normal; object-fit: contain; }
+.film.tn-film .film-toggle { top: auto; bottom: 10px; right: 14px; color: #1a1f2b; background: rgba(255, 255, 255, 0.85); border-color: rgba(26, 31, 43, 0.3); }
+.film.tn-film .film-toggle:hover { color: #000; border-color: #000; }
+/* the background's labels step aside while the recording is on screen */
+.sb-hud, .tn-reader { transition: opacity 0.35s ease; }
+.tn-watching .sb-hud { opacity: 0; pointer-events: none; }
+.tn-watching .sb-hud > * { pointer-events: none; }
+.tn-watching .tn-reader { display: none; }
 /* the file being read */
 .tn-reader {
   position: fixed; right: 18px; top: 92px; z-index: 5; pointer-events: none; padding: 10px 14px; border-radius: 12px;

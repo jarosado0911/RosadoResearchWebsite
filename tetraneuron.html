@@ -87,11 +87,27 @@
           <a class="btn btn-ghost" href="./#contact">Curious? Get in touch</a>
         </div>
       </section>
+
+      <section id="app" class="section sb-tab tn-app">
+        <div class="section-head">
+          <p class="eyebrow">The real thing</p>
+          <h2>The app, growing this neuron.</h2>
+          <p class="sub">The 3D view of the TetraNeuron desktop app as it runs today, recorded as the neuron grows from a single point to the whole cell.</p>
+        </div>
+        <figure class="film tn-film" id="tn-film">
+          <video class="film-video" muted loop playsinline preload="none" poster="video/tetraneuron-grow-poster.jpg"
+                 aria-label="Recording of the TetraNeuron app's 3D view: a neuron's mesh grows from the soma outward">
+            <source src="video/tetraneuron-grow.webm" type="video/webm" />
+            <source src="video/tetraneuron-grow.mp4" type="video/mp4" />
+          </video>
+          <button type="button" class="film-toggle" aria-label="Pause the video">Pause</button>
+        </figure>
+      </section>
     </main>
 
     <footer class="footer tn-footer">
       <p>&copy; <span id="year"></span> James Rosado</p>
-      <p class="muted">An impression, rendered live in WebGL. The cell is real, from <a href="https://neuromorpho.org" target="_blank" rel="noopener">NeuroMorpho.org</a>; the tubes and the growth are drawn for this page.</p>
+      <p class="muted">An impression, rendered live in WebGL. The cell is real, from <a href="https://neuromorpho.org" target="_blank" rel="noopener">NeuroMorpho.org</a>; the tubes and the growth in the background are drawn for this page. The recording is the real app's 3D view.</p>
     </footer>
 
     <script type="module" src="/src/main.js"></script>

@@ -484,6 +484,9 @@ export async function startTetraNeuronPage(canvas, { reducedMotion = false } = {
     time = reducedMotion ? CHAPTERS[chapter].still : ACT[chapter][0] + (chapter === 'read' ? 0 : 0.01);
   }));
 
+  const recording = document.getElementById('tn-film');
+  new IntersectionObserver(([e]) => document.body.classList.toggle('tn-watching', e.isIntersecting), { threshold: 0.2 }).observe(recording);
+
   canvas.style.transition = 'none';
   document.body.classList.add('sb-ready');
   const clock = new THREE.Clock();
