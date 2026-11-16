@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ten Spines, One Calcium Wave | James Rosado, Ph.D.</title>
+    <meta name="description" content="Research in progress: a whole reconstructed neuron with ten dendritic spines, each with a spine apparatus joined to the ER. All ten synapses open at once; every spine apparatus empties within milliseconds and the ER carries a calcium wave through the whole cell. Replayed in 3D from the simulation's output, with close-ups of every spine." />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="sb wc ts">
+    <!-- The background (src/tenspines.js): the simulated cell replaying its calcium; the story card in view sets the scene -->
+    <canvas id="sb-bg" data-page="tenspines" aria-label="3D view of the simulated neuron with ten spines: its plasma membrane glowing with cytosolic calcium and its ER inside colored by the calcium it stores, replaying the calcium wave; drag to rotate"></canvas>
+    <div class="vignette sb-vignette" aria-hidden="true"></div>
+    <div class="wc-labels" id="ts-labels" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="./">James Rosado</a>
+      <nav aria-label="Main">
+        <a href="./#services">Consulting</a>
+        <a href="./#research">Research</a>
+        <a href="./#projects">Software</a>
+        <a href="./#publications">Publications</a>
+        <a href="./#experience">Experience</a>
+      </nav>
+      <a class="btn btn-small btn-ghost nav-cv" href="resume.html">Résumé</a>
+      <a class="btn btn-small" href="./#contact">Contact</a>
+    </header>
+
+    <div class="sb-hud wc-hud ts-hud">
+      <div class="wc-player">
+        <button type="button" class="wc-play" aria-label="Pause">❚❚</button>
+        <input type="range" class="wc-scrub" min="0" max="100" step="0.01" value="0" aria-label="Simulated time, ms" />
+        <output class="wc-time">t = 0.00 ms</output>
+      </div>
+      <p class="sb-hud-label"><span class="dot"></span><span id="sb-scene-name">Ten spines</span><span class="sb-hud-hint"> · drag to turn · double-click to reset</span></p>
+      <div class="wc-keys">
+        <span class="wc-key"><i class="ts-jet" aria-hidden="true"></i>cytosol Ca²⁺ 0.05&ndash;100 µM (log)</span>
+        <span class="wc-key"><i class="ts-jet" aria-hidden="true"></i>ER Ca²⁺ 20&ndash;260 µM</span>
+      </div>
+    </div>
+
+    <main id="top" class="subpage wc-page">
+      <section class="page-head sb-head">
+        <a class="back" href="./#research">&larr; Research</a>
+        <p class="eyebrow">Research &middot; Dendritic spines &middot; Ten spines <span class="dev-pill">Research mode</span></p>
+        <h1>Ten spines, <em>one calcium wave.</em></h1>
+        <p class="lede">
+          The next step after <a href="wholecell.html">one synapse on a whole neuron</a>: the same reconstructed cell, now
+          with ten dendritic spines grown onto its dendrites. Each spine carries a spine apparatus, a thin finger of the
+          endoplasmic reticulum (ER) that reaches up into the spine and stores calcium. All ten synapses open at the same
+          moment. Calcium floods the spine heads, every spine apparatus empties within a few milliseconds, and the ER below
+          them carries the signal on as a wave through the whole cell. The background is that simulation, replayed from
+          its own output. Scroll to follow it; drag to turn the cell.
+        </p>
+        <div class="ts-status" role="note">
+          <p><strong>Research mode.</strong> This is work in progress, shown as it happens: one simulation run, with the
+          parameters of my earlier spine models, not yet repeated on a finer mesh or with smaller time steps, and not yet
+          published. The numbers on this page describe this run; they are not settled results.</p>
+        </div>
+        <ul class="facts nm-facts" aria-label="The run at a glance">
+          <li><strong>10</strong><span>spines, each with a spine apparatus joined to the cell's ER</span></li>
+          <li><strong>1.05M</strong><span>tetrahedra of cytosol and ER, 724,510 unknowns</span></li>
+          <li><strong>6.7 h</strong><span>on 128 cores of SDSC Expanse for 100 ms of calcium</span></li>
+        </ul>
+        <ol class="sb-tabs-nav wc-nav ts-nav">
+          <li><a href="#story"><span>01</span>The wave<small>Scroll through it in 3D</small></a></li>
+          <li><a href="#spines"><span>02</span>Ten spines up close<small>Every spine at once, cut open</small></a></li>
+          <li><a href="#race"><span>03</span>The stores empty<small>Spine, dendrite, soma</small></a></li>
+          <li><a href="#exploring"><span>04</span>What we're exploring<small>The open questions</small></a></li>
+          <li><a href="#run"><span>05</span>The run<small>What is in the model</small></a></li>
+        </ol>
+      </section>
+
+      <!-- ===================== 01 THE STORY (each card sets the background's scene) ===================== -->
+      <section id="story" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">01 &middot; The wave</p>
+          <h2>Follow the calcium.</h2>
+          <p class="sub">
+            Scroll through the run. The background flies to each part of the cell and plays that stretch of time, slowed
+            down where the spines are; the player at the bottom right pauses it or scrubs through all 100 ms.
+          </p>
+        </div>
+
+        <ol class="nm-steps wc-steps">
+          <li class="card" data-scene="cell">
+            <span class="num">01</span>
+            <h3>A neuron with ten spines</h3>
+            <p>A rat pyramidal neuron, <code>0-2a</code> from <a href="https://neuromorpho.org" target="_blank" rel="noopener">NeuroMorpho.org</a>, with an ER tube inside every dendrite at half its radius. Ten real spine shapes were grown onto it with <a href="spinebuilder.html">SpineBuilder</a>, each with a spine apparatus whose lumen is one with the dendrite's ER. Five spines sit within 40 µm of the soma, four between 58 and 109 µm, and one, <b>syn7</b>, 344 µm out on the long apical dendrite.</p>
+            <p>The membrane glows with the calcium in the cytosol just inside it. The ER is colored by the calcium it stores, on the same jet scale: dark red while full, at 250 µM, through yellow and green to blue as it empties.</p>
+          </li>
+          <li class="card" data-scene="fire">
+            <span class="num">02</span>
+            <h3>Ten synapses open at once</h3>
+            <p>At t = 0 every synapse opens together. For 10 ms they let calcium in, about 118,000 ions in all, and for 200 ms they release IP3, a second messenger that also opens the ER. Each synapse glows with the calcium measured right at it: peaks between 5.5 and 71 µM, set by the synapse's size and the shape of its spine.</p>
+          </li>
+          <li class="card" data-scene="inside">
+            <span class="num">03</span>
+            <h3>Inside a spine</h3>
+            <p>The membranes open along <b>syn8</b>'s axis to show the calcium inside it: the cytosol of the spine head, and the lumen of the spine apparatus. Calcium pours in at the synapse; within a millisecond the spine apparatus answers, its receptors open and its store pours out. It turns from red to blue: half empty at 1.0 ms, settled near 25 µM.</p>
+            <p>In every one of the ten spines the spine apparatus is half empty within 0.8 to 2.5 ms.</p>
+          </li>
+          <li class="card" data-scene="branched">
+            <span class="num">04</span>
+            <h3>A spine with two heads</h3>
+            <p><b>syn10</b> is branched: one neck, and a spine apparatus that splits in two, one branch for each head. It is the largest spine apparatus of the ten, and the slowest and least to empty: half empty only at 2.5 ms, and it settles at 51 µM where the others reach 25&ndash;46.</p>
+          </li>
+          <li class="card" data-scene="dendrite">
+            <span class="num">05</span>
+            <h3>Down into the dendrite</h3>
+            <p>Each spine apparatus is joined to the ER of the dendrite below it, and that ER releases next: within 10 µm of a synapse, half of it has released by 5.5 ms. From there the release spreads along the dendritic ER, red giving way to blue, at about 3 µm per millisecond.</p>
+          </li>
+          <li class="card" data-scene="soma">
+            <span class="num">06</span>
+            <h3>The soma empties</h3>
+            <p>The wave reaches the soma from the dendrites of the five nearby spines. Its large ER starts to release at about 10 ms, from the side facing those dendrites, then from its whole surface inward: half of it at 40 ms, nearly all by 50 ms. The released calcium stays close to the ER, a bright shell around it: on most of the soma's own membrane it stays near 0.05 µM.</p>
+          </li>
+          <li class="card" data-scene="tree">
+            <span class="num">07</span>
+            <h3>Out to the tips</h3>
+            <p>The front keeps going into dendrites that carry no synapse at all. Half of the cell's ER membrane has released by 26 ms, 90% by 50 ms, and 99.8% by 70 ms. The last to go are the far tips of the dendrites, 60&ndash;70 ms after the synapses opened.</p>
+          </li>
+          <li class="card" data-scene="ring">
+            <span class="num">08</span>
+            <h3>Two spines keep ringing</h3>
+            <p>Most spines settle after the pulse. <b>syn3</b> does not: from 25 ms its synapse spikes again and again, eight times, about every 7 ms. It has one of the smallest synapses and a long, thin neck with a spine apparatus that runs almost its whole length. <b>syn9</b> joins in at about 40 ms with smaller spikes. Why is one of the open questions.</p>
+          </li>
+          <li class="card" data-scene="late">
+            <span class="num">09</span>
+            <h3>100 ms later</h3>
+            <p>Across the cell the ER is down from 250 to 55 µM on average, the cytosol sits at about half a micromolar, and the IP3 from the synapses is still rising. Refilling the stores takes far longer than this run.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ===================== 02 THE SPINE WALL (src/tenspines.js: one canvas, a scissor box per tile) ===================== -->
+      <section id="spines" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">02 &middot; Ten spines up close</p>
+          <h2>Every spine, on one clock.</h2>
+          <p class="sub">
+            All ten spines at full resolution, nearest to farthest from the soma, replaying the same 100 ms. Each turns
+            slowly on its own axis; drag one to turn it yourself. <b>Cut open</b> slices every spine down its middle, so
+            you see the calcium inside the spine head and in the spine apparatus' lumen. The first milliseconds, when the
+            spine apparatuses empty, play at a third of the speed.
+          </p>
+        </div>
+        <div class="ts-wall" id="ts-wall">
+          <canvas class="ts-wall-canvas" aria-hidden="true"></canvas>
+          <div class="ts-wall-bar">
+            <div class="wc-player">
+              <button type="button" class="wc-play" aria-label="Pause">❚❚</button>
+              <input type="range" class="wc-scrub" min="0" max="100" step="0.01" value="0" aria-label="Simulated time of the close-ups, ms" />
+              <output class="wc-time">t = 0.00 ms</output>
+            </div>
+            <div class="sb-scenes" role="group" aria-label="Speed">
+              <button type="button" data-speed="0.5">Slow</button>
+              <button type="button" data-speed="2" class="active">Medium</button>
+              <button type="button" data-speed="8">Fast</button>
+            </div>
+            <div class="sb-scenes" role="group" aria-label="View">
+              <button type="button" data-mode="surface" class="active">Membrane</button>
+              <button type="button" data-mode="cut">Cut open</button>
+            </div>
+          </div>
+          <div class="ts-tiles"></div>
+          <div class="ts-wall-foot">
+            <span class="bar-scale ts-jet"><span>cytosol 0.05 µM</span><i aria-hidden="true"></i><span>100 µM</span></span>
+            <span class="bar-scale ts-jet"><span>ER 20 µM</span><i aria-hidden="true"></i><span>260 µM</span></span>
+            <p>Under each spine, its whole run as two ribbons: calcium at the synapse on top, in the spine apparatus below. The white line is the clock. Watch syn3's top ribbon after 25 ms.</p>
+          </div>
+          <p class="ts-wall-fallback">The close-ups need WebGL.</p>
+        </div>
+      </section>
+
+      <!-- ===================== 03 THE RACE (released fractions, src/tenspines.js) ===================== -->
+      <section id="race" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">03 &middot; The stores empty</p>
+          <h2>Spine first, then dendrite, then soma.</h2>
+          <p class="sub">
+            How much of each store has released, that is, fallen below half of its resting calcium, over the run. The
+            spine apparatuses go first, nine tenths of them within 3 ms; the dendritic ER follows the wave for the next 60; the soma's large ER waits
+            for the wave to arrive, then empties in a rush. Point at the chart to read it; click to send the 3D cell to
+            that moment. The dashed line is its clock.
+          </p>
+        </div>
+        <figure class="ts-race" id="ts-race">
+          <div class="ts-race-legend">
+            <span><i style="background:#3987e5"></i>Spine apparatus (all ten)</span>
+            <span><i style="background:#d95926"></i>Dendritic ER</span>
+            <span><i style="background:#199e70"></i>Soma ER</span>
+          </div>
+          <div class="ts-race-plot">
+            <svg role="img" aria-label="Line chart: percentage of the spine apparatus, the dendritic ER and the soma ER that has released, from 0 to 100 ms. The spine apparatus reaches 90% by 3 ms and 100% by 7 ms, the dendritic ER climbs steadily to 99% by 70 ms, the soma ER starts at about 10 ms and has nearly all released by 50 ms."></svg>
+            <div class="ts-race-tip" role="status"></div>
+          </div>
+          <figcaption>Share of each store's membrane, by mesh vertex, that has fallen below 125 µM at least once.</figcaption>
+          <details class="ts-race-table">
+            <summary>Show the numbers</summary>
+            <div class="nm-table-wrap">
+              <table class="nm-table">
+                <thead><tr><th>Time</th><th>Spine apparatus</th><th>Dendritic ER</th><th>Soma ER</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </details>
+        </figure>
+      </section>
+
+      <!-- ===================== 04 WHAT WE'RE EXPLORING ===================== -->
+      <section id="exploring" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">04 &middot; What we're exploring</p>
+          <h2>The questions this run opens.</h2>
+          <p class="sub">
+            My <a href="spines.html">single-spine models</a> showed that the spine apparatus can act as an all-or-nothing
+            switch between a spine and its dendrite. This project asks what that switch does inside a whole neuron, with
+            the cell's real shape, the ER in every branch and many spines at once.
+          </p>
+        </div>
+        <div class="grid grid-3 ts-explore">
+          <article class="card">
+            <p class="tag">Spines as triggers</p>
+            <h3>Does the spine apparatus start the wave?</h3>
+            <p>Here every spine apparatus empties first and the dendritic ER beneath it follows. Is the spine apparatus the spark that turns a local synaptic signal into a cell-wide wave, or would the dendrite's own ER have started it anyway? The same cell with spines that lack one would tell.</p>
+          </article>
+          <article class="card">
+            <p class="tag">How many, and where</p>
+            <h3>From ten spines to hundreds</h3>
+            <p>Ten synapses opening together is a strong, perfectly timed stimulus. Meshes of the same cell with 20, 40, 80, 160 and 320 spines are already built, to ask how the wave's start and reach depend on how many spines are active, when, and where they sit.</p>
+          </article>
+          <article class="card">
+            <p class="tag">Oscillations</p>
+            <h3>Why do some spines ring?</h3>
+            <p>syn3 and syn9 keep spiking long after their synapses closed, about every 7 ms. A cycle of release, refilling by the ER's pumps, and release again is the likely explanation, but it has not been analysed yet, nor checked on a finer mesh.</p>
+          </article>
+          <article class="card">
+            <p class="tag">Calcium meets voltage</p>
+            <h3>Driven by the cell's own spikes</h3>
+            <p>In this run only the synapses let calcium in. The next run, on the supercomputer now, adds voltage-gated calcium channels across the whole membrane, opened by a simulated burst of action potentials. For now the coupling runs one way: voltage moves calcium, not back.</p>
+          </article>
+          <article class="card">
+            <p class="tag">The thick dendrite</p>
+            <h3>Why does the wave get through this time?</h3>
+            <p>In the <a href="wholecell.html">one-synapse run</a> the wave stalled in the thick apical dendrite. Here the ER of the whole cell releases, that dendrite included. But the cell changed in several ways at once: a wider ER, ten synapses instead of one, spines with their own stores. Separating them is next.</p>
+          </article>
+          <article class="card">
+            <p class="tag">Before any claim</p>
+            <h3>Is it the mesh?</h3>
+            <p>One run on one mesh. Before the numbers here become results, they need the same run on a finer mesh and with smaller time steps, and the oscillations and the wave speed have to survive both.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===================== 05 THE RUN ===================== -->
+      <section id="run" class="section sb-tab">
+        <div class="section-head">
+          <p class="eyebrow">05 &middot; The run</p>
+          <h2>What is in the model.</h2>
+          <p class="sub">
+            The whole-cell version of my spine calcium model, in UG4 with the neuro_collection plugin, run on SDSC Expanse
+            under my NSF ACCESS allocation for this project.
+          </p>
+        </div>
+        <div class="nm-table-wrap">
+          <table class="nm-table ts-run">
+            <tbody>
+              <tr><th>The cell</th><td>Rat pyramidal neuron 0-2a (NeuroMorpho.org); the ER as a tube at half the radius of every dendrite and a ball in the soma; ten spines with their spine apparatus placed and welded in by SpineBuilder</td></tr>
+              <tr><th>The mesh</th><td>1,045,560 tetrahedra on 223,657 vertices: cytosol, ER and spine apparatus lumen, with the plasma membrane, ER membrane, spine apparatus membrane and ten synapses as their own surfaces</td></tr>
+              <tr><th>In the cytosol</th><td>Free calcium, a calcium buffer (calbindin) and IP3, all diffusing</td></tr>
+              <tr><th>In the ER</th><td>Free calcium, diffusing through the dendrites' ER into every spine apparatus and back</td></tr>
+              <tr><th>On the ER and spine apparatus</th><td>Ryanodine receptors and IP3 receptors that release calcium, SERCA pumps that take it back, a small leak; the same on the spine apparatus as on the dendritic ER</td></tr>
+              <tr><th>On the plasma membrane</th><td>PMCA and sodium-calcium exchanger pumps that move calcium out of the cell, a small leak in; at rest every flux balances</td></tr>
+              <tr><th>The stimulus</th><td>All ten synapses at t = 0: calcium for 10 ms, IP3 for 200 ms</td></tr>
+              <tr><th>The numerics</th><td>Finite volumes in space, implicit time steps of 5 µs: 20,000 steps, Newton's method converging at every one</td></tr>
+              <tr><th>The hardware</th><td>128 cores on one SDSC Expanse node, 6 h 39 min, 852 core-hours; 101 snapshots, one every millisecond, 5.7 GB</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="cs-cta">
+          <a class="btn" href="wholecell.html">The one-synapse run &rarr;</a>
+          <a class="btn btn-ghost" href="spinebuilder.html">How the spines are built &rarr;</a>
+          <a class="btn btn-ghost" href="spines.html">The single-spine models &rarr;</a>
+          <a class="btn btn-ghost" href="./#research">&larr; Back to research</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> James Rosado</p>
+      <p class="muted">The background and the close-ups replay the simulation's output: the membranes decimated for the browser except around the ten spines, which are at full resolution; calcium every 1 ms of simulated time, blended smoothly in between; the synapse glows from ug4's own measurement every 0.05 ms.</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

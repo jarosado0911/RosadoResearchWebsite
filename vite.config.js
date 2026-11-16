@@ -24,6 +24,7 @@ export default defineConfig({
         mathematics: resolve(import.meta.dirname, 'mathematics.html'),
         calcsim: resolve(import.meta.dirname, 'calcsim.html'),
         wholecell: resolve(import.meta.dirname, 'wholecell.html'),
+        tenspines: resolve(import.meta.dirname, 'tenspines.html'),
         'neurovisor-electrical': resolve(import.meta.dirname, 'neurovisor-electrical.html'),
         'neurovisor-calcium': resolve(import.meta.dirname, 'neurovisor-calcium.html'),
       },

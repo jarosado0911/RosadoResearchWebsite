@@ -47,6 +47,7 @@ if (sbCanvas) {
     tetraneuron: () => import('./tetraneuron.js').then(({ startTetraNeuronPage }) => startTetraNeuronPage(sbCanvas, { reducedMotion })),
     calcsim: () => import('./calcsim3d.js').then(({ startCalcSimBackground }) => startCalcSimBackground(sbCanvas, { reducedMotion })),
     wholecell: () => import('./wholecell.js').then(({ startWholeCellPage }) => startWholeCellPage(sbCanvas, { reducedMotion })),
+    tenspines: () => import('./tenspines.js').then(({ startTenSpinesPage }) => startTenSpinesPage(sbCanvas, { reducedMotion })),
     'nv-electrical': () => startNeuroVisor('electrical'),
     'nv-calcium': () => startNeuroVisor('calcium'),
   }[sbCanvas.dataset.page] ?? (() => import('./spinebuilder.js').then(({ startSpineBuilderPage }) => startSpineBuilderPage(sbCanvas, { reducedMotion }))))()

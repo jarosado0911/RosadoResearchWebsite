@@ -1261,3 +1261,84 @@ body.sb.sb-explore { touch-action: none; overflow: hidden; }
 .wc-xsec figcaption { margin-top: 8px; font-size: 0.85rem; color: var(--muted); text-align: center; }
 .wc-next { margin-top: 64px; margin-bottom: 22px; }
 .wc-next h3 { font-size: 1.6rem; }
+
+/* ---------- Ten-spine page (tenspines.html, src/tenspines.js) ---------- */
+/* jet without its darkest navy, as in the shaders: cytosol and ER share it */
+.wc-key i.ts-jet, .bar-scale.ts-jet i { background: linear-gradient(90deg, #0000e6, #0059ff, #00ccff, #40ffbf, #b3ff4d, #ffd900, #ff6600, #f20000, #800000); }
+.ts-status {
+  margin-top: 2rem; max-width: 44rem; padding: 16px 22px; border-radius: var(--radius);
+  border: 1px solid rgba(255, 179, 71, 0.45); background: rgba(40, 26, 8, 0.6);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.ts-status p { margin: 0; color: #e8dcc8; font-size: 0.95rem; line-height: 1.55; }
+.ts-status strong { color: var(--accent); font-weight: 600; }
+.ts-nav { grid-template-columns: repeat(5, minmax(0, 13rem)); }
+/* the spine wall has its own player: the background's HUD and labels step aside while it fills the screen */
+.ts-hud, .ts .wc-labels { transition: opacity 0.35s ease; }
+.ts-wall-on .ts-hud, .ts-wall-on .wc-labels { opacity: 0; }
+.ts-wall-on .ts-hud, .ts-wall-on .ts-hud > * { pointer-events: none; }
+@media (max-width: 1100px) { .ts-nav { grid-template-columns: repeat(3, minmax(0, 15rem)); } }
+@media (max-width: 760px) { .ts-nav { grid-template-columns: 1fr; } }
+
+/* the spine wall: one canvas under the whole panel, drawn only inside each tile's view */
+.ts-wall { position: relative; margin-top: 26px; padding: 18px 18px 16px; background: rgba(8, 12, 22, 0.95); border: 1px solid var(--panel-border); border-radius: var(--radius); }
+.ts-wall-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; pointer-events: none; }
+.ts-wall > :not(canvas) { position: relative; z-index: 1; }
+.ts-wall-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 16px; }
+.ts-wall-bar .wc-player { flex: 1 1 320px; }
+.ts-wall-bar .sb-scenes { justify-content: flex-start; }
+.ts-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px 12px; }
+.ts-tile { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.ts-tile figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; font-size: 0.76rem; color: var(--muted); white-space: nowrap; }
+.ts-tile figcaption b { font-family: var(--serif); font-weight: 400; font-size: 1.1rem; color: var(--text); }
+.ts-view { aspect-ratio: 3 / 4; border-radius: 12px; border: 1px solid rgba(140, 180, 230, 0.16); cursor: grab; touch-action: pan-y; }
+.ts-view:active { cursor: grabbing; }
+.sb main .ts-view, .sb main .ts-tile { pointer-events: auto; }
+.ts-read { margin: 0; display: grid; gap: 1px; font-size: 0.74rem; }
+.ts-read div { display: flex; justify-content: space-between; gap: 6px; }
+.ts-read dt { color: var(--muted); }
+.ts-read dd { margin: 0; font-variant-numeric: tabular-nums; color: var(--text); }
+.ts-ribbons { position: relative; display: grid; gap: 2px; margin-top: 2px; }
+.ts-ribbons canvas { display: block; width: 100%; height: 7px; border-radius: 2px; }
+.ts-now { position: absolute; top: -3px; bottom: -3px; left: calc(var(--now, 0) * 100%); width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 4px rgba(0, 0, 0, 0.9); }
+.ts-wall-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; margin-top: 18px; font-size: 0.8rem; color: var(--muted); }
+.ts-wall-foot .bar-scale { flex: 0 1 300px; min-width: 220px; }
+.ts-wall-foot p { margin: 0; flex: 1 1 280px; }
+.ts-wall-fallback { display: none; margin: 12px 0 0; color: var(--muted); }
+.ts-wall-failed .ts-wall-fallback { display: block; }
+@media (max-width: 1000px) { .ts-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .ts-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ts-wall { padding: 14px 12px; } }
+
+/* the race: released fractions of the three stores */
+.ts-race { margin: 26px 0 0; padding: 20px 22px 16px; max-width: 920px; background: rgba(8, 12, 22, 0.94); border: 1px solid var(--panel-border); border-radius: var(--radius); }
+.ts-race-legend { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 0.85rem; color: #c0cadb; margin-bottom: 6px; }
+.ts-race-legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+.ts-race-legend i { width: 18px; height: 3px; border-radius: 2px; }
+.ts-race-plot { position: relative; }
+.ts-race svg { display: block; width: 100%; height: auto; font-family: var(--sans); }
+.ts-grid { stroke: rgba(233, 238, 247, 0.09); stroke-width: 1; }
+.ts-tick { font-size: 12px; fill: var(--muted); }
+.ts-race-label { font-size: 13px; fill: #c0cadb; }
+.ts-race-now { stroke: rgba(255, 255, 255, 0.6); stroke-width: 1; stroke-dasharray: 3 3; }
+.ts-race-cross { stroke: rgba(233, 238, 247, 0.45); stroke-width: 1; }
+.sb main .ts-race-hit { pointer-events: all; cursor: crosshair; }
+.sb main :is(.ts-race details, .ts-race summary) { pointer-events: auto; }
+.ts-race-tip {
+  position: absolute; top: 6px; left: 0; min-width: 180px; display: grid; gap: 3px; padding: 8px 11px;
+  font-size: 0.8rem; color: #c0cadb; background: rgba(5, 7, 13, 0.95); border: 1px solid var(--panel-border); border-radius: 10px;
+  opacity: 0; pointer-events: none; transition: opacity 0.15s;
+}
+.ts-race-tip.on { opacity: 1; }
+.ts-race-tip b { color: var(--text); font-weight: 600; }
+.ts-race-tip span { display: flex; align-items: center; gap: 0.45rem; }
+.ts-race-tip i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.ts-race-tip em { margin-left: auto; padding-left: 0.8rem; font-style: normal; color: var(--text); font-variant-numeric: tabular-nums; }
+.ts-race figcaption { margin-top: 6px; font-size: 0.82rem; color: var(--muted); }
+.ts-race-table summary { margin-top: 10px; cursor: pointer; font-size: 0.88rem; color: var(--accent-2); }
+.ts-race-table .nm-table-wrap { margin-top: 10px; }
+.ts-race-table td { font-variant-numeric: tabular-nums; }
+
+.ts-explore .card h3 { font-size: 1.2rem; }
+.ts-explore .card p:not(.tag) { color: #c0cadb; }
+.ts-run th { width: 13rem; }
+@media (max-width: 640px) { .ts-run th { width: auto; } }
