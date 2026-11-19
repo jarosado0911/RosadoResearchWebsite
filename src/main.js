@@ -10,6 +10,28 @@ if (import.meta.env.DEV) document.body.classList.add('show-todo');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canvas = document.getElementById('neuron');
 
+// page transitions: a link to another page of the site flies down a dendrite first (src/dive.js); the browser
+// then slides or emerges into the next page (src/pagetransition.js). Not with reduced motion, new tabs or files.
+const samePage = (url) => url.pathname.replace(/index\.html$/, '') === location.pathname.replace(/index\.html$/, '');
+document.addEventListener('click', (e) => {
+  if (reducedMotion || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const a = e.target.closest?.('a[href]');
+  if (!a || (a.target && a.target !== '_self') || a.hasAttribute('download')) return;
+  const url = new URL(a.href, location.href);
+  if (url.origin !== location.origin || samePage(url) || !/(\.html|\/)$/.test(url.pathname)) return;
+  e.preventDefault();
+  // the next page loads while the flight plays
+  const hint = document.createElement('link');
+  hint.rel = 'prefetch'; hint.href = url.href;
+  document.head.appendChild(hint);
+  import('./dive.js').then(({ dive }) => dive(url.href)).catch(() => { location.href = url.href; });
+});
+if (!reducedMotion) {
+  const warm = () => import('./dive.js').then(({ preload }) => preload()).catch(() => {});
+  if ('requestIdleCallback' in window) requestIdleCallback(warm, { timeout: 4000 });
+  else setTimeout(warm, 2500);
+}
+
 // the CA1 neuron background (home and spines pages)
 if (canvas) import('./neuron.js')
   .then(({ startNeuron }) => startNeuron(canvas, {

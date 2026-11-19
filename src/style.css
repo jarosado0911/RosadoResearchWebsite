@@ -48,6 +48,17 @@ body {
   .vignette { background: linear-gradient(180deg, rgba(5, 7, 13, 0.3), rgba(5, 7, 13, 0.75)); }
 }
 
+/* ---- the page transition's flight down a dendrite (src/dive.js) ---- */
+.dive { position: fixed; inset: 0; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; cursor: pointer; background: #05070d; overflow: hidden; }
+.dive.on { opacity: 1; }
+.dive canvas { display: block; width: 100%; height: 100%; transform: scale(1.03); }   /* the blur's edges stay off screen */
+.dive::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 95% at 50% 50%, rgba(5, 7, 13, 0) 55%, rgba(5, 7, 13, 0.85) 100%);
+}
+/* the page under it leans in as the flight begins */
+.diving main, .diving .footer { transform: scale(1.06); filter: blur(3px); transition: transform 0.45s cubic-bezier(0.5, 0, 0.75, 0), filter 0.45s ease; }
+
 /* ---- type ---- */
 h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01em; margin: 0; }
 h1 { font-size: clamp(2.6rem, 6.2vw, 5rem); line-height: 1.04; font-variation-settings: 'opsz' 144; }

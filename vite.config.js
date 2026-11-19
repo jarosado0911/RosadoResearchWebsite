@@ -1,11 +1,22 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
+import { TRANSITION_CSS, TRANSITION_JS } from './src/pagetransition.js';
+
+// the slide between pages (src/pagetransition.js), inline in every page's <head>
+const pageTransitions = {
+  name: 'page-transitions',
+  transformIndexHtml: () => [
+    { tag: 'style', attrs: { 'data-page-transition': '' }, children: TRANSITION_CSS, injectTo: 'head' },
+    { tag: 'script', attrs: { 'data-page-transition': '' }, children: TRANSITION_JS, injectTo: 'head' },
+  ],
+};
 
 // Local only: http://localhost:5173 (npm run dev) and http://localhost:4173 (npm run preview, the built site)
 export default defineConfig({
   // relative URLs everywhere, so the built site works at any address: a GitHub Pages sub-folder
   // (https://jarosado0911.github.io/RosadoResearchWebsite/) or the root of your own domain later
   base: './',
+  plugins: [pageTransitions],
   server: { host: 'localhost', port: 5173, strictPort: true },
   preview: { host: 'localhost', port: 4173, strictPort: true },
   build: {

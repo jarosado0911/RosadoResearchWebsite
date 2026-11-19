@@ -13,6 +13,7 @@
     "neuronmesh": "python3 scripts/build_neuronmesh.py",
     "tetraneuron": "python3 scripts/build_tetraneuron.py",
     "nemotms": "python3 scripts/build_nemotms.py",
+    "dive": "python3 scripts/build_dive.py",
     "resume-pdf": "node scripts/make_resume_pdf.mjs"
   },
   "dependencies": {
