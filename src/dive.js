@@ -452,7 +452,25 @@ export async function dive(url, { onStart } = {}) {
     };
   };
   const { s0, s1 } = leg;
-  const travel = (u) => s0 + (s1 - s0) * (0.12 * u + 0.88 * smoother(u));
+  // pacing by how fast it looks, not by distance: the surface streams past at speed / height, so while the camera
+  // is still high (the first leg's dive) it covers more ground. A gentle start, a steady cruise, and a long, soft
+  // slowdown as it arrives (no rush in the middle or at the end).
+  const r0 = at(s0).r;
+  const nominalHeight = (u) => {
+    const skim = 1.05 + 0.1 * r0;
+    return resume ? skim : THREE.MathUtils.lerp(4.5 + r0, skim, smoother(THREE.MathUtils.clamp(u / 0.38, 0, 1)));
+  };
+  const look = (u) => (0.08 + 0.92 * THREE.MathUtils.smoothstep(u, 0, 0.3)) * (1 - 0.8 * THREE.MathUtils.smoothstep(u, 0.5, 1));
+  const N = 240, table = new Float32Array(N + 1);
+  for (let i = 1; i <= N; i++) {
+    const u = (i - 0.5) / N;
+    table[i] = table[i - 1] + look(u) * nominalHeight(u);
+  }
+  const travel = (u) => {
+    const f = THREE.MathUtils.clamp(u, 0, 1) * N, i = Math.min(Math.floor(f), N - 1);
+    const c = table[i] + (table[i + 1] - table[i]) * (f - i);
+    return s0 + (s1 - s0) * (c / table[N]);
+  };
   const somaDist = (s) => Math.abs(s - doc.somaS);
   const meet = somaDist(travel(0.55));    // the spike reaches the camera a little past half way
   const lookAt = new THREE.Vector3();
